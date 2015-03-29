@@ -22,7 +22,10 @@ public class Sketch extends PApplet {
 	}
 	
 	public void setup() {
+		frameRate(60);
+		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
+		world = new World(this);
 		leader = new Leader(this);
 		world=new World(this);
 		world.generateContents();
@@ -39,7 +42,7 @@ public class Sketch extends PApplet {
 		//println(leader.x +  ", " + leader.y);
 		
 		// Update everything in the world. Remove dead circles from the list.
-		ArrayList<GameObject>contents = world.contents;
+		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
@@ -50,7 +53,7 @@ public class Sketch extends PApplet {
 			}
 		}
 		
-		// TO DO: update the camera
+		
 	}
 	
 	public static void main(String args[]) {

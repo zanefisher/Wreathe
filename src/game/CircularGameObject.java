@@ -6,7 +6,7 @@ public abstract class CircularGameObject extends GameObject {
 	public void draw() {
 		sketch.noStroke();
 		sketch.fill(r, g, b, a);
-		sketch.ellipse(sketch.screenX(x), sketch.screenY(x),
+		sketch.ellipse(sketch.screenX(x), sketch.screenY(y),
 				sketch.cameraScale * radius * 2, sketch.cameraScale * radius * 2);
 	}
 }

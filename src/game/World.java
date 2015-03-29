@@ -25,6 +25,7 @@ public class World extends CircularGameObject {
 		contents= new ArrayList<GameObject>();
 		//sketch=s;
 		parent = null;
+		contents = new ArrayList<GameObject>();
 	}
 	
 	public void generateContents() {
