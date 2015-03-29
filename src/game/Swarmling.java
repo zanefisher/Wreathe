@@ -3,18 +3,18 @@ package game;
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
 	static final float maxSpeed = 3.8f, maxAccel = 0.3f;
-	
+	static float swarmlingAvoidence=40;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	
-	Swarmling(Sketch s, float ix, float iy, float avoidence) {
+	Swarmling(Sketch s, float ix, float iy) {
 		sketch = s;
 		x = ix;
 		y = iy;
 		dx = 0;
 		dy = 0;
 		radius = 5;
-		objectAvoidence=avoidence;
+		objectAvoidence=swarmlingAvoidence;
 		//TO DO: init color
 		a=255;
 		r=255;
@@ -78,8 +78,8 @@ public class Swarmling extends CircularGameObject {
 		float speed = Sketch.mag(dx, dy);
 		dx = Sketch.min(dx, dx * maxSpeed / speed);
 		dy = Sketch.min(dy, dy * maxSpeed / speed);
-		x += dx;
-		y += dy;
+		//x += dx;
+		//y += dy;
 		//Sketch.println("update rx, ry " + x + "," + y);
 		//TO DO: attack behavior
 		
