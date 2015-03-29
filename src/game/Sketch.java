@@ -48,4 +48,8 @@ public class Sketch extends PApplet {
 		
 		// TO DO: update the camera
 	}
+	
+	public static void main(String args[]) {
+		PApplet.main(new String[] { "--present", "game.Sketch" });
+	}
 }
