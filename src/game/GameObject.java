@@ -3,7 +3,7 @@ package game;
 public abstract class GameObject {
 	static Sketch sketch;
 	float x, y, dx, dy;
-	
+	float objectAvoidence;
 	// Move and do collision checks. Return true if the object should
 	// continue to exist. Most child classes will want to override this.
 	public boolean update() {

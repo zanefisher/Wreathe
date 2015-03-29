@@ -7,19 +7,20 @@ public class Swarmling extends CircularGameObject {
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	
-	Swarmling(Sketch s, float ix, float iy) {
+	Swarmling(Sketch s, float ix, float iy, float avoidence) {
 		sketch = s;
 		x = ix;
 		y = iy;
 		dx = 0;
 		dy = 0;
 		radius = 5;
+		objectAvoidence=avoidence;
 		//TO DO: init color
 		a=255;
 		r=255;
 		g=0;
 		b=0;
-		Sketch.println("rx, ry " + x + ", " + y);
+		//Sketch.println("rx, ry " + x + ", " + y);
 	}
 	
 	public void follow(Swarmling s) {
@@ -58,6 +59,13 @@ public class Swarmling extends CircularGameObject {
 		//  checking for collision and movement influence
 		//- wandering behavior
 		
+		//if not following
+		if(following==null){
+			
+		}
+		else{
+			
+		}
 
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);
@@ -70,8 +78,8 @@ public class Swarmling extends CircularGameObject {
 		float speed = Sketch.mag(dx, dy);
 		dx = Sketch.min(dx, dx * maxSpeed / speed);
 		dy = Sketch.min(dy, dy * maxSpeed / speed);
-		//x += dx;
-		//y += dy;
+		x += dx;
+		y += dy;
 		//Sketch.println("update rx, ry " + x + "," + y);
 		//TO DO: attack behavior
 		
