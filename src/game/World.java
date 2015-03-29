@@ -25,7 +25,12 @@ public class World extends CircularGameObject {
 	}
 	
 	public void generateContents() {
-		// to do
+		
+		for(int i = 0; i < 20; i++){
+			Obstacle obs = new Obstacle(sketch);
+			obs.initInWorld(this);
+		}
+		
 	}
 	
 	public void drawAsBackground() {
