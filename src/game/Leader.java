@@ -4,10 +4,7 @@ public class Leader extends Swarmling {
 	
 	Leader(Sketch s) {
 		super(s, 0, 0);
-		r = 0;
-		g = 0;
-		b = 255;
-		a = 255;
+		color = sketch.color(0, 0, 255);
 	}
 	
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
