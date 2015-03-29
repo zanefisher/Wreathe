@@ -47,7 +47,7 @@ public class Sketch extends PApplet {
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
-				println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
+				//println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
 				obj.draw();
 			} else {
 				contents.remove(i--);
@@ -55,6 +55,7 @@ public class Sketch extends PApplet {
 		}
 		cameraX = lerp(cameraX, leader.x, 0.2f);
 		cameraY = lerp(cameraY, leader.y, 0.2f);
+		println("frame: " + frameRate);
 	}
 	
 	public static void main(String args[]) {

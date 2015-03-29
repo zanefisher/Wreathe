@@ -7,6 +7,7 @@ public class World extends CircularGameObject {
 	float innerRadius; //radius of the world while you're in it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=8;
+	static float swarmlingAvoidence=40;
 	//static Sketch s;
 	World parent;
 	ArrayList<GameObject> contents;
@@ -33,7 +34,7 @@ public class World extends CircularGameObject {
 		for(int i=0; i<swarmlingsGenerated; i++){
 			float rx=sketch.random(sketch.screenWidth);
 			float ry=sketch.random(sketch.screenHeight);
-			Swarmling rs= new Swarmling(sketch, rx, ry);
+			Swarmling rs= new Swarmling(sketch, rx, ry, swarmlingAvoidence);
 			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
 		}
