@@ -26,7 +26,7 @@ public class Sketch extends PApplet {
 		leader = new Leader(this);
 	}
 	
-	public void update() {
+	public void draw() {
 		// Draw the current world.
 		background(world.r, world.g, world.b);
 		
