@@ -26,7 +26,7 @@ public class Sketch extends PApplet {
 		leader = new Leader(this);
 	}
 	
-	public void update() {
+	public void draw() {
 		// Draw the current world.
 		background(world.r, world.g, world.b);
 		
@@ -47,5 +47,9 @@ public class Sketch extends PApplet {
 		}
 		
 		// TO DO: update the camera
+	}
+	
+	public static void main(String args[]) {
+		PApplet.main(new String[] { "--present", "game.Sketch" });
 	}
 }
