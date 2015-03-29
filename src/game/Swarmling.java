@@ -27,7 +27,7 @@ public class Swarmling extends CircularGameObject {
 	        if (lastInLine == this) {
 	        	lastInLine = following;
 	        } else {
-	        	// if this swarmling isin the middle of the line,
+	        	// if this swarmling is in the middle of the line,
 	        	// link up its follower to its following
 	        	Swarmling s = lastInLine;
 	        	while (s.following != this) {
