@@ -21,6 +21,7 @@ public class World extends CircularGameObject {
 		bb = 128;
 		innerRadius = 1000;
 		parent = null;
+		contents = new ArrayList<GameObject>();
 	}
 	
 	public void generateContents() {
