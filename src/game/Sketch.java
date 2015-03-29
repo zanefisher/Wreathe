@@ -53,15 +53,8 @@ public class Sketch extends PApplet {
 				contents.remove(i--);
 			}
 		}
-		
-<<<<<<< HEAD
-				cameraX = lerp(cameraX, leader.x, 0.2f);
-				cameraY = lerp(cameraY, leader.y, 0.2f);
-
-=======
 		cameraX = lerp(cameraX, leader.x, 0.2f);
 		cameraY = lerp(cameraY, leader.y, 0.2f);
->>>>>>> c6a1a70729c3cc2af7cca3c6863d3e8f1eb3c4f2
 	}
 	
 	public static void main(String args[]) {
