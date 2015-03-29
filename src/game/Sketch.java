@@ -27,28 +27,34 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		leader = new Leader(this);
+		//world=new World(this);
+		world.generateContents();
 	}
 	
 	public void draw() {
 		// Draw the current world.
+		//world= new World(this);
 		background(world.r, world.g, world.b);
+		world.drawAsBackground();
 		
 		// Update the leader
 		leader.update();
 		leader.draw();
+		//println(leader.x +  ", " + leader.y);
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
+				println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
 				obj.draw();
 			} else {
 				contents.remove(i--);
 			}
 		}
-		
-		
+		cameraX = lerp(cameraX, leader.x, 0.2f);
+		cameraY = lerp(cameraY, leader.y, 0.2f);
 	}
 	
 	public static void main(String args[]) {
