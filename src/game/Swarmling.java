@@ -19,6 +19,7 @@ public class Swarmling extends CircularGameObject {
 		r=255;
 		g=0;
 		b=0;
+		Sketch.println("rx, ry " + x + ", " + y);
 	}
 	
 	public void follow(Swarmling s) {
@@ -69,9 +70,9 @@ public class Swarmling extends CircularGameObject {
 		float speed = Sketch.mag(dx, dy);
 		dx = Sketch.min(dx, dx * maxSpeed / speed);
 		dy = Sketch.min(dy, dy * maxSpeed / speed);
-		x += dx;
-		y += dy;
-		
+		//x += dx;
+		//y += dy;
+		//Sketch.println("update rx, ry " + x + "," + y);
 		//TO DO: attack behavior
 		
 		return true;

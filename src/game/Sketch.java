@@ -27,7 +27,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		leader = new Leader(this);
-		world=new World(this);
+		//world=new World(this);
 		world.generateContents();
 	}
 	
@@ -46,14 +46,16 @@ public class Sketch extends PApplet {
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
-				println(obj.x + "," + obj.y);
+				println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
 				obj.draw();
 			} else {
 				contents.remove(i--);
 			}
 		}
 		
-		
+				cameraX = lerp(cameraX, leader.x, 0.2f);
+				cameraY = lerp(cameraY, leader.y, 0.2f);
+
 	}
 	
 	public static void main(String args[]) {
