@@ -31,7 +31,7 @@ public class Sketch extends PApplet {
 	
 	public void draw() {
 		// Draw the current world.
-		background(world.r, world.g, world.b);
+		world.drawAsBackground();
 		
 		// Update the leader
 		leader.update();
@@ -48,7 +48,8 @@ public class Sketch extends PApplet {
 			}
 		}
 		
-		
+		cameraX = lerp(cameraX, leader.x, 0.2f);
+		cameraY = lerp(cameraY, leader.y, 0.2f);
 	}
 	
 	public static void main(String args[]) {
