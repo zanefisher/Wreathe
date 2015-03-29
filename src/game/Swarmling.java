@@ -15,6 +15,10 @@ public class Swarmling extends CircularGameObject {
 		dy = 0;
 		radius = 5;
 		//TO DO: init color
+		a=255;
+		r=255;
+		g=0;
+		b=0;
 	}
 	
 	public void follow(Swarmling s) {

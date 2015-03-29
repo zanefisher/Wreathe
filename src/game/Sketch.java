@@ -24,22 +24,26 @@ public class Sketch extends PApplet {
 	public void setup() {
 		size(screenWidth, screenHeight);
 		leader = new Leader(this);
+		world=new World(this);
+		world.generateContents();
 	}
 	
 	public void draw() {
 		// Draw the current world.
+		//world= new World(this);
 		background(world.r, world.g, world.b);
 		
 		// Update the leader
 		leader.update();
 		leader.draw();
-		println(leader.x +  ", " + leader.y);
+		//println(leader.x +  ", " + leader.y);
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject>contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
+				println(obj.x + "," + obj.y);
 				obj.draw();
 			} else {
 				contents.remove(i--);
