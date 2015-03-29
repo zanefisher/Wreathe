@@ -21,9 +21,18 @@ public class World extends CircularGameObject {
 		bb = 128;
 		innerRadius = 1000;
 		parent = null;
+		contents = new ArrayList<GameObject>();
 	}
 	
 	public void generateContents() {
 		// to do
+	}
+	
+	public void drawAsBackground() {
+		sketch.background(r, g, b);
+		sketch.noStroke();
+		sketch.fill(br, bg, bb);
+		sketch.ellipse(sketch.screenX(0),  sketch.screenY(0),
+				sketch.cameraScale * innerRadius * 2, sketch.cameraScale * innerRadius * 2);
 	}
 }
