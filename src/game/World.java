@@ -7,7 +7,7 @@ public class World extends CircularGameObject {
 	float innerRadius; //radius of the world while you're in it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=8;
-	
+	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
 	//static Sketch s;
 	World parent;
 	ArrayList<GameObject> contents;
