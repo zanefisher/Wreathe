@@ -9,6 +9,7 @@ public class Leader extends Swarmling {
 		b = 255;
 		a = 255;
 		objectAvoidence=15;
+		color = sketch.color(0, 0, 255);
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
