@@ -36,15 +36,17 @@ public class Obstacle extends CircularGameObject {
 		dx = Sketch.sin(radians) * speed * -1;
 		dy = Sketch.cos(radians) * speed * -1;
 		w.contents.add(this);
-		Sketch.println("ox, oy: " + x + " , " + y);
+
+		//Sketch.println("ox, oy: " + x + " , " + y);
+
 	}
 	
 	public boolean update(){
 		x += dx;
 		y += dy;
-		
 		if((Sketch.abs(x)>(sketch.world.radius + radius * 10)) || (Sketch.abs(y)> (sketch.world.radius + radius * 10))){
 			sketch.obstacleNumber-=1;
+		if((Sketch.abs(x)>sketch.world.radius + radius * 5) || (Sketch.abs(y)>sketch.world.radius + radius * 5)){
 			return false;
 		}
 		
