@@ -45,12 +45,11 @@ public class Obstacle extends CircularGameObject {
 		x += dx;
 		y += dy;
 		if((Sketch.abs(x)>(sketch.world.radius + radius * 10)) || (Sketch.abs(y)> (sketch.world.radius + radius * 10))){
-			sketch.obstacleNumber-=1;
-		if((Sketch.abs(x)>sketch.world.radius + radius * 5) || (Sketch.abs(y)>sketch.world.radius + radius * 5)){
-			return false;
+			//sketch.obstacleNumber-=1;
+			//return false;
 		}
 		
 		return true;
 	}
-
 }
+

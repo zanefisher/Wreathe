@@ -115,7 +115,7 @@ public class Swarmling extends CircularGameObject {
 					//it is an obstacle
 					//destroy it when leader is leading a swarmling to a obstacle
 					distance = Sketch.dist(x, y, other.x, other.y) - ((Obstacle)other).radius;
-					if(distance<radius && avoid==0){
+					if(distance<=radius /*&& avoid==0*/){
 						return false;
 					}
 					

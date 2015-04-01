@@ -44,7 +44,7 @@ public class Sketch extends PApplet {
 		
 		// Update the leader
 		leader.update();
-		leader.draw();
+		
 		world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
 		count+=1;
@@ -76,6 +76,7 @@ public class Sketch extends PApplet {
 		cameraX = lerp(cameraX, leader.x, 0.2f);
 		cameraY = lerp(cameraY, leader.y, 0.2f);
 		//println("frame: " + frameRate);
+		leader.draw();
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
