@@ -75,9 +75,11 @@ public class Swarmling extends CircularGameObject {
 		//- wandering behavior
 		
 		float elbow = swarmlingAvoidence;
+		float avoid = Obstacle.obstacleAvoidence;
 		//if it is following
 		if(following != null){
 			elbow = lineAvoidence;
+			avoid = 0;
 			//Sketch.println("dx, dy: "+dx+" , "+dy);
 			//follow the former one
 			ddx=(following.x-x - dx*4)/16;
@@ -90,14 +92,15 @@ public class Swarmling extends CircularGameObject {
 		for(int i=0; i< sketch.world.contents.size(); i++){
 			GameObject other = sketch.world.contents.get(i);
 			if (other!= this){
+				
 				float distance = Sketch.dist(x, y, other.x, other.y);
 				
-				if(other.objectAvoidence<=40){
+				if(other.objectAvoidence<=50){
 					//it is a swarmlings
 					if(distance<elbow){
 						float fractWithSmooth = (elbow - distance + 2)/(elbow + 2);
-						ddx+= ((x-other.x) * fractWithSmooth/2 - dx*10)/100;
-						ddy+= ((y-other.y) * fractWithSmooth/2 - dy*10)/100;
+						ddx += ((x-other.x) * fractWithSmooth/2 - dx*10)/100;
+						ddy += ((y-other.y) * fractWithSmooth/2 - dy*10)/100;
 					}
 					if(distance < 5){
 						unfollow();
@@ -105,7 +108,17 @@ public class Swarmling extends CircularGameObject {
 				}
 				else{
 					//it is an obstacle
+					//destroy it when leader is leading a swarmling to a obstacle
+					distance = Sketch.dist(x, y, other.x, other.y) - ((Obstacle)other).radius;
+					if(distance<radius && avoid==0){
+						return false;
+					}
 					
+					else if (distance<avoid && avoid != 0){
+						float fractWithSmooth = (avoid - distance +2)/(avoid + 2);
+						ddx += ((x-other.x) * fractWithSmooth/2 - dx/5)/25;
+						ddy += ((y-other.y) * fractWithSmooth/2 - dy/5)/25;
+					}
 				}
 			}
 		}

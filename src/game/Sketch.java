@@ -8,6 +8,8 @@ public class Sketch extends PApplet {
 	int screenSize = screenWidth * screenHeight;
 	static int obstacleSpawnPeriod=100;
 	int count=0;
+	int obstacleNumber=0;
+	static int obstacleMax=8;
 	float cameraX = 0, cameraY = 0, cameraScale = 0.5f;
 	
 	Leader leader;
@@ -49,9 +51,11 @@ public class Sketch extends PApplet {
 		
 		//generate the obstacle
 		if(count%obstacleSpawnPeriod == 0){
-			
+			obstacleNumber+=1;
+			if(obstacleNumber<=obstacleMax){
 			Obstacle obstacle= new Obstacle(this);			
 			obstacle.initInWorld(world);
+			}
 			
 		}
 		

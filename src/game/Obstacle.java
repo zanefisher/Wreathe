@@ -4,14 +4,15 @@ public class Obstacle extends CircularGameObject {
 	
 	static float obstacleMinRadius = 40;
 	static float obstacleMaxRadius = 200;
-	static float obstacleMaxSpeed = 6;
-	static float obstacleMinSpeed = 1;
+	static float obstacleMaxSpeed = 3.8f;
+	static float obstacleMinSpeed = 0.6f;
+	static float obstacleAvoidence = 80f;
 	float obstacleLife=0;
 	//float raius=0;
 	Obstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
-		objectAvoidence=100f;
+		objectAvoidence=obstacleAvoidence;
 	}
 	
 	Obstacle(Sketch s, float ix, float iy){
@@ -19,7 +20,7 @@ public class Obstacle extends CircularGameObject {
 		x=ix;
 		y=iy;
 		color=sketch.color(255,255,255,255);
-		objectAvoidence=100f;
+		objectAvoidence=obstacleAvoidence;
 	}
 	
 	public void initInWorld(World w){
@@ -42,7 +43,8 @@ public class Obstacle extends CircularGameObject {
 		x += dx;
 		y += dy;
 		
-		if((Sketch.abs(x)>sketch.world.radius + radius * 5) || (Sketch.abs(y)>sketch.world.radius + radius * 5)){
+		if((Sketch.abs(x)>(sketch.world.radius + radius * 10)) || (Sketch.abs(y)> (sketch.world.radius + radius * 10))){
+			sketch.obstacleNumber-=1;
 			return false;
 		}
 		
