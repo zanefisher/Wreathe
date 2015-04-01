@@ -2,7 +2,7 @@ package game;
 
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
-	static final float maxSpeed = 3.8f, maxAccel = 30f;
+	static final float maxSpeed = 3.8f, maxAccel = 0.3f;
 	static final float swarmlingDriftSpeed = 1.5f;
 	static final float swarmlingAvoidence=40;
 	static final float lineAvoidence=20;
