@@ -9,9 +9,12 @@ public class Swarmling extends CircularGameObject {
 	static final float attractRadius=60;
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
+	static final float attackRadius = 100;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
+	Obstacle attacking = null;
+	float leastDistance = 10000f;
 	
 	Swarmling(Sketch s, float ix, float iy) {
 		sketch = s;
@@ -109,7 +112,7 @@ public class Swarmling extends CircularGameObject {
 				}
 			}
 		}
-			    
+		
 	    //wandering behavior using noise
 	    if(following ==null && Sketch.mag(dx, dy) < 0.3f){
 	    	//get the random angle
@@ -169,6 +172,29 @@ public class Swarmling extends CircularGameObject {
 		//Sketch.println("update rx, ry " + x + "," + y);
 		//TO DO: attack behavior
 		
+		
+		//find the nearest obstacle, store it in attacking
+		leastDistance = 100000f;
+		for(int i=0; i< sketch.world.contents.size(); i++){
+			GameObject other = sketch.world.contents.get(i);
+			if (other!= this && other.objectAvoidence > 50f){
+				//it is an obstacle
+				float distance = Sketch.dist(x, y, other.x, other.y);
+				if( distance < leastDistance){
+					leastDistance = distance;
+					attacking = (Obstacle)other;	
+				}				
+			}
+		}
+		
+		//attack the obstacle if it is inside the attackRadius
+		if(Sketch.dist(x, y, attacking.x, attacking.y)<attackRadius){
+			Projectile p = new Projectile(sketch,this,attacking);
+		}
+		
+		
 		return true;
 	}
+	
+	
 }
