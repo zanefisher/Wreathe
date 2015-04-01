@@ -12,5 +12,5 @@ public abstract class GameObject {
 		return true;
 	}
 
-	public abstract void draw();
+	public abstract void draw(Camera camera);
 }
