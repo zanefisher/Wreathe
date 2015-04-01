@@ -6,8 +6,9 @@ public class Sketch extends PApplet {
 	
 	int screenWidth = 640, screenHeight = 480;
 	int screenSize = screenWidth * screenHeight;
-	
-	float cameraX = 0, cameraY = 0, cameraScale = 1f;
+	static int obstacleSpawnPeriod=100;
+	int count=0;
+	float cameraX = 0, cameraY = 0, cameraScale = 0.5f;
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -44,6 +45,17 @@ public class Sketch extends PApplet {
 		leader.draw();
 		world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
+		count+=1;
+		
+		//generate the obstacle
+		if(count%obstacleSpawnPeriod == 0){
+			
+			Obstacle obstacle= new Obstacle(this);			
+			obstacle.initInWorld(world);
+			
+		}
+		
+		println(world.contents.size());
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;

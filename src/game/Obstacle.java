@@ -4,9 +4,10 @@ public class Obstacle extends CircularGameObject {
 	
 	static float obstacleMinRadius = 40;
 	static float obstacleMaxRadius = 200;
-	static float obstacleMaxSpeed = 10;
-	static float obstacleMinSpeed = 3;
-	
+	static float obstacleMaxSpeed = 6;
+	static float obstacleMinSpeed = 1;
+	float obstacleLife=0;
+	//float raius=0;
 	Obstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
@@ -22,16 +23,30 @@ public class Obstacle extends CircularGameObject {
 	}
 	
 	public void initInWorld(World w){
-		float radius = sketch.montecarlo((obstacleMaxRadius - obstacleMinRadius) / 2, (obstacleMaxRadius + obstacleMinRadius) / 2);
-		float maxSpeed = 3;
-		float minSpeed = 0.1f;
-		float speed = sketch.random(minSpeed, maxSpeed) * obstacleMinRadius / radius;
+		radius = sketch.montecarlo((obstacleMaxRadius - obstacleMinRadius) / 2, (obstacleMaxRadius + obstacleMinRadius) / 2);
+		//Sketch.println("monter: " + radius);
+		float speed = sketch.random(obstacleMinSpeed, obstacleMaxSpeed) * obstacleMinRadius / radius;
+		//Sketch.println("speed: " + speed);
 		float radians = sketch.random(2) * Sketch.PI;
+		float obstacleLife = radius;
+		//Sketch.println("radians: " + radians);
 		x = Sketch.sin(radians) * (radius + w.innerRadius);		
 		y = Sketch.cos(radians) * (radius + w.innerRadius);
 		dx = Sketch.sin(radians) * speed * -1;
 		dy = Sketch.cos(radians) * speed * -1;
 		w.contents.add(this);
+		Sketch.println("ox, oy: " + x + " , " + y);
+	}
+	
+	public boolean update(){
+		x += dx;
+		y += dy;
+		
+		if((Sketch.abs(x)>sketch.world.radius + radius * 5) || (Sketch.abs(y)>sketch.world.radius + radius * 5)){
+			return false;
+		}
+		
+		return true;
 	}
 
 }
