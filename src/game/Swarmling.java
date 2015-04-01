@@ -3,7 +3,7 @@ package game;
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
 	static final float maxSpeed = 3.8f, maxAccel = 30f;
-	static final float swarmlingDriftSpeed = 1f;
+	static final float swarmlingDriftSpeed = 1.5f;
 	static final float swarmlingAvoidence=40;
 	static final float lineAvoidence=20;
 	static final float attractRadius=60;
@@ -32,7 +32,7 @@ public class Swarmling extends CircularGameObject {
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
-		sketch.world.queueCooldown=60;
+		sketch.world.queueCooldown=30;
 	}
 	
 	public void unfollow() {
@@ -84,8 +84,8 @@ public class Swarmling extends CircularGameObject {
 			elbow = lineAvoidence;
 			//Sketch.println("dx, dy: "+dx+" , "+dy);
 			//follow the former one
-			ddx=(following.x-x - dx*5)/20;
-			ddy=(following.y-y - dy*5)/20;
+			ddx=(following.x-x - dx*4)/16;
+			ddy=(following.y-y - dy*4)/16;
 			//Sketch.println("ddx, ddy: "+ddx+" , "+ddy);
 			//drifting=false;
 		}
@@ -99,8 +99,9 @@ public class Swarmling extends CircularGameObject {
 				if(other.objectAvoidence<=40){
 					//it is a swarmlings
 					if(distance<elbow){
-					ddx+= (x-other.x) * (1 - (distance/elbow))/2;
-					ddy+= (y-other.y) * (1 - (distance/elbow))/2;
+						float fractWithSmooth = (elbow - distance + 2)/(elbow + 2);
+						ddx+= ((x-other.x) * fractWithSmooth/2 - dx*10)/100;
+						ddy+= ((y-other.y) * fractWithSmooth/2 - dy*10)/100;
 					}
 					if(distance < 5){
 						unfollow();
