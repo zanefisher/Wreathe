@@ -6,7 +6,7 @@ public class World extends CircularGameObject {
 	boolean filled;
 	float innerRadius; //radius of the world while you're in it.
 	int br, bg, bb; //background color
-	static int swarmlingsGenerated=18;
+	static int swarmlingsGenerated=8;
 	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
 	//static Sketch s;
 	int bgColor; //background color
@@ -33,11 +33,6 @@ public class World extends CircularGameObject {
 			Swarmling rs= new Swarmling(sketch, rx, ry);
 			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
-		}
-		
-		for(int i = 0; i < 20; i++){
-			Obstacle obs = new Obstacle(sketch);
-			obs.initInWorld(this);
 		}
 	}
 	
