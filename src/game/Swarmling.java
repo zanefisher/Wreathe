@@ -3,12 +3,14 @@ package game;
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
 	static final float maxSpeed = 3.8f, maxAccel = 30f;
-	static final float swarmlingDriftSpeed = 0.6f;
+	static final float swarmlingDriftSpeed = 1.5f;
 	static final float swarmlingAvoidence=40;
 	static final float lineAvoidence=20;
 	static final float attractRadius=60;
+	//should be a magnitude of world radius
+	static final float wanderingFactor=1000;
+	static float seed=0;
 	Swarmling following = null;
-	boolean drifting=true;
 	int followCooldown = 0; // how many frames until ready to follow again
 	
 	Swarmling(Sketch s, float ix, float iy) {
@@ -20,17 +22,13 @@ public class Swarmling extends CircularGameObject {
 		radius = 5;
 		objectAvoidence=swarmlingAvoidence;
 		//TO DO: init color
-		a=255;
-		r=255;
-		g=0;
-		b=0;
 		//Sketch.println("rx, ry " + x + ", " + y);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
-		sketch.world.queueCooldown=60;
+		sketch.world.queueCooldown=30;
 	}
 	
 	public void unfollow() {
@@ -53,9 +51,9 @@ public class Swarmling extends CircularGameObject {
 	
 	public boolean update() {
 		float ddx = 0, ddy = 0; //acceleration
-		
+		seed += 0.01f;
 		followCooldown = Sketch.max(0, followCooldown - 1);
-		drifting = true;
+		//drifting = true;
 		//check if state change or not
 		if (sketch.mousePressed &&
 	            (followCooldown == 0) && 
@@ -63,11 +61,9 @@ public class Swarmling extends CircularGameObject {
 	            (sketch.world.queueCooldown == 0) &&
 	            (Sketch.dist(x, y, lastInLine.x, lastInLine.y) < attractRadius)){
 			follow(lastInLine);
-			drifting=false;
 		}
 		else if(following != null && !sketch.mousePressed){
 			unfollow();
-			//drifting=true;
 		}
 		
 		//TO DO:
@@ -82,12 +78,12 @@ public class Swarmling extends CircularGameObject {
 		//if it is following
 		if(following != null){
 			elbow = lineAvoidence;
-			Sketch.println("dx, dy: "+dx+" , "+dy);
+			//Sketch.println("dx, dy: "+dx+" , "+dy);
 			//follow the former one
-			ddx=(following.x-x - dx/0.5f)/10;
-			ddy=(following.y-y - dy/0.5f)/10;
-			Sketch.println("ddx, ddy: "+ddx+" , "+ddy);
-			drifting=false;
+			ddx=(following.x-x - dx*4)/16;
+			ddy=(following.y-y - dy*4)/16;
+			//Sketch.println("ddx, ddy: "+ddx+" , "+ddy);
+			//drifting=false;
 		}
 		
 		//check for movement influence (avoid things)
@@ -99,9 +95,9 @@ public class Swarmling extends CircularGameObject {
 				if(other.objectAvoidence<=40){
 					//it is a swarmlings
 					if(distance<elbow){
-					ddx+= (x-other.x - dx/(1 - (distance/elbow))) * (1 - (distance/elbow))/2;
-					ddy+= (y-other.y - dy/(1 - (distance/elbow))) * (1 - (distance/elbow))/2;
-					drifting=false;
+						float fractWithSmooth = (elbow - distance + 2)/(elbow + 2);
+						ddx+= ((x-other.x) * fractWithSmooth/2 - dx*10)/100;
+						ddy+= ((y-other.y) * fractWithSmooth/2 - dy*10)/100;
 					}
 					if(distance < 5){
 						unfollow();
@@ -113,18 +109,33 @@ public class Swarmling extends CircularGameObject {
 				}
 			}
 		}
+			    
+	    //wandering behavior using noise
+	    if(following ==null && Sketch.mag(dx, dy) < 0.3f){
+	    	//get the random angle
+	    	//sketch.randomSeed(seed);
+	    	float theta=sketch.random(Sketch.TWO_PI);
+	    	
+	    	//get the random noise from noise() function and scale it
+	    	float noise=sketch.noise(x, y, seed);
+	    	
+	    	//get the random target
+	    	float wx = Sketch.cos(theta)*noise*wanderingFactor;
+	    	float wy = Sketch.sin(theta)*noise*wanderingFactor;
+	    	//Sketch.println(wx +" , " + wy);
+			ddx += (wx-x-dx)/500;
+			ddy += (wy-y-dy)/500;
+	    }
+	    
 		
-		//fraction drag (drifting)
-	    if (drifting && Sketch.mag(dx, dy) > 0) {
+		//fraction drag (any time)
+	    if (Sketch.mag(dx, dy) > 0) {
 	        float frac = (swarmlingDriftSpeed / Sketch.mag(dx, dy));
 	        ddx += (0-dx)*frac;
 	        ddy += (0-dy)*frac;
 //	        ddx = Sketch.min(dx, frac * dx);
 //	        ddy = Sketch.min(dy, frac * dy);
 	      }
-		
-	    
-	    //wondering behaviour
 	    
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);

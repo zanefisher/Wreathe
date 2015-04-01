@@ -4,15 +4,12 @@ public class Leader extends Swarmling {
 	
 	Leader(Sketch s) {
 		super(s, 0, 0);
-		r = 0;
-		g = 0;
-		b = 255;
-		a = 255;
 		objectAvoidence=15;
+		color = sketch.color(0, 0, 255);
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
-		float speed = sketch.mousePressed ? maxSpeed : 3 * maxSpeed;
+		float speed = sketch.mousePressed ? maxSpeed : 2 * maxSpeed;
 		float xToMouse = sketch.mouseX - sketch.screenX(x);
 		float yToMouse = sketch.mouseY - sketch.screenY(y);
 		float dist = Sketch.mag(xToMouse, yToMouse);

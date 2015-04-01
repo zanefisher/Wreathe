@@ -7,7 +7,7 @@ public class Sketch extends PApplet {
 	int screenWidth = 640, screenHeight = 480;
 	int screenSize = screenWidth * screenHeight;
 	
-	float cameraX = 0, cameraY = 0, cameraScale = 1;
+	float cameraX = 0, cameraY = 0, cameraScale = 1f;
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -26,6 +26,7 @@ public class Sketch extends PApplet {
 		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
 		world = new World(this);
+		world.generateContents();
 		leader = new Leader(this);
 		leader.lastInLine=leader;
 		//world=new World(this);
@@ -35,7 +36,7 @@ public class Sketch extends PApplet {
 	public void draw() {
 		// Draw the current world.
 		//world= new World(this);
-		background(world.r, world.g, world.b);
+		background(world.color);
 		world.drawAsBackground();
 		
 		// Update the leader
@@ -58,6 +59,27 @@ public class Sketch extends PApplet {
 		cameraX = lerp(cameraX, leader.x, 0.2f);
 		cameraY = lerp(cameraY, leader.y, 0.2f);
 		//println("frame: " + frameRate);
+	}
+	
+	// Monte Carlo method to generate deviation from an offset number.
+	
+	float montecarlo(float max){
+		return montecarlo(max, 0);
+	}
+	
+	float montecarlo(float max, float offset){
+		boolean sign = true;
+		while(true){
+			float value = random(max);
+			float check = random(max);
+			if(value <= check){
+				if(random(1f) < 0.5f)
+					sign = !sign;
+				value *= sign ? 1f : -1f;
+				value += offset;
+				return value;
+			}
+		}
 	}
 	
 	public static void main(String args[]) {
