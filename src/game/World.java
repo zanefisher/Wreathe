@@ -38,6 +38,11 @@ public class World extends CircularGameObject {
 			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
 		}
+		
+		for(int i = 0; i < 20; i++){
+			Obstacle obs = new Obstacle(sketch);
+			obs.initInWorld(this);
+		}
 	}
 	
 	public void drawAsBackground() {
