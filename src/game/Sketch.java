@@ -4,33 +4,22 @@ import java.util.ArrayList;
 
 public class Sketch extends PApplet {
 	
-	int screenWidth = 640, screenHeight = 480;
-	int screenSize = screenWidth * screenHeight;
+	static int screenWidth = 640, screenHeight = 480;
+	static int screenSize = screenWidth * screenHeight;
 	
 	float cameraX = 0, cameraY = 0, cameraScale = 1f;
 	
 	Leader leader;
 	World world; // the world the player is currently in
 	
-	// Convert an x coordinate in the world to an x coordinate on the screen.
-	// Technically, this overloads a PApplet method we don't use.
-	public float screenX(float x) {
-		return (screenWidth / 2) + (cameraScale * (x - cameraX));
-	}
-	public float screenY(float y) {
-		return (screenHeight / 2) + (cameraScale * (y - cameraY));
-	}
-	
 	public void setup() {
 		frameRate(60);
 		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
 		world = new World(this);
-		world.generateContents();
+		world.explore();
 		leader = new Leader(this);
-		leader.lastInLine=leader;
-		//world=new World(this);
-		world.generateContents();
+		Swarmling.lastInLine = leader;
 	}
 	
 	public void draw() {
@@ -41,7 +30,7 @@ public class Sketch extends PApplet {
 		
 		// Update the leader
 		leader.update();
-		leader.draw();
+		leader.draw(world.camera);
 		world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
 		
@@ -51,13 +40,22 @@ public class Sketch extends PApplet {
 			GameObject obj = contents.get(i);
 			if (obj.update()) {
 				//println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
-				obj.draw();
+				obj.draw(world.camera);
 			} else {
 				contents.remove(i--);
 			}
 		}
-		cameraX = lerp(cameraX, leader.x, 0.2f);
-		cameraY = lerp(cameraY, leader.y, 0.2f);
+		
+		for (int i = 0; i < world.children.size(); ++i) {
+			World w = world.children.get(i);
+			if (w.update()) {
+				w.draw(world.camera);
+			} else {
+				world.children.remove(i--);
+			}
+		}
+		world.camera.x = lerp(world.camera.x, leader.x, 0.2f);
+		world.camera.y = lerp(world.camera.y, leader.y, 0.2f);
 		//println("frame: " + frameRate);
 	}
 	
