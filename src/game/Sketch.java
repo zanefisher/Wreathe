@@ -27,6 +27,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		leader = new Leader(this);
+		leader.lastInLine=leader;
 		//world=new World(this);
 		world.generateContents();
 	}
@@ -40,6 +41,7 @@ public class Sketch extends PApplet {
 		// Update the leader
 		leader.update();
 		leader.draw();
+		world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
 		
 		// Update everything in the world. Remove dead circles from the list.
@@ -55,7 +57,7 @@ public class Sketch extends PApplet {
 		}
 		cameraX = lerp(cameraX, leader.x, 0.2f);
 		cameraY = lerp(cameraY, leader.y, 0.2f);
-		println("frame: " + frameRate);
+		//println("frame: " + frameRate);
 	}
 	
 	public static void main(String args[]) {

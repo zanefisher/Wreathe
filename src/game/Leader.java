@@ -8,8 +8,8 @@ public class Leader extends Swarmling {
 		g = 0;
 		b = 255;
 		a = 255;
+		objectAvoidence=15;
 	}
-	
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
 		float speed = sketch.mousePressed ? maxSpeed : 3 * maxSpeed;
