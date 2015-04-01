@@ -55,6 +55,7 @@ public class Sketch extends PApplet {
 			
 		}
 		
+
 		//println(world.contents.size());
 		
 		// Update everything in the world. Remove dead circles from the list.
