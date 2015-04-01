@@ -9,12 +9,14 @@ public class Swarmling extends CircularGameObject {
 	static final float attractRadius=60;
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
-	static final float attackRadius = 100;
+	static final float attackRadius = 250;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	Obstacle attacking = null;
 	float leastDistance = 10000f;
+	int attackCooldown = 30;
+	
 	
 	Swarmling(Sketch s, float ix, float iy) {
 		sketch = s;
@@ -188,8 +190,10 @@ public class Swarmling extends CircularGameObject {
 		}
 		
 		//attack the obstacle if it is inside the attackRadius
-		if(Sketch.dist(x, y, attacking.x, attacking.y)<attackRadius){
+		attackCooldown = Sketch.max(0, attackCooldown-1);
+		if(attackCooldown == 0 && attacking!=null && Sketch.dist(x, y, attacking.x, attacking.y)<attackRadius){
 			Projectile p = new Projectile(sketch,this,attacking);
+			attackCooldown = 30;
 		}
 		
 		
