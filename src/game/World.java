@@ -6,7 +6,7 @@ public class World extends CircularGameObject {
 	boolean filled;
 	float innerRadius; //radius of the world while you're in it.
 	int br, bg, bb; //background color
-	static int swarmlingsGenerated=8;
+	static int swarmlingsGenerated=18;
 	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
 	//static Sketch s;
 	World parent;
@@ -32,8 +32,8 @@ public class World extends CircularGameObject {
 	public void generateContents() {
 		// to do
 		for(int i=0; i<swarmlingsGenerated; i++){
-			float rx=sketch.random(sketch.screenWidth);
-			float ry=sketch.random(sketch.screenHeight);
+			float rx=sketch.random(sketch.cameraScale * innerRadius);
+			float ry=sketch.random(sketch.cameraScale * innerRadius);
 			Swarmling rs= new Swarmling(sketch, rx, ry);
 			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
