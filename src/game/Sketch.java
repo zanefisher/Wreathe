@@ -7,7 +7,7 @@ public class Sketch extends PApplet {
 	int screenWidth = 640, screenHeight = 480;
 	int screenSize = screenWidth * screenHeight;
 	
-	float cameraX = 0, cameraY = 0, cameraScale = 0.2f;
+	float cameraX = 0, cameraY = 0, cameraScale = 1f;
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -36,7 +36,7 @@ public class Sketch extends PApplet {
 	public void draw() {
 		// Draw the current world.
 		//world= new World(this);
-		background(world.r, world.g, world.b);
+		background(world.color);
 		world.drawAsBackground();
 		
 		// Update the leader

@@ -22,10 +22,6 @@ public class Swarmling extends CircularGameObject {
 		radius = 5;
 		objectAvoidence=swarmlingAvoidence;
 		//TO DO: init color
-		a=255;
-		r=255;
-		g=0;
-		b=0;
 		//Sketch.println("rx, ry " + x + ", " + y);
 	}
 	

@@ -4,10 +4,6 @@ public class Leader extends Swarmling {
 	
 	Leader(Sketch s) {
 		super(s, 0, 0);
-		r = 0;
-		g = 0;
-		b = 255;
-		a = 255;
 		objectAvoidence=15;
 		color = sketch.color(0, 0, 255);
 	}
