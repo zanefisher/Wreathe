@@ -4,11 +4,10 @@ import java.util.ArrayList;
 
 public class Sketch extends PApplet {
 	
-	int screenWidth = 640, screenHeight = 480;
-	int screenSize = screenWidth * screenHeight;
+	static int screenWidth = 640, screenHeight = 480;
+	static int screenSize = screenWidth * screenHeight;
 	static int obstacleSpawnPeriod=100;
-	int count=0;
-	int obstacleNumber=0;
+
 	static int obstacleMax=8;
 	float cameraX = 0, cameraY = 0, cameraScale = 1f;
 	
@@ -23,6 +22,8 @@ public class Sketch extends PApplet {
 		world.explore();
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
+		world.obstacleNumber=0;
+		world.count=0;
 	}
 	
 	public void draw() {
@@ -35,12 +36,12 @@ public class Sketch extends PApplet {
 		leader.update();
         world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
-		count+=1;
+		world.count+=1;
 		
 		//generate the obstacle
-		if(count%obstacleSpawnPeriod == 0){
-			obstacleNumber+=1;
-			if(obstacleNumber<=obstacleMax){
+		if(world.count%obstacleSpawnPeriod == 0){
+			world.obstacleNumber+=1;
+			if(world.obstacleNumber<=obstacleMax){
 			Obstacle obstacle= new Obstacle(this);			
 			obstacle.initInWorld(world);
 			}
@@ -73,7 +74,7 @@ public class Sketch extends PApplet {
 		world.camera.x = lerp(world.camera.x, leader.x, 0.2f);
 		world.camera.y = lerp(world.camera.y, leader.y, 0.2f);
 		//println("frame: " + frameRate);
-		leader.draw();
+		leader.draw(world.camera);
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
