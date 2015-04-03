@@ -75,6 +75,14 @@ public class Sketch extends PApplet {
 		world.camera.y = lerp(world.camera.y, leader.y, 0.2f);
 		//println("frame: " + frameRate);
 		leader.draw(world.camera);
+		
+		if(this.mousePressed){
+		      noFill();
+		      stroke(255);
+		      strokeWeight(1);
+		      ellipse(world.camera.screenX(Swarmling.lastInLine.x),  world.camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		}
+		
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.

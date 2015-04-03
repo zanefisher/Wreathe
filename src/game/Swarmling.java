@@ -2,7 +2,7 @@ package game;
 
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
-	static final float maxSpeed = 3.8f, maxAccel = 5f;
+	static final float maxSpeed = 3.8f, maxAccel = 0.3f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float swarmlingAvoidence=40;
 	static final float lineAvoidence=20;
@@ -214,5 +214,22 @@ public class Swarmling extends CircularGameObject {
 		return true;
 	}
 	
+	public void draw(Camera camera){
+		super.draw(camera);
+		if(following != null && sketch.mousePressed){ 
+			
+			float amt=radius/(Sketch.mag(following.x-x, following.y-y));
+			
+			//get the start point and the end point of the swarmlings
+			float x1=camera.screenX(Sketch.lerp(x, following.x, amt));
+			float x2=camera.screenX(Sketch.lerp(following.x, x, amt));
+			float y1=camera.screenY(Sketch.lerp(y, following.y, amt));
+			float y2=camera.screenY(Sketch.lerp(following.y, y, amt));
+			
+			//draw the line
+			sketch.stroke(color);
+			sketch.line(x1, y1, x2, y2);
+		}
+	}
 	
 }
