@@ -9,14 +9,15 @@ public class Swarmling extends CircularGameObject {
 	static final float attractRadius=60;
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
-	static final float attackRadius = 250;
+	static final float attackFactor = 2f;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	Obstacle attacking = null;
 	float leastDistance = 10000f;
-	int attackCooldown = 30;
-	
+	int attackCooldownCount = 30;	
+	int attackCooldown = (int)Math.random()*attackCooldownCount;
+
 	
 	Swarmling(Sketch s, float ix, float iy) {
 		sketch = s;
@@ -202,13 +203,19 @@ public class Swarmling extends CircularGameObject {
 				}				
 			}
 		}
+		if(attacking!=null && Sketch.dist(x, y, attacking.x, attacking.y)>=attackFactor*attacking.radius) 
+			//initialize the attackCooldown with a random number when it's not attacking
+			attackCooldown = (int)Math.random()*attackCooldownCount;
+		else
+			//decrease the attackCooldown
+			attackCooldown = Sketch.max(0, attackCooldown-1); 
 		
 		//attack the obstacle if it is inside the attackRadius
-		attackCooldown = Sketch.max(0, attackCooldown-1);
-		if(attackCooldown == 0 && attacking!=null && Sketch.dist(x, y, attacking.x, attacking.y)<attackRadius){
+		if(attackCooldown == 0 && attacking!=null && Sketch.dist(x, y, attacking.x, attacking.y)<attackFactor*attacking.radius){
 			Projectile p = new Projectile(sketch,this,attacking);
 			attackCooldown = 30;
 		}
+
 		
 		
 		return true;
