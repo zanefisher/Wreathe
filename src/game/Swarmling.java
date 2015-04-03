@@ -2,8 +2,8 @@ package game;
 
 public class Swarmling extends CircularGameObject {
 	static Swarmling lastInLine;
-	static final float maxSpeed = 3.8f, maxAccel = 0.3f;
-	static final float swarmlingDriftSpeed = 1.5f;
+	static final float maxSpeed = 3.8f, maxAccel = 5f;
+	static final float swarmlingDriftAccel = 1.5f;
 	static final float swarmlingAvoidence=40;
 	static final float lineAvoidence=20;
 	static final float attractRadius=60;
@@ -116,6 +116,7 @@ public class Swarmling extends CircularGameObject {
 					//destroy it when leader is leading a swarmling to a obstacle
 					distance = Sketch.dist(x, y, other.x, other.y) - ((Obstacle)other).radius;
 					if(distance<=radius /*&& avoid==0*/){
+						unfollow();
 						return false;
 					}
 					
@@ -148,7 +149,7 @@ public class Swarmling extends CircularGameObject {
 		
 		//fraction drag (any time)
 	    if (Sketch.mag(dx, dy) > 0) {
-	        float frac = (swarmlingDriftSpeed / Sketch.mag(dx, dy));
+	        float frac = (swarmlingDriftAccel / Sketch.mag(dx, dy));
 	        ddx += (0-dx)*frac;
 	        ddy += (0-dy)*frac;
 //	        ddx = Sketch.min(dx, frac * dx);

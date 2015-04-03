@@ -9,7 +9,8 @@ public class World extends CircularGameObject {
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=8;
 	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
-	
+	public int count=0;
+	public int obstacleNumber=0;
 	int bgColor; //background color
 	Camera camera;
 	
