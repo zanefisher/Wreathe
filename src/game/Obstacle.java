@@ -7,7 +7,7 @@ public class Obstacle extends CircularGameObject {
 	static float obstacleMaxSpeed = 3.8f;
 	static float obstacleMinSpeed = 0.6f;
 	static float obstacleAvoidence = 80f;
-	float obstacleLife=0;
+	float obstacleLife=1f;
 	//float raius=0;
 	Obstacle(Sketch s){
 		sketch = s;
@@ -29,7 +29,7 @@ public class Obstacle extends CircularGameObject {
 		float speed = sketch.random(obstacleMinSpeed, obstacleMaxSpeed) * obstacleMinRadius / radius;
 		//Sketch.println("speed: " + speed);
 		float radians = sketch.random(2) * Sketch.PI;
-		float obstacleLife = radius;
+		obstacleLife = radius;
 		//Sketch.println("radians: " + radians);
 		x = Sketch.sin(radians) * (radius + w.innerRadius);		
 		y = Sketch.cos(radians) * (radius + w.innerRadius);
@@ -42,6 +42,9 @@ public class Obstacle extends CircularGameObject {
 	}
 	
 	public boolean update(){
+		
+
+		
 		x += dx;
 		y += dy;
 		if((Sketch.abs(x)>(sketch.world.radius + radius * 10)) || (Sketch.abs(y)> (sketch.world.radius + radius * 10))){
@@ -49,7 +52,27 @@ public class Obstacle extends CircularGameObject {
 			//return false;
 		}
 		
-		return true;
+		//check if it has died
+		if(obstacleLife <= 0f) {
+			return false;
+		}
+		else{
+			return true;
+		}
+		
+		
+
+	}
+	
+	public void draw(Camera camera){
+		super.draw(camera);
+		
+	    sketch.noFill();
+	    sketch.stroke(0, 0, 0, 255);
+	    sketch.strokeWeight(6);
+	    float halfArcLength = Sketch.PI * (1-obstacleLife / radius);
+	    sketch.arc(camera.screenX(x), camera.screenY(y), radius*2, radius*2, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
+//	    Sketch.println("obstacleLife:"+obstacleLife);
 	}
 }
 
