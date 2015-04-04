@@ -7,20 +7,24 @@ public class Obstacle extends CircularGameObject {
 	static float obstacleMaxSpeed = 3.8f;
 	static float obstacleMinSpeed = 0.6f;
 	static float obstacleAvoidence = 80f;
+	static int maxSwarmlingsGeneratedForDeadObstacle = 6;
 	float obstacleLife=1f;
+	World world = null;
 	//float raius=0;
-	Obstacle(Sketch s){
+	Obstacle(Sketch s, World w){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
 		objectAvoidence=obstacleAvoidence;
+		world = w;
 	}
 	
-	Obstacle(Sketch s, float ix, float iy){
+	Obstacle(Sketch s,World w, float ix, float iy){
 		sketch = s;
 		x=ix;
 		y=iy;
 		color=sketch.color(255,255,255,255);
 		objectAvoidence=obstacleAvoidence;
+		world = w;
 	}
 	
 	public void initInWorld(World w){
@@ -54,6 +58,14 @@ public class Obstacle extends CircularGameObject {
 		
 		//check if it has died
 		if(obstacleLife <= 0f) {
+			//Generate New Swarmlings
+			for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/obstacleMaxRadius; i++){
+				float rx = x + sketch.random(radius);
+				float ry = y + sketch.random(radius);
+				Swarmling rs= new Swarmling(sketch, rx, ry);
+				world.contents.add(rs);
+			}
+			
 			return false;
 		}
 		else{
