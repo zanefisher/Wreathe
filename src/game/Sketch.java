@@ -42,7 +42,7 @@ public class Sketch extends PApplet {
 		if(world.count%obstacleSpawnPeriod == 0){
 			world.obstacleNumber+=1;
 			if(world.obstacleNumber<=obstacleMax){
-			Obstacle obstacle= new Obstacle(this);			
+			Obstacle obstacle= new Obstacle(this, world);			
 			obstacle.initInWorld(world);
 			}
 			

@@ -4,6 +4,8 @@ public class Projectile extends CircularGameObject{
 	CircularGameObject from,to;
 	float attackSpeed = 6f;
 	float distance = 0f;
+	float attackPower = 8f;
+	
 	Projectile(Sketch s, CircularGameObject a, CircularGameObject b) {
 		sketch = s;
 		from = a;
@@ -23,6 +25,10 @@ public class Projectile extends CircularGameObject{
 		y += dy;
 		distance = Sketch.dist(x, y, to.x, to.y);
 		if(distance>to.radius)	return true;
-		else return false;
+		else {
+			Obstacle tmp = (Obstacle)to;
+			tmp.obstacleLife -= attackPower;
+			return false;
+		}
 	}
 }
