@@ -26,7 +26,7 @@ public class Projectile extends CircularGameObject{
 		distance = Sketch.dist(x, y, to.x, to.y);
 		if(distance>to.radius)	return true;
 		else {
-			Obstacle tmp = (Obstacle)to;
+			CircularGameObject tmp = to;
 			tmp.obstacleLife -= attackPower;
 			return false;
 		}

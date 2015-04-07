@@ -11,6 +11,7 @@ public class World extends CircularGameObject {
 	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
 	public int count=0;
 	public int obstacleNumber=0;
+	public int obstaclesAroundEntrance=3;
 	int bgColor; //background color
 	Camera camera;
 	
@@ -36,13 +37,32 @@ public class World extends CircularGameObject {
 	}
 	
 	public void generateContents() {
-		// to do
+		
+		// contents generation in the setup of the world
+		
+		//swarmling generation
 		for(int i=0; i<swarmlingsGenerated; i++){
 			float rx = sketch.random(innerRadius) - (innerRadius / 2);
 			float ry = sketch.random(innerRadius) - (innerRadius / 2);
 			Swarmling rs= new Swarmling(sketch, rx, ry);
 			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
+		}
+		
+		//stationary obstacles generation
+		
+		
+		
+		//other stationary obstacles randomly generated
+		int otherStationaryObstaclesNumber = (int) sketch.random(1, 3);
+		for(int i = 0; i < otherStationaryObstaclesNumber; i++){
+			float rx = sketch.random(innerRadius) - (innerRadius / 2);
+			float ry = sketch.random(innerRadius) - (innerRadius / 2);
+			StationaryObstacle sob = new StationaryObstacle(sketch, this);
+			sob.x=rx;
+			sob.y=ry;
+			
+			contents.add(sob);
 		}
 	}
 	
@@ -53,6 +73,27 @@ public class World extends CircularGameObject {
 				children.add(new World(sketch));
 			}
 			explored = true;
+		}
+		
+		//add obstacles covering the entrances
+		for(int i=0; i< children.size(); i++){
+			float theta = sketch.random(Sketch.TWO_PI);
+			//if still need stationary obstacles to cover the entrance
+			while(obstaclesAroundEntrance>0){
+				//Sketch.println("in");
+				StationaryObstacle sob= new StationaryObstacle(sketch, this);
+				//set the entrance and set the obstacle's position around the world
+				sob.entrance=children.get(i);
+				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+				
+				//recalculate theta
+				theta += Sketch.TWO_PI*(1/3);
+				
+				contents.add(sob);
+				obstaclesAroundEntrance--;
+			}
+			obstaclesAroundEntrance=3;
 		}
 	}
 	
@@ -73,6 +114,9 @@ public class World extends CircularGameObject {
 //			camera.x = sketch.world.camera.screenX(x);
 //			camera.y = sketch.world.camera.screenY(y);
 		}
+		
+		
+		
 		return true;
 	}
 	

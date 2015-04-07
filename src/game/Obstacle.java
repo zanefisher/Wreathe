@@ -7,8 +7,8 @@ public class Obstacle extends CircularGameObject {
 	static float obstacleMaxSpeed = 3.8f;
 	static float obstacleMinSpeed = 0.6f;
 	static float obstacleAvoidence = 80f;
-	static int maxSwarmlingsGeneratedForDeadObstacle = 6;
-	float obstacleLife=1f;
+	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
+	//float obstacleLife=1f;
 	World world = null;
 	//float raius=0;
 	Obstacle(Sketch s, World w){
@@ -27,7 +27,7 @@ public class Obstacle extends CircularGameObject {
 		world = w;
 	}
 	
-	public void initInWorld(World w){
+	public void init(){
 		radius = sketch.montecarlo((obstacleMaxRadius - obstacleMinRadius) / 2, (obstacleMaxRadius + obstacleMinRadius) / 2);
 		//Sketch.println("monter: " + radius);
 		float speed = sketch.random(obstacleMinSpeed, obstacleMaxSpeed) * obstacleMinRadius / radius;
@@ -35,14 +35,11 @@ public class Obstacle extends CircularGameObject {
 		float radians = sketch.random(2) * Sketch.PI;
 		obstacleLife = radius;
 		//Sketch.println("radians: " + radians);
-		x = Sketch.sin(radians) * (radius + w.innerRadius);		
-		y = Sketch.cos(radians) * (radius + w.innerRadius);
+		x = Sketch.sin(radians) * (radius + world.innerRadius);		
+		y = Sketch.cos(radians) * (radius + world.innerRadius);
 		dx = Sketch.sin(radians) * speed * -1;
 		dy = Sketch.cos(radians) * speed * -1;
-		w.contents.add(this);
-
-		//Sketch.println("ox, oy: " + x + " , " + y);
-
+		world.contents.add(this);
 	}
 	
 	public boolean update(){
@@ -51,9 +48,9 @@ public class Obstacle extends CircularGameObject {
 		
 		x += dx;
 		y += dy;
-		if((Sketch.abs(x)>(sketch.world.radius + radius * 10)) || (Sketch.abs(y)> (sketch.world.radius + radius * 10))){
-			//sketch.obstacleNumber-=1;
-			//return false;
+		if(Sketch.abs(sketch.world.camera.screenX(x))>(sketch.world.innerRadius + radius * 5) || (Sketch.abs(sketch.world.camera.screenY(y))> (sketch.world.innerRadius + radius * 5))){
+			sketch.world.obstacleNumber-=1;
+			return false;
 		}
 		
 		//check if it has died
@@ -65,7 +62,7 @@ public class Obstacle extends CircularGameObject {
 				Swarmling rs= new Swarmling(sketch, rx, ry);
 				world.contents.add(rs);
 			}
-			
+			sketch.world.obstacleNumber-=1;
 			return false;
 		}
 		else{
