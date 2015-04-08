@@ -1,12 +1,13 @@
 package game;
 
-public class Projectile extends CircularGameObject{
-	CircularGameObject from,to;
+public class Projectile extends GameObject{
+	GameObject from;
+	Obstacle to;
 	float attackSpeed = 6f;
 	float distance = 0f;
 	float attackPower = 8f;
 	
-	Projectile(Sketch s, CircularGameObject a, CircularGameObject b) {
+	Projectile(Sketch s, GameObject a, Obstacle b) {
 		sketch = s;
 		from = a;
 		to =b;
@@ -16,6 +17,7 @@ public class Projectile extends CircularGameObject{
 		color=sketch.color(255,0,0,255);
 		sketch.world.contents.add(this);
 	}
+	
 	public boolean update() {
 		
 		distance = Sketch.dist(x, y, to.x, to.y);
@@ -26,7 +28,7 @@ public class Projectile extends CircularGameObject{
 		distance = Sketch.dist(x, y, to.x, to.y);
 		if(distance>to.radius)	return true;
 		else {
-			CircularGameObject tmp = to;
+			Obstacle tmp = to;
 			tmp.obstacleLife -= attackPower;
 			return false;
 		}

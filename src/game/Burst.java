@@ -17,7 +17,7 @@ public class Burst extends CircularGameObject {
 		return --ttl > 0;
 	}
 	
-	public void draw(Camera camera){
+	public void draw(WorldView camera){
 		float alpha = Sketch.map(ttl, burstLength, 0, 255, 0);
 	    sketch.noFill();
 	    sketch.stroke(color, alpha);
