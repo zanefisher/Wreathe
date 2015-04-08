@@ -1,10 +1,13 @@
 package game;
 
 public class Projectile extends GameObject{
-	GameObject from,to;
+	GameObject from;
+	Obstacle to;
 	float attackSpeed = 6f;
 	float distance = 0f;
-	Projectile(Sketch s, GameObject a, GameObject b) {
+	float attackPower = 8f;
+	
+	Projectile(Sketch s, GameObject a, Obstacle b) {
 		sketch = s;
 		from = a;
 		to =b;
@@ -14,6 +17,7 @@ public class Projectile extends GameObject{
 		color=sketch.color(255,0,0,255);
 		sketch.world.contents.add(this);
 	}
+	
 	public boolean update() {
 		
 		distance = Sketch.dist(x, y, to.x, to.y);
@@ -23,6 +27,10 @@ public class Projectile extends GameObject{
 		y += dy;
 		distance = Sketch.dist(x, y, to.x, to.y);
 		if(distance>to.radius)	return true;
-		else return false;
+		else {
+			Obstacle tmp = to;
+			tmp.obstacleLife -= attackPower;
+			return false;
+		}
 	}
 }

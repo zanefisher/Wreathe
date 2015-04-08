@@ -22,7 +22,7 @@ public class Sketch extends PApplet {
 		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
 		world = new World(this);
-//		world.explore();
+		world.explore();
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
@@ -68,27 +68,31 @@ public class Sketch extends PApplet {
 		world.count+=1;
 		
 		//generate the obstacle
+		//moving
 		if(world.count%obstacleSpawnPeriod == 0){
 			world.obstacleNumber+=1;
 			if(world.obstacleNumber<=obstacleMax){
-			Obstacle obstacle= new Obstacle(this);			
+			MovingObstacle obstacle= new MovingObstacle(this);			
 			obstacle.initInWorld(world);
 			}
 			
 		}
-		
-
-		//println(world.contents.size());
-		
+				
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (! obj.update()) {
 				contents.remove(i--);
+				if(obj.getClass().getName().equals("game.Swarmling") || 
+						obj.getClass().getName().equals("game.Obstacle") || 
+						obj.getClass().getName().equals("game.StationaryObstacle")){
+					Burst nb = new Burst(this, obj.x, obj.y);
+					world.contents.add(nb);
+				}
 			}
 		}
-		
+			
 		for (int i = 0; i < world.children.size(); ++i) {
 			World w = world.children.get(i);
 			if (! w.update()) {
@@ -100,6 +104,13 @@ public class Sketch extends PApplet {
 		
 		world.draw(camera);
 		leader.draw(camera);
+		
+		if(this.mousePressed){
+		      noFill();
+		      stroke(255);
+		      strokeWeight(1);
+		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		}
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
