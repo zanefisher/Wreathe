@@ -199,14 +199,14 @@ public class Swarmling extends CircularGameObject {
 				if( distance < leastDistance){
 					leastDistance = distance;
 					attacking = (Obstacle)other;	
-				}				
+				}
 			}
 		}
 		
 		//attack the obstacle if it is inside the attackRadius
 		attackCooldown = Sketch.max(0, attackCooldown-1);
 		if(attackCooldown == 0 && attacking!=null && Sketch.dist(x, y, attacking.x, attacking.y)<attackRadius){
-			Projectile p = new Projectile(sketch,this,attacking);
+			new Projectile(sketch,this,attacking);
 			attackCooldown = 30;
 		}
 		

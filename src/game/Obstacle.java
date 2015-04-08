@@ -8,7 +8,6 @@ public class Obstacle extends CircularGameObject {
 	static float obstacleMinSpeed = 0.6f;
 	static float obstacleAvoidence = 80f;
 	float obstacleLife=0;
-	//float raius=0;
 	Obstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
@@ -31,8 +30,8 @@ public class Obstacle extends CircularGameObject {
 		float radians = sketch.random(2) * Sketch.PI;
 		float obstacleLife = radius;
 		//Sketch.println("radians: " + radians);
-		x = Sketch.sin(radians) * (radius + w.innerRadius);		
-		y = Sketch.cos(radians) * (radius + w.innerRadius);
+		x = Sketch.sin(radians) * (radius + w.radius);		
+		y = Sketch.cos(radians) * (radius + w.radius);
 		dx = Sketch.sin(radians) * speed * -1;
 		dy = Sketch.cos(radians) * speed * -1;
 		w.contents.add(this);
