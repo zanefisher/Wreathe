@@ -62,14 +62,14 @@ public class Swarmling extends CircularGameObject {
 		followCooldown = Sketch.max(0, followCooldown - 1);
 		//drifting = true;
 		//check if state change or not
-		if (sketch.mousePressed &&
+		if (Sketch.control.isPressed() &&
 	            (followCooldown == 0) && 
 	            (following == null) &&
 	            (sketch.world.queueCooldown == 0) &&
 	            (Sketch.dist(x, y, lastInLine.x, lastInLine.y) < attractRadius)){
 			follow(lastInLine);
 		}
-		else if(following != null && !sketch.mousePressed){
+		else if(following != null && !Sketch.control.isPressed()){
 			unfollow();
 		}
 		
@@ -224,7 +224,7 @@ public class Swarmling extends CircularGameObject {
 	
 	public void draw(Camera camera){
 		super.draw(camera);
-		if(following != null && sketch.mousePressed){ 
+		if(following != null && Sketch.control.isPressed()){ 
 			
 			float amt=radius/(Sketch.mag(following.x-x, following.y-y));
 			

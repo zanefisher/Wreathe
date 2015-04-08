@@ -1,6 +1,9 @@
 package game;
 import processing.core.*;
+
 import java.util.ArrayList;
+
+
 
 public class Sketch extends PApplet {
 	
@@ -14,6 +17,10 @@ public class Sketch extends PApplet {
 	Leader leader;
 	World world; // the world the player is currently in
 	
+	static Controller control = new Controller();
+
+	
+	
 	public void setup() {
 		frameRate(60);
 		colorMode(RGB, 255);
@@ -24,9 +31,12 @@ public class Sketch extends PApplet {
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
 		world.count=0;
+		
 	}
 	
 	public void draw() {
+
+		
 		// Draw the current world.
 		//world= new World(this);
 		background(world.color);
@@ -83,7 +93,7 @@ public class Sketch extends PApplet {
 		//draw the leader
 		leader.draw(world.camera);
 		
-		if(this.mousePressed){
+		if(Sketch.control.isPressed()){
 		      noFill();
 		      stroke(255);
 		      strokeWeight(1);
