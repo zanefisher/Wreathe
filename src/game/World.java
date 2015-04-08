@@ -11,7 +11,7 @@ public class World extends CircularGameObject {
 	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
 	public int count=0;
 	public int obstacleNumber=0;
-	public int obstaclesAroundEntrance=3;
+	public int obstaclesAroundEntrance=4;
 	int bgColor; //background color
 	
 	World parent;
@@ -20,6 +20,8 @@ public class World extends CircularGameObject {
 	
 	//TO DO: rewrite this
 	World(Sketch s) {
+//		x=100;
+//		y=100;
 		sketch = s;
 		explored = false;
 		color = sketch.color(64, 96, sketch.random(128));
@@ -29,7 +31,7 @@ public class World extends CircularGameObject {
 		parent = null;
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
-		generateContents();
+	//generateContents();
 	}
 	
 	public WorldView getView() {
@@ -52,13 +54,10 @@ public class World extends CircularGameObject {
 			float rx = sketch.random(radius) - (radius / 2);
 			float ry = sketch.random(radius) - (radius / 2);
 			Swarmling rs= new Swarmling(sketch, rx, ry);
-			//Sketch.println("rx, ry " + rs.x + "," + rs.y);
 			contents.add(rs);
 		}
 		
 		//stationary obstacles generation
-		
-		
 		
 		//other stationary obstacles randomly generated
 		int otherStationaryObstaclesNumber = (int) sketch.random(1, 3);
@@ -71,45 +70,73 @@ public class World extends CircularGameObject {
 			
 			contents.add(sob);
 		}
-	}
-	
-	public void explore() {
-		if (!explored) {
-			int childCount = (int) sketch.random(4) + 1;
-			for (int i = 0; i < childCount; ++i) {
-				children.add(new World(sketch));
-			}
-			explored = true;
-		}
 		
 		//add obstacles covering the entrances
 		for(int i=0; i< children.size(); i++){
 			float theta = sketch.random(Sketch.TWO_PI);
 			//if still need stationary obstacles to cover the entrance
 			while(obstaclesAroundEntrance>0){
-				//Sketch.println("in");
 				StationaryObstacle sob= new StationaryObstacle(sketch, this);
+				Sketch.println(Sketch.PI);
 				//set the entrance and set the obstacle's position around the world
 				sob.entrance=children.get(i);
 				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
 				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
 				
 				//recalculate theta
-				theta += Sketch.TWO_PI*(1/3);
+				theta += Sketch.PI / 2;
 				
 				contents.add(sob);
 				obstaclesAroundEntrance--;
 			}
-			obstaclesAroundEntrance=3;
+			obstaclesAroundEntrance=4;
 		}
+	}
+		
+	
+	public void explore() {
+		if (!explored) {
+			int childCount = (int) sketch.random(4) + 1;
+			for (int i = 0; i < childCount; ++i) {
+				World nw = new World(sketch);
+				nw.x = sketch.random(radius) - (radius / 2);
+				nw.y = sketch.random(radius) - (radius / 2);
+				children.add(nw);
+			}
+			explored = true;
+			generateContents();
+			
+			//add obstacles covering the entrances
+//			for(int i=0; i< children.size(); i++){
+//				float theta = sketch.random(Sketch.TWO_PI);
+//				//if still need stationary obstacles to cover the entrance
+//				while(obstaclesAroundEntrance>0){
+//					StationaryObstacle sob= new StationaryObstacle(sketch, this);
+//					
+//					//set the entrance and set the obstacle's position around the world
+//					sob.entrance=children.get(i);
+//					sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+//					sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+//					
+//					//recalculate theta
+//					theta += Sketch.TWO_PI*(1/3);
+//					
+//					contents.add(sob);
+//					obstaclesAroundEntrance--;
+//				}
+//				obstaclesAroundEntrance=3;
+//			}
+		}
+
+
 	}
 	
 	public boolean update() {
 		float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
 		if (distToLeader < portalRadius) {
 			this.explore();
-//			sketch.leader.x = Sketch.map(sketch.leader.x, x - radius, x + radius, -1 * innerRadius, innerRadius);
-//			sketch.leader.y = Sketch.map(sketch.leader.y, y - radius, y + radius, -1 * innerRadius, innerRadius);
+			sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
+			sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
 					sketch.world = this;
 //		} else {
 //			if (distToLeader < radius + transitionRadius) {
@@ -127,8 +154,11 @@ public class World extends CircularGameObject {
 	}
 	
 	public void draw(WorldView view) {
+		sketch.noStroke();
 		sketch.fill(color);
-		super.draw(view);
+		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
+				view.scale * radius * 2, view.scale * radius * 2);
+		
 		for (int i = 0; i < contents.size(); ++i) {
 			contents.get(i).draw(view);
 		}

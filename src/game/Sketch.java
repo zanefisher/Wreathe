@@ -22,7 +22,7 @@ public class Sketch extends PApplet {
 		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
 		world = new World(this);
-//		world.explore();
+		world.explore();
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
@@ -84,9 +84,9 @@ public class Sketch extends PApplet {
 			GameObject obj = contents.get(i);
 			if (! obj.update()) {
 				contents.remove(i--);
-				println(obj.getClass().getName());
-				if(obj.getClass().getName().equals("game.Swarmling") || obj.getClass().getName().equals("game.Obstacle") || obj.getClass().getName().equals("game.StationaryObstacle")){
-					println("burst!");
+				if(obj.getClass().getName().equals("game.Swarmling") || 
+						obj.getClass().getName().equals("game.Obstacle") || 
+						obj.getClass().getName().equals("game.StationaryObstacle")){
 					Burst nb = new Burst(this, obj.x, obj.y);
 					world.contents.add(nb);
 				}

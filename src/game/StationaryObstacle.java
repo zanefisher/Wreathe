@@ -10,7 +10,7 @@ public class StationaryObstacle extends CircularGameObject {
 	//integer indicates the stationary obstacle around the entrance
 	
 	static float stationaryObstacleMaxRadius = 60;
-	static float stationaryObstacleMinRadius = 0;
+	static float stationaryObstacleMinRadius = 40;
 	
 	//float obstacleLife = 1f;
 	

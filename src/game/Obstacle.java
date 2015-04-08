@@ -66,14 +66,14 @@ public class Obstacle extends CircularGameObject {
 
 	}
 	
-	public void draw(WorldView camera){
-		super.draw(camera);
+	public void draw(WorldView view){
+		super.draw(view);
 		
 	    sketch.noFill();
 	    sketch.stroke(0, 0, 0, 255);
 	    sketch.strokeWeight(6);
 	    float halfArcLength = Sketch.PI * (1-obstacleLife / radius);
-	    sketch.arc(camera.screenX(x), camera.screenY(y), radius*2, radius*2, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
+	    sketch.arc(view.screenX(x), view.screenY(y), radius*2*view.scale, radius*2*view.scale, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
 	}
 }
 
