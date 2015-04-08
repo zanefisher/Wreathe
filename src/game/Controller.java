@@ -40,7 +40,7 @@ public class Controller extends PApplet {
 	}
 	
 	public boolean isPressed(){
-		pressed = device.getButton("FOLLOW").pressed();
+		pressed = device.getButton("FOLLOW").pressed()||device.getButton("FOLLOWA").pressed()||device.getButton("FOLLOWB").pressed();
 		return pressed;
 	}
 	
