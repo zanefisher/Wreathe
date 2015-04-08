@@ -11,12 +11,23 @@ public class Leader extends Swarmling {
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
 		float speed = sketch.mousePressed ? maxSpeed : 2 * maxSpeed;
-		float xToMouse = sketch.mouseX - sketch.camera.screenX(x);
-		float yToMouse = sketch.mouseY - sketch.camera.screenY(y);
-		float dist = Sketch.mag(xToMouse, yToMouse);
+		float xToMouse;
+		float yToMouse;
+		float dist;
+		if (false) {
+			xToMouse = sketch.mouseX - sketch.camera.screenX(x);
+			yToMouse = sketch.mouseY - sketch.camera.screenY(y);
+			dist = Sketch.mag(xToMouse, yToMouse);
+		} else {
+//		float xToMouse = sketch.mouseX - sketch.world.camera.screenX(x);
+//		float yToMouse = sketch.mouseY - sketch.world.camera.screenY(y);
+			xToMouse = Sketch.control.getJx();
+			yToMouse = Sketch.control.getJy();
+			dist = 2*Sketch.mag(xToMouse, yToMouse);
+		}
 		if (dist > 0) {
-			dx = xToMouse * Sketch.min(1, speed / dist);
-			dy = yToMouse * Sketch.min(1, speed / dist);
+			dx = xToMouse * Sketch.min(speed, speed / dist);
+			dy = yToMouse * Sketch.min(speed, speed / dist);
 			x += dx;
 			y += dy;
 		}

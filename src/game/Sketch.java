@@ -1,6 +1,9 @@
 package game;
 import processing.core.*;
+
 import java.util.ArrayList;
+
+
 
 public class Sketch extends PApplet {
 	
@@ -16,6 +19,10 @@ public class Sketch extends PApplet {
 	float focusMargin = 100; // how close objects in focus can get to the edge before the camera moves
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
+	
+	static Controller control = new Controller();
+
+	
 	
 	public void setup() {
 		frameRate(60);
@@ -57,6 +64,8 @@ public class Sketch extends PApplet {
 	}
 	
 	public void draw() {
+
+		
 		// Draw the current world.
 		//world= new World(this);
 		background(0);
@@ -105,7 +114,7 @@ public class Sketch extends PApplet {
 		world.draw(camera);
 		leader.draw(camera);
 		
-		if(this.mousePressed){
+		if(Sketch.control.isPressed()){
 		      noFill();
 		      stroke(255);
 		      strokeWeight(1);
