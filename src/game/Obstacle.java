@@ -8,9 +8,7 @@ public class Obstacle extends CircularGameObject {
 	static float obstacleMinSpeed = 0.6f;
 	static float obstacleAvoidence = 80f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
-	//float obstacleLife=1f;
 	World world = null;
-	//float raius=0;
 	Obstacle(Sketch s, World w){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
@@ -29,26 +27,21 @@ public class Obstacle extends CircularGameObject {
 	
 	public void init(){
 		radius = sketch.montecarlo((obstacleMaxRadius - obstacleMinRadius) / 2, (obstacleMaxRadius + obstacleMinRadius) / 2);
-		//Sketch.println("monter: " + radius);
 		float speed = sketch.random(obstacleMinSpeed, obstacleMaxSpeed) * obstacleMinRadius / radius;
-		//Sketch.println("speed: " + speed);
 		float radians = sketch.random(2) * Sketch.PI;
 		obstacleLife = radius;
-		//Sketch.println("radians: " + radians);
-		x = Sketch.sin(radians) * (radius + world.innerRadius);		
-		y = Sketch.cos(radians) * (radius + world.innerRadius);
+		x = Sketch.sin(radians) * (radius + world.radius);		
+		y = Sketch.cos(radians) * (radius + world.radius);
 		dx = Sketch.sin(radians) * speed * -1;
 		dy = Sketch.cos(radians) * speed * -1;
 		world.contents.add(this);
 	}
 	
 	public boolean update(){
-		
-
-		
+				
 		x += dx;
 		y += dy;
-		if(Sketch.abs(sketch.world.camera.screenX(x))>(sketch.world.innerRadius + radius * 5) || (Sketch.abs(sketch.world.camera.screenY(y))> (sketch.world.innerRadius + radius * 5))){
+		if(Sketch.dist(0,0, x, y) > world.radius + radius *2){
 			sketch.world.obstacleNumber-=1;
 			return false;
 		}
@@ -73,7 +66,7 @@ public class Obstacle extends CircularGameObject {
 
 	}
 	
-	public void draw(Camera camera){
+	public void draw(WorldView camera){
 		super.draw(camera);
 		
 	    sketch.noFill();
@@ -81,7 +74,6 @@ public class Obstacle extends CircularGameObject {
 	    sketch.strokeWeight(6);
 	    float halfArcLength = Sketch.PI * (1-obstacleLife / radius);
 	    sketch.arc(camera.screenX(x), camera.screenY(y), radius*2, radius*2, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
-//	    Sketch.println("obstacleLife:"+obstacleLife);
 	}
 }
 

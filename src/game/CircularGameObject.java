@@ -3,8 +3,9 @@ public abstract class CircularGameObject extends GameObject {
 	float radius;
 	int color;
 	
+
 	float obstacleLife;
-	public void draw(Camera camera) {
+	public void draw(WorldView camera) {
 		sketch.noStroke();
 		sketch.fill(color);
 		sketch.ellipse(camera.screenX(x), camera.screenY(y),

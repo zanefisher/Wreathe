@@ -4,33 +4,62 @@ import java.util.ArrayList;
 
 public class Sketch extends PApplet {
 	
-	static int screenWidth = 640, screenHeight = 480;
+	static int screenWidth = 1280, screenHeight = 800;
 	static int screenSize = screenWidth * screenHeight;
 	static int obstacleSpawnPeriod=100;
 
 	static int obstacleMax=8;
-	float cameraX = 0, cameraY = 0, cameraScale = 1f;
 	
 	Leader leader;
 	World world; // the world the player is currently in
+	WorldView camera;
+	float focusMargin = 25; // how close objects in focus can get to the edge before the camera moves
+	float minZoom = 0.2f;
+	float maxZoom = 1.5f;
 	
 	public void setup() {
 		frameRate(60);
 		colorMode(RGB, 255);
 		size(screenWidth, screenHeight);
 		world = new World(this);
-		world.explore();
+//		world.explore();
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
 		world.count=0;
+		camera = new WorldView(0, 0, 1);
+	}
+	
+	private void updateCamera() {
+		
+		// find the range of all swarmlings in line, plus a projection of the leader 
+		float minX = leader.x + (10 * leader.dx);
+		float maxX = minX;
+		float minY = leader.y + (10 * leader.dy);
+		float maxY = minY;
+		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
+			minX = min(minX, s.x);
+			maxX = max(maxX, s.x);
+			minY = min(minY, s.y);
+			maxY = max(maxY, s.y);
+		}
+		
+		float midX = lerp(minX, maxX, 0.5f);
+		float midY = lerp(minY, maxY, 0.5f);
+		
+		float xZoomTarget = (screenWidth - (2 * focusMargin)) / (maxX - minX);
+		float yZoomTarget = (screenHeight - (2 * focusMargin)) / (maxY - minY);
+		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom);
+		
+		camera.x = lerp(camera.x, midX, 0.1f);
+		camera.y = lerp(camera.y, midY, 0.1f);
+		camera.scale = lerp(camera.scale, zoomTarget, 0.1f);
 	}
 	
 	public void draw() {
 		// Draw the current world.
 		//world= new World(this);
-		background(world.color);
-		world.drawAsBackground();
+		background(0);
 		
 		// Update the leader
 		leader.update();
@@ -48,27 +77,12 @@ public class Sketch extends PApplet {
 			}
 			
 		}
-		
-		//update the world status and generate the world entrance
-		for (int i = 0; i < world.children.size(); ++i) {
-			World w = world.children.get(i);
-			if (w.update()) {
-				w.draw(world.camera);
-			} else {
-				world.children.remove(i--);
-			}
-		}
-		world.camera.x = lerp(world.camera.x, leader.x, 0.2f);
-		world.camera.y = lerp(world.camera.y, leader.y, 0.2f);
-		
+				
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
-			if (obj.update()) {
-				//println("swarm: "+ i + " p: "+ obj.x + "," + obj.y);
-				obj.draw(world.camera);
-			} else {
+			if (! obj.update()) {
 				contents.remove(i--);
 				println(obj.getClass().getName());
 				if(obj.getClass().getName().equals("game.Swarmling") || obj.getClass().getName().equals("game.Obstacle") || obj.getClass().getName().equals("game.StationaryObstacle")){
@@ -78,18 +92,25 @@ public class Sketch extends PApplet {
 				}
 			}
 		}
+			
+		for (int i = 0; i < world.children.size(); ++i) {
+			World w = world.children.get(i);
+			if (! w.update()) {
+				world.children.remove(i--);
+			}
+		}
 		
-
-		//draw the leader
-		leader.draw(world.camera);
+		updateCamera();
+		
+		world.draw(camera);
+		leader.draw(camera);
 		
 		if(this.mousePressed){
 		      noFill();
 		      stroke(255);
 		      strokeWeight(1);
-		      ellipse(world.camera.screenX(Swarmling.lastInLine.x),  world.camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
 		}
-		
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.

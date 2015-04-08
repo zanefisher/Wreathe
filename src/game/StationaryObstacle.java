@@ -26,8 +26,6 @@ public class StationaryObstacle extends CircularGameObject {
 	
 	public void initInWorld(){
 
-		//Sketch.println("ox, oy: " + x + " , " + y);
-
 	}
 	
 	public boolean update(){

@@ -29,7 +29,6 @@ public class Swarmling extends CircularGameObject {
 		radius = swarmlingRadius;
 		objectAvoidence=swarmlingAvoidence;
 		//TO DO: init color
-		//Sketch.println("rx, ry " + x + ", " + y);
 	}
 	
 	public void follow(Swarmling s) {
@@ -87,11 +86,11 @@ public class Swarmling extends CircularGameObject {
 		if(following != null){
 			elbow = lineAvoidence;
 			avoid = 0;
-			//Sketch.println("dx, dy: "+dx+" , "+dy);
+
 			//follow the former one
 			ddx=(following.x-x - dx*4)/16;
 			ddy=(following.y-y - dy*4)/16;
-			//Sketch.println("ddx, ddy: "+ddx+" , "+ddy);
+
 			//drifting=false;
 		}
 		
@@ -143,7 +142,7 @@ public class Swarmling extends CircularGameObject {
 	    	//get the random target
 	    	float wx = Sketch.cos(theta)*noise*wanderingFactor;
 	    	float wy = Sketch.sin(theta)*noise*wanderingFactor;
-	    	//Sketch.println(wx +" , " + wy);
+
 			ddx += (wx-x-dx)/500;
 			ddy += (wy-y-dy)/500;
 	    }
@@ -154,8 +153,6 @@ public class Swarmling extends CircularGameObject {
 	        float frac = (swarmlingDriftAccel / Sketch.mag(dx, dy));
 	        ddx += (0-dx)*frac;
 	        ddy += (0-dy)*frac;
-//	        ddx = Sketch.min(dx, frac * dx);
-//	        ddy = Sketch.min(dy, frac * dy);
 	      }
 	    
 		// Clamp and apply acceleration.
@@ -169,7 +166,7 @@ public class Swarmling extends CircularGameObject {
 		else{
 			ddx=0;ddy=0;
 		}
-		//Sketch.println("ddx: "+ddx);
+
 		dx += ddx > 0 ? addx : -addx;
 		dy += ddy > 0 ? addy : -addy;
 		
@@ -184,10 +181,10 @@ public class Swarmling extends CircularGameObject {
 		else{
 			dx=0;dy=0;
 		}
-		//Sketch.println("dx: "+dx);}
+
 		x += dx > 0 ? adx : -adx;
 		y += dy > 0 ? ady : -ady;
-		//Sketch.println("update rx, ry " + x + "," + y);
+
 		//TO DO: attack behavior
 		
 		
@@ -222,7 +219,7 @@ public class Swarmling extends CircularGameObject {
 		return true;
 	}
 	
-	public void draw(Camera camera){
+	public void draw(WorldView camera){
 		super.draw(camera);
 		if(following != null && sketch.mousePressed){ 
 			
