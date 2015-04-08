@@ -1,10 +1,10 @@
 package game;
 
-public class Projectile extends CircularGameObject{
-	CircularGameObject from,to;
+public class Projectile extends GameObject{
+	GameObject from,to;
 	float attackSpeed = 6f;
 	float distance = 0f;
-	Projectile(Sketch s, CircularGameObject a, CircularGameObject b) {
+	Projectile(Sketch s, GameObject a, GameObject b) {
 		sketch = s;
 		from = a;
 		to =b;

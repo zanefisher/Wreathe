@@ -2,8 +2,9 @@ package game;
 
 public abstract class GameObject {
 	static Sketch sketch;
-	float x, y, dx, dy;
-	float objectAvoidence;
+	float x, y, dx, dy, radius;
+	int color;
+	float avoidRadius = 0;
 	// Move and do collision checks. Return true if the object should
 	// continue to exist. Most child classes will want to override this.
 	public boolean update() {
@@ -11,6 +12,15 @@ public abstract class GameObject {
 		y += dy;
 		return true;
 	}
-
-	public abstract void draw(WorldView camera);
+	
+	public float distTo(GameObject other) {
+		return Sketch.dist(x, y, other.x, other.y) - (radius + other.radius);
+	}
+	
+	public void draw(WorldView view) {
+		sketch.noStroke();
+		sketch.fill(color);
+		sketch.ellipse(view.screenX(x), view.screenY(y),
+				view.scale * radius * 2, view.scale * radius * 2);
+	}
 }

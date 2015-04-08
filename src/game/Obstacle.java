@@ -1,17 +1,17 @@
 package game;
 
-public class Obstacle extends CircularGameObject {
+public class Obstacle extends GameObject {
 	
-	static float obstacleMinRadius = 40;
-	static float obstacleMaxRadius = 200;
-	static float obstacleMaxSpeed = 3.8f;
-	static float obstacleMinSpeed = 0.6f;
-	static float obstacleAvoidence = 80f;
+	static float minRadius = 40;
+	static float maxRadius = 200;
+	static float maxSpeed = 3.8f;
+	static float minSpeed = 0.6f;
+	
 	float obstacleLife=0;
 	Obstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(255,255,255,255);
-		objectAvoidence=obstacleAvoidence;
+		avoidRadius = 80f;
 	}
 	
 	Obstacle(Sketch s, float ix, float iy){
@@ -19,13 +19,13 @@ public class Obstacle extends CircularGameObject {
 		x=ix;
 		y=iy;
 		color=sketch.color(255,255,255,255);
-		objectAvoidence=obstacleAvoidence;
+		avoidRadius = 80f;
 	}
 	
 	public void initInWorld(World w){
-		radius = sketch.montecarlo((obstacleMaxRadius - obstacleMinRadius) / 2, (obstacleMaxRadius + obstacleMinRadius) / 2);
+		radius = sketch.montecarlo((maxRadius - minRadius) / 2, (maxRadius + minRadius) / 2);
 		//Sketch.println("monter: " + radius);
-		float speed = sketch.random(obstacleMinSpeed, obstacleMaxSpeed) * obstacleMinRadius / radius;
+		float speed = sketch.random(minSpeed, maxSpeed) * minRadius / radius;
 		//Sketch.println("speed: " + speed);
 		float radians = sketch.random(2) * Sketch.PI;
 		float obstacleLife = radius;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Sketch extends PApplet {
 	
-	static int screenWidth = 1280, screenHeight = 800;
+	static int screenWidth = 1080, screenHeight = 700;
 	static int screenSize = screenWidth * screenHeight;
 	static int obstacleSpawnPeriod=100;
 
@@ -13,7 +13,7 @@ public class Sketch extends PApplet {
 	Leader leader;
 	World world; // the world the player is currently in
 	WorldView camera;
-	float focusMargin = 25; // how close objects in focus can get to the edge before the camera moves
+	float focusMargin = 100; // how close objects in focus can get to the edge before the camera moves
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
@@ -33,9 +33,9 @@ public class Sketch extends PApplet {
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (10 * leader.dx);
+		float minX = leader.x + (20 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (10 * leader.dy);
+		float minY = leader.y + (20 * leader.dy);
 		float maxY = minY;
 		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
 			minX = min(minX, s.x);
@@ -51,9 +51,9 @@ public class Sketch extends PApplet {
 		float yZoomTarget = (screenHeight - (2 * focusMargin)) / (maxY - minY);
 		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom);
 		
-		camera.x = lerp(camera.x, midX, 0.1f);
-		camera.y = lerp(camera.y, midY, 0.1f);
-		camera.scale = lerp(camera.scale, zoomTarget, 0.1f);
+		camera.x = lerp(camera.x, midX, 0.05f);
+		camera.y = lerp(camera.y, midY, 0.05f);
+		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
 	}
 	
 	public void draw() {
@@ -63,7 +63,7 @@ public class Sketch extends PApplet {
 		
 		// Update the leader
 		leader.update();
-        world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
+        Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
 		//println(leader.x +  ", " + leader.y);
 		world.count+=1;
 		
