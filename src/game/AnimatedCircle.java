@@ -1,7 +1,7 @@
 package game;
 
 public class AnimatedCircle {
-	  CircularGameObject start, end;
+	  GameObject start, end;
 	  
 //	  AnimatedCircle(Sketch sk, CircularGameObject s, CircularGameObject e) {
 //		sketch = sk;

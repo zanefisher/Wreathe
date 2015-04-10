@@ -1,14 +1,13 @@
 package game;
 import java.util.ArrayList;
 
-public class World extends CircularGameObject {
+public class World extends GameObject {
 	
 	boolean explored;
 	static float transitionRadius = 40;
 	float portalRadius; //radius of the world while you're in it.
 	int br, bg, bb; //background color
-	static int swarmlingsGenerated=8;
-	int queueCooldown=0; //how much frame should wait for the next swarmling to follow
+	static int swarmlingsGenerated=32;
 	public int count=0;
 	public int obstacleNumber=0;
 	public int obstaclesAroundEntrance=4;
@@ -62,7 +61,7 @@ public class World extends CircularGameObject {
 		for(int i = 0; i < otherStationaryObstaclesNumber; i++){
 			float rx = sketch.random(radius) - (radius / 2);
 			float ry = sketch.random(radius) - (radius / 2);
-			StationaryObstacle sob = new StationaryObstacle(sketch, this);
+			StationaryObstacle sob = new StationaryObstacle(sketch);
 			sob.x=rx;
 			sob.y=ry;
 			
@@ -74,7 +73,7 @@ public class World extends CircularGameObject {
 			float theta = sketch.random(Sketch.TWO_PI);
 			//if still need stationary obstacles to cover the entrance
 			while(obstaclesAroundEntrance>0){
-				StationaryObstacle sob= new StationaryObstacle(sketch, this);
+				StationaryObstacle sob= new StationaryObstacle(sketch);
 				//set the entrance and set the obstacle's position around the world
 				sob.entrance=children.get(i);
 				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
