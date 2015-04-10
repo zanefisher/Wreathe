@@ -41,9 +41,9 @@ public class Sketch extends PApplet {
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (30 * leader.dx);
+		float minX = leader.x + (40 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (30 * leader.dy);
+		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
 		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
 			minX = min(minX, s.x);

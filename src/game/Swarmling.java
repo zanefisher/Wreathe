@@ -74,8 +74,8 @@ public class Swarmling extends GameObject {
 		
 		// Add follow vector.
 		if (following != null) {
-			ddx += (following.x - x) / 10;
-			ddy += (following.y - y) / 10;
+			ddx += (following.x - x) / 4;
+			ddy += (following.y - y) / 4;
 			avoidFactor = 0.1f;
 		}
 		
