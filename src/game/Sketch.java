@@ -20,8 +20,8 @@ public class Sketch extends PApplet {
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
-	Controller control = new Controller();
-	boolean usingController = control.device != null;
+	Controller controller = new Controller();
+	boolean usingController = controller.device != null;
 
 	
 	
@@ -94,12 +94,6 @@ public class Sketch extends PApplet {
 			GameObject obj = contents.get(i);
 			if (! obj.update()) {
 				contents.remove(i--);
-				if(obj.getClass().getName().equals("game.Swarmling") || 
-						obj.getClass().getName().equals("game.Obstacle") || 
-						obj.getClass().getName().equals("game.StationaryObstacle")){
-					Burst nb = new Burst(this, obj.x, obj.y);
-					world.contents.add(nb);
-				}
 			}
 		}
 			
