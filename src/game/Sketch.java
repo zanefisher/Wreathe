@@ -63,8 +63,10 @@ public class Sketch extends PApplet {
 		
 		// Update the leader
 		leader.update();
+		
+		//Update the current world
+		world.update();		
         world.queueCooldown=Sketch.max(0, world.queueCooldown-1);
-		//println(leader.x +  ", " + leader.y);
 		world.count+=1;
 		
 		//generate the obstacle
@@ -92,7 +94,7 @@ public class Sketch extends PApplet {
 				}
 			}
 		}
-			
+		
 		for (int i = 0; i < world.children.size(); ++i) {
 			World w = world.children.get(i);
 			if (! w.update()) {
@@ -101,7 +103,6 @@ public class Sketch extends PApplet {
 		}
 		
 		updateCamera();
-		
 		world.draw(camera);
 		leader.draw(camera);
 		

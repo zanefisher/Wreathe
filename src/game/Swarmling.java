@@ -90,8 +90,6 @@ public class Swarmling extends CircularGameObject {
 			//follow the former one
 			ddx=(following.x-x - dx*4)/16;
 			ddy=(following.y-y - dy*4)/16;
-
-			//drifting=false;
 		}
 		
 		//check for movement influence (avoid things)
