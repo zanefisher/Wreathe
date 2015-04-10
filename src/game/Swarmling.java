@@ -28,7 +28,7 @@ public class Swarmling extends GameObject {
 		dy = sketch.random(-1 * maxSpeed, maxSpeed);
 		radius = swarmlingRadius;
 		avoidRadius = 10f;
-		//TO DO: init color
+		color = sketch.color(200, 150, 40);
 	}
 	
 	public void follow(Swarmling s) {
@@ -129,7 +129,7 @@ public class Swarmling extends GameObject {
 		}
 		
 		// Attack if we found a target.
-		if (target != null){
+		if (target != null) {
 			new Projectile(sketch, this, target);
 			attackCooldown = 30;
 		}
