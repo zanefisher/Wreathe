@@ -21,9 +21,8 @@ public class World extends GameObject {
 	World(Sketch s) {
 		sketch = s;
 		explored = false;
-		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
-		color = sketch.color(hue, sat, bri);
-		bgColor = sketch.color(hue + sketch.random(90) - 45, sat - sketch.random(25), bri - sketch.random(25));
+		color = sketch.color(64, 96, sketch.random(128));
+		bgColor = sketch.color(64, sketch.random(128), 96);
 		portalRadius = 50;
 		radius = 1000;
 		parent = null;
@@ -165,9 +164,12 @@ public class World extends GameObject {
 	}
 	
 	public void draw(WorldView view) {
+		//base case do not draw worlds that are too small
+		if(view.scale < 0.01) return;
+		
 		sketch.noStroke();
 		sketch.fill(color);
-		sketch.ellipse(view.screenX(x) + parent.x, view.screenY(y) + parent.y,
+		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
 				view.scale * radius * 2, view.scale * radius * 2);
 		
 		for (int i = 0; i < contents.size(); ++i) {
