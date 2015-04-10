@@ -9,8 +9,8 @@ public class Sketch extends PApplet {
 	
 	static int screenWidth = 1080, screenHeight = 700;
 	static int screenSize = screenWidth * screenHeight;
+	
 	static int obstacleSpawnPeriod=100;
-
 	static int obstacleMax=8;
 	
 	Leader leader;
@@ -20,7 +20,8 @@ public class Sketch extends PApplet {
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
-	static Controller control = new Controller();
+	Controller control = new Controller();
+	boolean usingController = control.device != null;
 
 	
 	
@@ -40,9 +41,9 @@ public class Sketch extends PApplet {
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (20 * leader.dx);
+		float minX = leader.x + (30 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (20 * leader.dy);
+		float minY = leader.y + (30 * leader.dy);
 		float maxY = minY;
 		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
 			minX = min(minX, s.x);
@@ -114,7 +115,7 @@ public class Sketch extends PApplet {
 		world.draw(camera);
 		leader.draw(camera);
 		
-		if(Sketch.control.isPressed()){
+		if(leader.leading){
 		      noFill();
 		      stroke(255);
 		      strokeWeight(1);

@@ -8,20 +8,16 @@ import net.java.games.input.*;
 public class Controller extends PApplet {
 	//for controller
 	ControlIO control;
-	ControlDevice device;
+	ControlDevice device = null;
 	
 	float jx,jy;
 	boolean pressed;
 	
-	public Controller(){
+	public Controller() {
 		// Initialise the ControlIO
 		control = ControlIO.getInstance(this);
 		// Find a device that matches the configuration file
 		device = control.getMatchedDevice("joystick");
-		if (device == null) {
-		    println("No suitable device configured");
-		    System.exit(-1); // End the program NOW!
-		}
 	}
 	
 	public void update(){
