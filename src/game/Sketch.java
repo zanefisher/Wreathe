@@ -20,14 +20,14 @@ public class Sketch extends PApplet {
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
-	Controller control = new Controller();
-	boolean usingController = control.device != null;
+	Controller controller = new Controller();
+	boolean usingController = controller.device != null;
 
 	
 	
 	public void setup() {
 		frameRate(60);
-		colorMode(RGB, 255);
+		colorMode(HSB, 360, 100, 100, 1);
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		world.explore();
@@ -41,9 +41,9 @@ public class Sketch extends PApplet {
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (30 * leader.dx);
+		float minX = leader.x + (40 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (30 * leader.dy);
+		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
 		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
 			minX = min(minX, s.x);
@@ -96,12 +96,6 @@ public class Sketch extends PApplet {
 			GameObject obj = contents.get(i);
 			if (! obj.update()) {
 				contents.remove(i--);
-				if(obj.getClass().getName().equals("game.Swarmling") || 
-						obj.getClass().getName().equals("game.Obstacle") || 
-						obj.getClass().getName().equals("game.StationaryObstacle")){
-					Burst nb = new Burst(this, obj.x, obj.y);
-					world.contents.add(nb);
-				}
 			}
 		}
 		
