@@ -1,6 +1,6 @@
 package game;
 
-public class Burst extends CircularGameObject {
+public class Burst extends GameObject {
 	static int burstLength = 90;
 	int ttl=0;
 	Burst(Sketch s, float ix, float iy){
