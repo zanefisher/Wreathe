@@ -62,13 +62,13 @@ public class Swarmling extends GameObject {
 		
 		// Check for following/unfollowing.
 		followCooldown = Sketch.max(0, followCooldown - 1);
-		if (Sketch.control.isPressed() &&
+		if (sketch.leader.leading &&
 	            (followCooldown == 0) && 
 	            (following == null) &&
 	            (queueCooldown == 0) &&
 	            (Sketch.dist(x, y, lastInLine.x, lastInLine.y) < attractRadius)){
 			follow(lastInLine);
-		} else if(following != null && !Sketch.control.isPressed()){
+		} else if(following != null && !sketch.leader.leading){
 			unfollow();
 		}
 		
@@ -159,7 +159,10 @@ public class Swarmling extends GameObject {
 	
 	public void draw(WorldView camera){
 		super.draw(camera);
-		if(following != null && Sketch.control.isPressed()){ 
+
+		
+		// draw the line between led swarmlings
+		if(following != null && sketch.leader.leading){ 
 			
 			float amt=radius/(Sketch.mag(following.x-x, following.y-y));
 			
@@ -168,8 +171,6 @@ public class Swarmling extends GameObject {
 			float x2=camera.screenX(Sketch.lerp(following.x, x, amt));
 			float y1=camera.screenY(Sketch.lerp(y, following.y, amt));
 			float y2=camera.screenY(Sketch.lerp(following.y, y, amt));
-			
-			//draw the line
 			sketch.stroke(color);
 			sketch.strokeWeight(1);
 			sketch.line(x1, y1, x2, y2);
