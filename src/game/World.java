@@ -166,12 +166,13 @@ public class World extends GameObject {
 	public void draw(WorldView view) {
 		sketch.noStroke();
 		sketch.fill(color);
-		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
+		sketch.ellipse(view.screenX(x) + parent.x, view.screenY(y) + parent.y,
 				view.scale * radius * 2, view.scale * radius * 2);
 		
 		for (int i = 0; i < contents.size(); ++i) {
 			contents.get(i).draw(view);
 		}
+		
 		for (int i = 0; i < children.size(); ++i) {
 			World child = children.get(i);
 			WorldView childView = new WorldView(view);
