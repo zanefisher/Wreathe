@@ -19,8 +19,6 @@ public class World extends GameObject {
 	
 	//TO DO: rewrite this
 	World(Sketch s) {
-//		x=100;
-//		y=100;
 		sketch = s;
 		explored = false;
 		color = sketch.color(64, 96, sketch.random(128));
@@ -132,10 +130,15 @@ public class World extends GameObject {
 	public boolean update() {
 		float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
 		if (distToLeader < portalRadius) {
+			// if the leader goes in to the inner world, change the inner world as the current world
+			while(Swarmling.lastInLine != sketch.leader){
+				Swarmling.lastInLine.unfollow();
+			}
 			this.explore();
 			sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
 			sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-					sketch.world = this;
+			this.parent = sketch.world;
+			sketch.world = this;
 //		} else {
 //			if (distToLeader < radius + transitionRadius) {
 //				camera.scale = Sketch.map(distToLeader, radius + transitionRadius, radius, radius / innerRadius, 1);
@@ -146,12 +149,24 @@ public class World extends GameObject {
 //			camera.y = sketch.world.camera.screenY(y);
 		}
 		
+		//if the leader goes out of the world, change the parent world as the current world
 		
+		else if(distToLeader > radius && sketch.world == this){
+			while(Swarmling.lastInLine != sketch.leader){
+				Swarmling.lastInLine.unfollow();
+			}
+			sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - portalRadius, x + portalRadius);
+			sketch.leader.y = Sketch.map(sketch.leader.y, -1  * radius, radius, y - portalRadius, y + portalRadius);
+			sketch.world = this.parent;
+		}
 		
 		return true;
 	}
 	
 	public void draw(WorldView view) {
+		//base case do not draw worlds that are too small
+		if(view.scale < 0.01) return;
+		
 		sketch.noStroke();
 		sketch.fill(color);
 		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
@@ -160,6 +175,7 @@ public class World extends GameObject {
 		for (int i = 0; i < contents.size(); ++i) {
 			contents.get(i).draw(view);
 		}
+		
 		for (int i = 0; i < children.size(); ++i) {
 			World child = children.get(i);
 			WorldView childView = new WorldView(view);

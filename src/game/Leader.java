@@ -17,11 +17,11 @@ public class Leader extends Swarmling {
 		float minOffset;
 		
 		if (sketch.usingController) {
-			leading = sketch.control.isPressed();
+			leading = sketch.controller.isPressed();
 			minOffset = 0.15f;
 			
-			dx = sketch.control.getJx();
-			dy = sketch.control.getJy();
+			dx = sketch.controller.getJx();
+			dy = sketch.controller.getJy();
 			
 		} else {
 			leading = sketch.mousePressed;

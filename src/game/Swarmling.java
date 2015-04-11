@@ -24,11 +24,11 @@ public class Swarmling extends GameObject {
 		sketch = s;
 		x = ix;
 		y = iy;
-		dx = 0;
-		dy = 0;
+		dx = sketch.random(-1 * maxSpeed, maxSpeed);
+		dy = sketch.random(-1 * maxSpeed, maxSpeed);
 		radius = swarmlingRadius;
 		avoidRadius = 10f;
-		//TO DO: init color
+		color = sketch.color(200, 150, 40);
 	}
 	
 	public void follow(Swarmling s) {
@@ -74,14 +74,14 @@ public class Swarmling extends GameObject {
 		
 		// Add follow vector.
 		if (following != null) {
-			ddx += (following.x - x) / 10;
-			ddy += (following.y - y) / 10;
+			ddx += (following.x - x) / 4;
+			ddy += (following.y - y) / 4;
 			avoidFactor = 0.1f;
 		}
 		
 		// Add friction drag.
-		ddx -= dx / 2;
-		ddy -= dy / 2;
+		ddx -= dx / 10;
+		ddy -= dy / 10;
 		
 		//closest target
 		Obstacle target = null;
@@ -101,6 +101,7 @@ public class Swarmling extends GameObject {
 					// death on collision
 					if (distance < 0) {
 						unfollow();
+						sketch.world.contents.add(new Burst(sketch, x, y, color));
 						return false;
 						
 					// check if it can be our new target.
@@ -113,8 +114,8 @@ public class Swarmling extends GameObject {
 				// try to avoid whatever this is.
 				if (distance < other.avoidRadius) {
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
-					ddx += ((x - other.x) / centerDist) * (1 - (distance / avoidRadius)) * avoidFactor;
-					ddy += ((y - other.y) / centerDist) * (1 - (distance / avoidRadius)) * avoidFactor;
+					ddx += ((other.x - x) / centerDist) * (1 - (distance / avoidRadius)) * avoidFactor;
+					ddy += ((other.y - y) / centerDist) * (1 - (distance / avoidRadius)) * avoidFactor;
 				}
 			}
 		}
@@ -128,7 +129,7 @@ public class Swarmling extends GameObject {
 		}
 		
 		// Attack if we found a target.
-		if (target != null){
+		if (target != null) {
 			new Projectile(sketch, this, target);
 			attackCooldown = 30;
 		}
@@ -138,6 +139,7 @@ public class Swarmling extends GameObject {
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);
 		if (accel > maxAccel) {
+			Sketch.println("!");
 			ddx *= maxAccel / accel;
 			ddy *= maxAccel / accel;
 		}
@@ -146,7 +148,7 @@ public class Swarmling extends GameObject {
 		
 		// Clamp and apply velocity.
 		float speed = Sketch.mag(dx, dy);
-		if (speed > 0) {
+		if (speed > maxSpeed) {
 			dx *= maxSpeed / speed;
 			dy *= maxSpeed / speed;
 		}
