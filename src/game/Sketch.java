@@ -31,6 +31,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		world.explore();
+		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
