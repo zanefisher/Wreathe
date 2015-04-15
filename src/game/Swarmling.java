@@ -103,9 +103,7 @@ public class Swarmling extends GameObject {
 				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
 					unfollow();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					Sketch.println("hahhahahaa");
 					return false;
-					
 				}	
 				
 				// special interactions with obstacles
