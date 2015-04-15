@@ -13,12 +13,14 @@ public class Swarmling extends GameObject {
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	static int queueCooldown = 0; //how much frame should wait for the next swarmling to follow
-	Obstacle attacking = null;
 
 	float leastDistance = 10000f;
 	Obstacle target = null;
 	int attackCooldownCount = 30;	
 	int attackCooldown = (int)Math.random()*attackCooldownCount;
+	
+	GameObject carrying = null;
+	float carryX, carryY; // swarmling's position relative to what it's carrying
 
 	
 	Swarmling(Sketch s, float ix, float iy) {
@@ -39,7 +41,10 @@ public class Swarmling extends GameObject {
 	}
 	
 	public void unfollow() {
-	    if (following != null) {
+		if (carrying != null) {
+			carrying = null;
+			following = null;
+		} else if (following != null) {
 	        if (lastInLine == this) {
 	        	lastInLine = following;
 	        } else {
@@ -92,8 +97,25 @@ public class Swarmling extends GameObject {
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
 			GameObject other = sketch.world.contents.get(i);
-			if ((other != this) && (other.avoidRadius > 0)) {
+			if (other != this) {
 				float distance = distTo(other);
+				
+				if ((following != null) && (carrying == null) && (other.carryable) && (distance <= 0)) {
+					Sketch.println("!");
+					carrying = other;
+					carryX = x - other.x;
+					carryY = y - other.y;
+					if (lastInLine == this) {
+						lastInLine = this.following;
+					} else {
+						for (Swarmling s = lastInLine; s != null; s = s.following) {
+							if (s.following == this) {
+								s.following = following;
+								break;
+							}
+						}
+					}
+				}
 				
 				// special interactions with obstacles
 				if (other instanceof Obstacle) {
@@ -144,15 +166,22 @@ public class Swarmling extends GameObject {
 		}
 		dx += ddx;
 		dy += ddy;
-		
 		// Clamp and apply velocity.
 		float speed = Sketch.mag(dx, dy);
 		if (speed > maxSpeed) {
 			dx *= maxSpeed / speed;
 			dy *= maxSpeed / speed;
 		}
-		x += dx;
-		y += dy;
+		
+		if (carrying == null) {
+			x += dx;
+			y += dy;
+		} else {
+			carrying.dx += dx * (weight / carrying.weight);
+			carrying.dy += dy * (weight / carrying.weight);
+			x = carrying.x + carryX;
+			y = carrying.y + carryY;
+		}
 
 		return true;
 	}

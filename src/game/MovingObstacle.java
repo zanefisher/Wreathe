@@ -49,8 +49,7 @@ public class MovingObstacle extends Obstacle {
 			for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
 				float rx = x + sketch.random(radius);
 				float ry = y + sketch.random(radius);
-				Swarmling rs= new Swarmling(sketch, rx, ry);
-				sketch.world.contents.add(rs);
+				sketch.world.contents.add(new Food(sketch, rx, ry));
 			}
 			sketch.world.obstacleNumber-=1;
 			return false;
