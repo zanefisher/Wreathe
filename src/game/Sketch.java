@@ -31,7 +31,7 @@ public class Sketch extends PApplet {
 	
 	public void setup() {
 		frameRate(60);
-		colorMode(HSB, 360, 100, 100, 1);
+		colorMode(HSB, 360, 100, 100, 100);
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		world.explore();

@@ -100,7 +100,7 @@ public class Swarmling extends GameObject {
 				float distance = distTo(other);
 				
 				// death on collision 
-				if (distance < 0 && other instanceof Obstacle && other instanceof WanderingEnemy) {
+				if (distance <= 0 && other instanceof Obstacle && other instanceof WanderingEnemy) {
 					unfollow();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					return false;
@@ -118,8 +118,9 @@ public class Swarmling extends GameObject {
 				}
 				
 				if (other instanceof WanderingEnemy){
-					if(distance < predateDist){
-						wanderingEnemy = (WanderingEnemy)other;
+					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
+					if(distance < predateDist && tmpEnemy.isAttacking==true){
+						wanderingEnemy = tmpEnemy;
 						predateDist = distance;
 					}	
 				}	
@@ -158,7 +159,6 @@ public class Swarmling extends GameObject {
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);
 		if (accel > maxAccel) {
-			Sketch.println("!");
 			ddx *= maxAccel / accel;
 			ddy *= maxAccel / accel;
 		}
