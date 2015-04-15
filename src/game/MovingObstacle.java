@@ -7,7 +7,6 @@ public class MovingObstacle extends Obstacle {
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 0.6f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
-	float obstacleLife=0;
 	
 	MovingObstacle(Sketch s){
 		sketch = s;

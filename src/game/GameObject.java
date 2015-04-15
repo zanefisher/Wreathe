@@ -14,7 +14,7 @@ public abstract class GameObject {
 	}
 	
 	public float distTo(GameObject other) {
-		return Sketch.dist(x, y, other.x, other.y) - (radius + other.radius);
+		return Sketch.max(0, Sketch.dist(x, y, other.x, other.y) - (radius + other.radius));
 	}
 	
 	public void draw(WorldView view) {
