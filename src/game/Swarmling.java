@@ -85,8 +85,8 @@ public class Swarmling extends GameObject {
 		}
 		
 		// Add friction drag.
-		ddx -= dx / 60;
-		ddy -= dy / 60;
+		ddx -= dx / 20;
+		ddy -= dy / 20;
 		
 		//closest target
 		target = null;
@@ -126,7 +126,7 @@ public class Swarmling extends GameObject {
 						return false;
 						
 					// check if it can be our new target.
-					} else if (distance < targetDist) {
+					} else if ((distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
 						targetDist = distance;
 					}
@@ -178,6 +178,12 @@ public class Swarmling extends GameObject {
 		} else {
 			carrying.dx += dx * (weight / carrying.weight);
 			carrying.dy += dy * (weight / carrying.weight);
+			float carrySpeed = Sketch.mag(dx, dy);
+			float maxCarrySpeed = maxSpeed * weight / carrying.weight;
+			if (carrySpeed > maxCarrySpeed) {
+				carrying.dx *= maxCarrySpeed / carrySpeed;
+				carrying.dy *= maxCarrySpeed / carrySpeed;
+			}
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}

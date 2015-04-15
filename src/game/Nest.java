@@ -18,7 +18,6 @@ public class Nest extends GameObject {
 		ArrayList<Branch> children;
 		
 		Branch() {
-			Sketch.println("!");
 			angle = sketch.random(Sketch.PI);
 			x1 = x + (radius * Sketch.cos(angle));
 			y1 = y + (radius * Sketch.sin(angle));
@@ -33,7 +32,6 @@ public class Nest extends GameObject {
 		}
 		
 		Branch(Branch parent, float a, float w, float l) {
-			Sketch.println("!");
 			angle = a;
 			width = w;
 			x1 = parent.x2;
