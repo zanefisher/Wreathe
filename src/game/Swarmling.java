@@ -101,7 +101,6 @@ public class Swarmling extends GameObject {
 				float distance = distTo(other);
 				
 				if ((following != null) && (carrying == null) && (other.carryable) && (distance <= 0)) {
-					Sketch.println("!");
 					carrying = other;
 					carryX = x - other.x;
 					carryY = y - other.y;
