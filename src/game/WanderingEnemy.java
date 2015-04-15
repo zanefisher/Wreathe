@@ -51,10 +51,10 @@ public class WanderingEnemy extends GameObject {
 		
 		//set Alpha
 		if (isAttacking == false)
-			alpha = 60-(int)(Math.random()*attackCooldown/attackCooldownCount*40);
+			alpha = 60 - (int)(40 * attackCooldown/attackCooldownCount);
 		else alpha = 100;
 		color=sketch.color(0,99,99,alpha);
-		Sketch.println(alpha);
+//		Sketch.println(alpha);
 		
 		x += dx;
 		y += dy;
