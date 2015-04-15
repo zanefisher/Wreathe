@@ -12,6 +12,8 @@ public class World extends GameObject {
 	public int obstacleNumber=0;
 	public int obstaclesAroundEntrance=4;
 	int bgColor; //background color
+	public int wanderingEnemyNumber=0;
+	
 	
 	World parent;
 	ArrayList<World> children;
