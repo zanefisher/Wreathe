@@ -12,6 +12,7 @@ public class WanderingEnemy extends GameObject {
 	int attackPeriodCount = (int)attackCooldownCount/3;
 	int attackPeriod = attackPeriodCount;
 	int alpha = 100;
+	int predateeThreshold = 4;
 	
 	
 	
@@ -35,14 +36,24 @@ public class WanderingEnemy extends GameObject {
 	
 	public boolean update(){
 		
+		int predateeCount = 0;
+		for (int i = 0; i < sketch.world.contents.size(); ++i) {
+			GameObject other = sketch.world.contents.get(i);
+			if ((distTo(other)<predateRadius)&&(other instanceof Swarmling)) {
+				predateeCount++;
+			}
+		}
+		
+		
+		
 		//update isAttacking
 		attackCooldown = Sketch.max(0, attackCooldown-1);
-		// on attacking
-		if(attackCooldown <= 0 && attackPeriod >0){
+		if(attackCooldown <= 0 && attackPeriod >0 && predateeCount>predateeThreshold){
 			isAttacking = true;
 			attackPeriod--;
 		}
 		else isAttacking = false;
+		
 		//reset attackCooldown and attackPeriod
 		if(attackCooldown <= 0 && attackPeriod <=0){
 			attackCooldown = attackCooldownCount;
@@ -55,6 +66,7 @@ public class WanderingEnemy extends GameObject {
 		else alpha = 100;
 		color=sketch.color(0,99,99,alpha);
 		
+		//set movement
 		x += dx;
 		y += dy;
 		if(Sketch.dist(0,0, x, y) > sketch.world.radius + radius *2){
@@ -67,10 +79,10 @@ public class WanderingEnemy extends GameObject {
 	public void draw(WorldView view){
 		super.draw(view);
 		if(isAttacking){
-	    sketch.noFill();
-	    sketch.stroke(0,99,99,alpha);
-	    sketch.strokeWeight(1);
-	    sketch.ellipse(sketch.camera.screenX(this.x), sketch.camera.screenY(this.y), predateRadius*2, predateRadius*2);
+			sketch.noFill();
+			sketch.stroke(0,99,99,alpha);
+			sketch.strokeWeight(1);
+			sketch.ellipse(sketch.camera.screenX(this.x), sketch.camera.screenY(this.y), predateRadius*2, predateRadius*2);
 		}
 	}
 }

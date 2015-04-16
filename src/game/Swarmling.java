@@ -135,8 +135,8 @@ public class Swarmling extends GameObject {
 		
 		// Add predate vector if we found a wandering enemy,
 		if(wanderingEnemy != null){
-			ddx += (wanderingEnemy.x - x) / 2;
-			ddy += (wanderingEnemy.y - y) / 2;
+			ddx += (wanderingEnemy.x - x) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
+			ddy += (wanderingEnemy.y - y) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
 		}
 		
 		
