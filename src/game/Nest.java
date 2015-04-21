@@ -9,7 +9,7 @@ public class Nest extends GameObject {
 	static float maxWidthReduction = 5f;
 	static float minLength = 10;
 	static float maxLength = 40;
-	static float branchRate = 0.15f;
+	static float branchRate = 0.05f;
 	
 	ArrayList<Branch> branches;
 	
@@ -55,7 +55,7 @@ public class Nest extends GameObject {
 		}
 		
 		void draw(WorldView view) {
-			sketch.strokeWeight(width);
+			sketch.strokeWeight(width * view.scale);
 			sketch.line(view.screenX(x1), view.screenY(y1), view.screenX(x2), view.screenY(y2));
 			for (int i = 0; i < children.size(); ++i) {
 				children.get(i).draw(view);

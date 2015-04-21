@@ -26,19 +26,19 @@ public class StationaryObstacle extends Obstacle {
 	
 	StationaryObstacle(Sketch s){
 		sketch = s;
-		color = sketch.color(255,255,255,255);
+		color = sketch.color(0,0,50);
 		avoidRadius = 40f;
 		radius = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 				(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-		obstacleLife = radius;
+		obstacleLife = radius / 2;
 	}
 	
 	StationaryObstacle(Sketch s, float r){
 		sketch = s;
-		color = sketch.color(255,255,255,255);
+		color = sketch.color(0,0,50);
 		avoidRadius = 40f;
 		radius = r;
-		obstacleLife = radius;
+		obstacleLife = radius / 2;
 	}
 	
 	public void initInWorld(){
