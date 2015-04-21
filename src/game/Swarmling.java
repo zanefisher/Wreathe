@@ -88,6 +88,10 @@ public class Swarmling extends GameObject {
 		float targetDist = attackRadius;
 		attackCooldown = Sketch.max(0, attackCooldown-1);
 		
+		//closest wandering enemy
+		WanderingEnemy wanderingEnemy = null;
+		float predateDist = WanderingEnemy.predateRadius;
+		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
@@ -95,22 +99,31 @@ public class Swarmling extends GameObject {
 			if ((other != this) && (other.avoidRadius > 0)) {
 				float distance = distTo(other);
 				
+				// death on collision 
+				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
+					unfollow();
+					sketch.world.contents.add(new Burst(sketch, x, y, color));
+					return false;
+				}	
+				
 				// special interactions with obstacles
 				if (other instanceof Obstacle) {
 					
-					// death on collision
-					if (distance < 0) {
-						unfollow();
-						sketch.world.contents.add(new Burst(sketch, x, y, color));
-						return false;
-						
+
 					// check if it can be our new target.
-					} else if ((attackCooldown == 0) && (distance < targetDist)) {
+					if ((attackCooldown == 0) && (distance < targetDist)) {
 						target = (Obstacle) other;
 						targetDist = distance;
 					}
 				}
 				
+				if (other instanceof WanderingEnemy){
+					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
+					if(distance < predateDist && tmpEnemy.isAttacking==true){
+						wanderingEnemy = tmpEnemy;
+						predateDist = distance;
+					}	
+				}	
 				// try to avoid whatever this is.
 				if (distance < other.avoidRadius) {
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
@@ -119,6 +132,13 @@ public class Swarmling extends GameObject {
 				}
 			}
 		}
+		
+		// Add predate vector if we found a wandering enemy,
+		if(wanderingEnemy != null){
+			ddx += (wanderingEnemy.x - x) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
+			ddy += (wanderingEnemy.y - y) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
+		}
+		
 		
 		// Avoid the leader
 		float leaderDistance = distTo(sketch.leader);
@@ -139,7 +159,6 @@ public class Swarmling extends GameObject {
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);
 		if (accel > maxAccel) {
-			Sketch.println("!");
 			ddx *= maxAccel / accel;
 			ddy *= maxAccel / accel;
 		}

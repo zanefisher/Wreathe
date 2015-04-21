@@ -16,6 +16,8 @@ public class World extends GameObject {
 	static int stationaryObstacleMinNumber = 60;
 	
 	int bgColor; //background color
+	public int wanderingEnemyNumber=0;
+	
 	
 	World parent;
 	ArrayList<World> children;
