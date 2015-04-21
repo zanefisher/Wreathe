@@ -7,7 +7,6 @@ public class MovingObstacle extends Obstacle {
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 0.6f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
-	float obstacleLife=0;
 	
 	MovingObstacle(Sketch s){
 		sketch = s;
@@ -39,7 +38,7 @@ public class MovingObstacle extends Obstacle {
 				
 		x += dx;
 		y += dy;
-		if(Sketch.dist(0,0, x, y) > sketch.world.radius + radius *2){
+		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
 			sketch.world.obstacleNumber-=1;
 			return false;
 		}
@@ -50,8 +49,7 @@ public class MovingObstacle extends Obstacle {
 			for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
 				float rx = x + sketch.random(radius);
 				float ry = y + sketch.random(radius);
-				Swarmling rs= new Swarmling(sketch, rx, ry);
-				sketch.world.contents.add(rs);
+				sketch.world.contents.add(new Food(sketch, rx, ry));
 			}
 			sketch.world.obstacleNumber-=1;
 			return false;

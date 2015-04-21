@@ -5,6 +5,9 @@ public abstract class GameObject {
 	float x, y, dx, dy, radius;
 	int color;
 	float avoidRadius = 0;
+	boolean carryable = false;
+	float weight = 1;
+	
 	// Move and do collision checks. Return true if the object should
 	// continue to exist. Most child classes will want to override this.
 	public boolean update() {
@@ -14,7 +17,7 @@ public abstract class GameObject {
 	}
 	
 	public float distTo(GameObject other) {
-		return Sketch.dist(x, y, other.x, other.y) - (radius + other.radius);
+		return Sketch.max(0, Sketch.dist(x, y, other.x, other.y) - (radius + other.radius));
 	}
 	
 	public void draw(WorldView view) {

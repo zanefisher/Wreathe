@@ -35,6 +35,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		world.explore();
+		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
@@ -124,7 +125,7 @@ public class Sketch extends PApplet {
 		if(leader.leading){
 		      noFill();
 		      stroke(255);
-		      strokeWeight(1);
+		      strokeWeight(2);
 		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
 		}
 	}
