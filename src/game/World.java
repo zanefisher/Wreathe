@@ -12,8 +12,8 @@ public class World extends GameObject {
 	public int obstacleNumber=0;
 	public int obstaclesAroundEntrance=6;
 	public int obstaclesRemainingAroundEntrance=6;
-	static int stationaryObstacleMaxNumber = 150;
-	static int stationaryObstacleMinNumber = 100;
+	static int stationaryObstacleMaxNumber = 100;
+	static int stationaryObstacleMinNumber = 80;
 	
 	int bgColor; //background color
 	public int wanderingEnemyNumber=0;
