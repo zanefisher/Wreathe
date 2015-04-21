@@ -27,6 +27,11 @@ public class WorldView {
 		y += dy;
 	}
 	
+	public void setViewPosition(float ix, float iy){
+		tx=ix;
+		ty=iy;
+	}
+	
 	// Convert an x coordinate in the world to an x coordinate on the screen.
 	// Technically, this overloads a PApplet method we don't use.
 	public float screenX(float objX) {

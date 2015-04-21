@@ -10,7 +10,7 @@ public class MovingObstacle extends Obstacle {
 	
 	MovingObstacle(Sketch s){
 		sketch = s;
-		color=sketch.color(255,255,255,255);
+		color=sketch.color(30,30,60);
 		avoidRadius = 80f;
 	}
 	
@@ -18,7 +18,7 @@ public class MovingObstacle extends Obstacle {
 		sketch = s;
 		x=ix;
 		y=iy;
-		color=sketch.color(255,255,255,255);
+		color=sketch.color(30,30,60);
 		avoidRadius = 80f;
 	}
 	

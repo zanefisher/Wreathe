@@ -31,6 +31,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		world = new World(this);
 		world.explore();
+		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		world.obstacleNumber=0;
@@ -73,8 +74,10 @@ public class Sketch extends PApplet {
 		
 		// Update the leader
 		leader.update();
+		
+		//Update the current world
+		world.update();		
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		//println(leader.x +  ", " + leader.y);
 		world.count+=1;
 		
 		//generate the obstacle
@@ -96,7 +99,7 @@ public class Sketch extends PApplet {
 				contents.remove(i--);
 			}
 		}
-			
+		
 		for (int i = 0; i < world.children.size(); ++i) {
 			World w = world.children.get(i);
 			if (! w.update()) {
