@@ -51,7 +51,24 @@ public class World extends GameObject {
 	public void generateContents() {
 		
 		// contents generation in the setup of the world
+		//add a nest
+		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
 		
+		//swarmling generation
+		for(int i=0; i<swarmlingsGenerated; i++){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			Swarmling rs= new Swarmling(sketch, rx, ry);
+			contents.add(rs);
+		}
+		
+		//sprinkle food
+//		for(int i=0; i<20; i++){
+//			float rx = sketch.random(radius) - (radius / 2);
+//			float ry = sketch.random(radius) - (radius / 2);
+//			Food f= new Food(sketch, rx, ry);
+//			contents.add(f);
+//		}
 		//stationary obstacles generation
 		
 		//other stationary obstacles randomly generated
@@ -263,18 +280,17 @@ public class World extends GameObject {
 				Swarmling.lastInLine.unfollow();
 			}
 			this.explore();
-			this.parent = sketch.world;
-			sketch.world = this;
+			float r = radius / portalRadius;
+			sketch.camera.scale *= 1 / r;
+			float x0 = sketch.leader.x;
+			float y0 = sketch.leader.y;
 			sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
 			sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-//		} else {
-//			if (distToLeader < radius + transitionRadius) {
-//				camera.scale = Sketch.map(distToLeader, radius + transitionRadius, radius, radius / innerRadius, 1);
-//			} else {
-//				camera.scale = radius / innerRadius;
-//			}
-//			camera.x = sketch.world.camera.screenX(x);
-//			camera.y = sketch.world.camera.screenY(y);
+			sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+			sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+			sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+			this.parent = sketch.world;
+			sketch.world = this;
 		}
 		
 		//if the leader goes out of the world, change the parent world as the current world
@@ -299,6 +315,10 @@ public class World extends GameObject {
 		sketch.fill(color);
 		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
 				view.scale * radius * 2, view.scale * radius * 2);
+
+		if (sketch.world == this) {
+			Swarmling.drawLine(view);
+		}
 		
 		for (int i = 0; i < contents.size(); ++i) {
 			contents.get(i).draw(view);
