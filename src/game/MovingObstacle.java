@@ -39,7 +39,7 @@ public class MovingObstacle extends Obstacle {
 				
 		x += dx;
 		y += dy;
-		if(Sketch.dist(0,0, x, y) > sketch.world.radius + radius *2){
+		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
 			sketch.world.obstacleNumber-=1;
 			return false;
 		}

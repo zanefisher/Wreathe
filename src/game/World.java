@@ -12,8 +12,8 @@ public class World extends GameObject {
 	public int obstacleNumber=0;
 	public int obstaclesAroundEntrance=6;
 	public int obstaclesRemainingAroundEntrance=6;
-	static int stationaryObstacleMaxNumber = 80;
-	static int stationaryObstacleMinNumber = 60;
+	static int stationaryObstacleMaxNumber = 150;
+	static int stationaryObstacleMinNumber = 100;
 	
 	int bgColor; //background color
 	public int wanderingEnemyNumber=0;
@@ -105,28 +105,36 @@ public class World extends GameObject {
 			}
 		}
 		else{
-			int lineNumber = (int)sketch.random(3, 7);
+			int lineNumber = (int)sketch.random(9, 12);
 			int obstaclesCount = 0;
 			for(int i = 0; i < lineNumber; i++){
 				//Sketch.println(count);
 				int lineOrArc = (int)sketch.random(0, 2);
-				
+				//int lineOrArc = 2;
 				//line or arc
 				if(lineOrArc < 1){
-					Sketch.println("arc");
-					float lineRadius = radius * sketch.random(0.2f, 0.8f);
+					
+					float lineRadius = radius * sketch.random(0.3f, 0.5f);
+					float offsetX = sketch.random(-(radius * 0.6f), (radius * 0.6f));
+					float offsetY = sketch.random(-(radius * 0.6f), (radius * 0.6f));
+					
 					//float lineDiameter = lineRadius * 2;
 					float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 							(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
 					float arcAngle = sketch.random(0, Sketch.PI);
 					float arc =  arcAngle * lineRadius;
-					int arcCircleNumber = (int)(arc / obDiameter);
+					int arcCircleNumber =  Sketch.min((int)(arc / obDiameter), 20);
+					//Sketch.println("arcNumber: " + arcCircleNumber);
 					//draw arc
 					for(int j = obstaclesCount; j < arcCircleNumber + obstaclesCount; j++ ){
 						float angle = j * ( arcAngle / arcCircleNumber);
 						StationaryObstacle sob = new StationaryObstacle(sketch, obDiameter / 2);
-						sob.x = x + Sketch.cos(angle) * lineRadius;
-						sob.y = y + Sketch.sin(angle) * lineRadius;
+						sob.x = x + offsetX + Sketch.cos(angle) * lineRadius;
+						sob.y = y + offsetY + Sketch.sin(angle) * lineRadius;
+						
+						if(Sketch.dist(sob.x, sob.y, x, y) > radius){
+							break;
+						}
 						
 						contents.add(sob);	
 					}
@@ -134,27 +142,27 @@ public class World extends GameObject {
 					
 				}
 				else{
-					Sketch.println("line");
+					
 					//draw line
-					int lineLength = (int)(radius / sketch.random(80, 120));
-					float startX = sketch.random(radius) - (radius / 2);
-					float startY = sketch.random(radius) - (radius / 2);
-					float dX = x - startX;
-					float dY = y - startY;
+					//int lineLength = (int)(radius / sketch.random(80, 120));
+					float startX = sketch.random(-(radius * 0.6f), (radius * 0.6f));
+					float startY = sketch.random(-(radius * 0.6f), (radius * 0.6f));
+					float endX = sketch.random(-(radius * 0.8f), (radius * 0.8f));
+					float endY = sketch.random(-(radius * 0.8f), (radius * 0.8f));
 					
 					float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 							(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-					float v = 0.5f * lineLength * obDiameter /Sketch.mag(dX, dY);
+					int lineLength = Sketch.min((int)(Sketch.dist(startX, startY, endX, endY) / obDiameter), 30);
+					//Sketch.println("lineLength: " + lineLength);
 					for(int j = obstaclesCount; j < obstaclesCount + lineLength; j++ ){
-						StationaryObstacle sob = new StationaryObstacle(sketch, obDiameter/2);
-						sob.x = x + startX;
-						sob.y = y + startY;
-						
+						StationaryObstacle sob = new StationaryObstacle(sketch, obDiameter / 2);
+						sob.x = x + Sketch.lerp(startX, endX, (j - obstaclesCount)/(float)lineLength);
+						sob.y = y + Sketch.lerp(startY, endY, (j - obstaclesCount)/(float)lineLength);
 						contents.add(sob);	
 						
-						//update startX and startY
-						startX *= v;
-						startY *= v;
+						if(Sketch.dist(sob.x, sob.y, x, y) > radius){
+							break;
+						}
 					}
 					obstaclesCount+=lineLength;
 					
@@ -203,6 +211,10 @@ public class World extends GameObject {
 			}
 
 		}
+		
+		
+		//would like to add some untouchable stuffs in the backgroud to potential empty space
+		
 	}
 		
 	
