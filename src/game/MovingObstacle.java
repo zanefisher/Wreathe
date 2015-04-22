@@ -29,8 +29,26 @@ public class MovingObstacle extends Obstacle {
 		obstacleLife = radius;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
-		dx = Sketch.sin(radians) * speed * -1;
-		dy = Sketch.cos(radians) * speed * -1;
+		boolean hitNest = true;
+		//find the nest
+		Nest nest=null;
+		for (int i = 0; i < sketch.world.contents.size(); ++i) {
+			GameObject other = sketch.world.contents.get(i);
+			if (other instanceof Nest) {
+				nest = (Nest)other;
+				break;
+			}
+		}
+		int count = 0;
+		while(hitNest && nest !=null && count<500){
+			dx = Sketch.sin(radians) * speed * -1;
+			dy = Sketch.cos(radians) * speed * -1;
+			float k = dy/dx;
+			float distance = Sketch.abs(k*nest.x-nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+			if(distance >= (nest.radius+radius))hitNest = false;
+			count++;
+		}
+		if(count<500)
 		world.contents.add(this);
 	}
 	
