@@ -4,7 +4,7 @@ public class MovingObstacle extends Obstacle {
 	
 	static float minRadius = 40;
 	static float maxRadius = 200;
-	static float maxSpeed = 3.8f;
+	static float maxSpeed = 1.9f;
 	static float minSpeed = 0.6f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	

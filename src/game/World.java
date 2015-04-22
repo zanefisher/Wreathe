@@ -56,7 +56,7 @@ public class World extends GameObject {
 		
 		
 		//sprinkle food
-		for(int i=0; i<30; i++){
+		for(int i=0; i<20; i++){
 			float rx = sketch.random(radius) - (radius / 2);
 			float ry = sketch.random(radius) - (radius / 2);
 			Food f= new Food(sketch, rx, ry);

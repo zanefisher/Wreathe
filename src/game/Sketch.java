@@ -10,8 +10,8 @@ public class Sketch extends PApplet {
 	static int screenWidth = 1080, screenHeight = 700;
 	static int screenSize = screenWidth * screenHeight;
 	
-	static int obstacleSpawnPeriod=100;
-	static int obstacleMax=8;
+	static int obstacleSpawnPeriod=300;
+	static int obstacleMax=3;
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -34,6 +34,8 @@ public class Sketch extends PApplet {
 		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
+		leader.x = world.contents.get(0).x;
+		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
 		camera = new WorldView(0, 0, 1);
