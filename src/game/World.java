@@ -315,14 +315,14 @@ public class World extends GameObject {
 		
 		//if the leader goes out of the world, change the parent world as the current world
 		
-		else if(distToLeader > radius && sketch.world == this){
-			while(Swarmling.lastInLine != sketch.leader){
-				Swarmling.lastInLine.unfollow();
-			}
-			sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - portalRadius, x + portalRadius);
-			sketch.leader.y = Sketch.map(sketch.leader.y, -1  * radius, radius, y - portalRadius, y + portalRadius);
-			sketch.world = this.parent;
-		}
+//		else if(distToLeader > radius && sketch.world == this){
+//			while(Swarmling.lastInLine != sketch.leader){
+//				Swarmling.lastInLine.unfollow();
+//			}
+//			sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - portalRadius, x + portalRadius);
+//			sketch.leader.y = Sketch.map(sketch.leader.y, -1  * radius, radius, y - portalRadius, y + portalRadius);
+//			sketch.world = this.parent;
+//		}
 		
 		return true;
 	}
