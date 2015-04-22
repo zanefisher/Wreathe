@@ -6,10 +6,13 @@ public class Nest extends GameObject {
 	static float maxWidth = 100;
 	static float minWidth = 10;
 	static float minWidthReduction = 1f;
-	static float maxWidthReduction = 5f;
+	static float maxWidthReduction = 3f;
 	static float minLength = 10;
 	static float maxLength = 40;
 	static float branchRate = 0.05f;
+	
+	float growth = 0.1f;
+	float animationDelay = 0f;
 	
 	ArrayList<Branch> branches;
 	
@@ -55,10 +58,13 @@ public class Nest extends GameObject {
 		}
 		
 		void draw(WorldView view) {
-			sketch.strokeWeight(width * view.scale);
-			sketch.line(view.screenX(x1), view.screenY(y1), view.screenX(x2), view.screenY(y2));
-			for (int i = 0; i < children.size(); ++i) {
-				children.get(i).draw(view);
+			float grownWidth = width * (growth - animationDelay);
+			if (grownWidth > minWidth) {
+				sketch.strokeWeight(grownWidth * growth * view.scale);
+				sketch.line(view.screenX(x1), view.screenY(y1), view.screenX(x2), view.screenY(y2));
+				for (int i = 0; i < children.size(); ++i) {
+					children.get(i).draw(view);
+				}
 			}
 		}
 	}
@@ -93,5 +99,12 @@ public class Nest extends GameObject {
 		for (int i = 0; i < branches.size(); ++i) {
 			branches.get(i).draw(view);
 		}
+		animationDelay -= Sketch.min(0.0004f, animationDelay);
+	}
+	
+	public void feed() {
+		float amt = 1 / (growth * 50);
+		growth += amt;
+		animationDelay += amt;
 	}
 }

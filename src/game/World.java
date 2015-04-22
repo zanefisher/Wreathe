@@ -62,12 +62,12 @@ public class World extends GameObject {
 		//add a nest
 		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
 		//sprinkle food
-//		for(int i=0; i<20; i++){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			Food f= new Food(sketch, rx, ry);
-//			contents.add(f);
-//		}
+		for(int i=0; i<30; i++){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			Food f= new Food(sketch, rx, ry);
+			contents.add(f);
+		}
 		//stationary obstacles generation
 		
 		//other stationary obstacles randomly generated
