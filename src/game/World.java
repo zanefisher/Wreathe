@@ -51,38 +51,19 @@ public class World extends GameObject {
 	public void generateContents() {
 		
 		// contents generation in the setup of the world
+
 		//add a nest
 		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
 		
-		//swarmling generation
-		for(int i=0; i<swarmlingsGenerated; i++){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			Swarmling rs= new Swarmling(sketch, rx, ry);
-			contents.add(rs);
-		}
 		
 		//sprinkle food
-//		for(int i=0; i<20; i++){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			Food f= new Food(sketch, rx, ry);
-//			contents.add(f);
-//		}
-		//stationary obstacles generation
-		
-		//other stationary obstacles randomly generated
-//		int otherStationaryObstaclesNumber = (int) sketch.random(1, 3);
-//		for(int i = 0; i < otherStationaryObstaclesNumber; i++){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			StationaryObstacle sob = new StationaryObstacle(sketch);
-//			sob.x=rx;
-//			sob.y=ry;
-//			
-//			contents.add(sob);
-//		}
-		
+		for(int i=0; i<30; i++){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			Food f= new Food(sketch, rx, ry);
+			contents.add(f);
+		}
+
 		StationaryPattern pattern = StationaryPattern.random;
 		int number = (int)sketch.random(stationaryObstacleMinNumber, stationaryObstacleMaxNumber);
 		
@@ -289,8 +270,9 @@ public class World extends GameObject {
 			sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 			sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 			sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
-			this.parent = sketch.world;
+
 			sketch.world = this;
+			this.parent = sketch.world;
 		}
 		
 		//if the leader goes out of the world, change the parent world as the current world

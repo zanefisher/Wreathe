@@ -5,8 +5,6 @@ public abstract class GameObject {
 	float x, y, dx, dy, radius;
 	int color;
 	float avoidRadius = 0;
-	boolean carryable = false;
-	float weight = 1;
 	
 	// Move and do collision checks. Return true if the object should
 	// continue to exist. Most child classes will want to override this.

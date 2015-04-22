@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Audio extends PApplet {
 
-	Synth[] swarmling = null;
+	Synth[] swarmling = new Synth[7];
 
 	Audio(){
 		swarmling[0] = new Synth("spawn");
@@ -21,11 +21,8 @@ public class Audio extends PApplet {
 		swarmling[6] = new Synth("dispose");	
 	}
 	
-	public void swarmSound(int input, float amp, float dur){
-		//amp 0~0.5
-		//dur 0.5~1.5
-		swarmling[input].set("amp", amp);
-		swarmling[input].set("dur", dur);
+	public void swarmSound(int input){
+
 		swarmling[input].create();
 		
 	}

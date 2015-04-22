@@ -52,11 +52,17 @@ public class Sketch extends PApplet {
 		float maxX = minX;
 		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
-		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
-			minX = min(minX, s.x);
-			maxX = max(maxX, s.x);
-			minY = min(minY, s.y);
-			maxY = max(maxY, s.y);
+//		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
+		for (int i = 0; i < world.contents.size(); ++i) {
+			if (world.contents.get(i) instanceof Swarmling) {
+				Swarmling s = (Swarmling) world.contents.get(i);
+				if (s.following != null) {
+					minX = min(minX, s.x);
+					maxX = max(maxX, s.x);
+					minY = min(minY, s.y);
+					maxY = max(maxY, s.y);
+				}
+			}
 		}
 		
 		float midX = lerp(minX, maxX, 0.5f);
@@ -81,7 +87,7 @@ public class Sketch extends PApplet {
 		// Update the leader
 		leader.update();
 		
-		//Update the current world
+		//lle the current world
 		world.update();		
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
 		world.count+=1;
