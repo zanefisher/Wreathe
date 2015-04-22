@@ -26,6 +26,8 @@ public class Sketch extends PApplet {
 	
 	Controller controller = new Controller();
 	boolean usingController = controller.device != null;
+	
+	Audio audio =  new Audio();
 
 	
 	
