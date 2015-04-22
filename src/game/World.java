@@ -27,8 +27,9 @@ public class World extends GameObject {
 	World(Sketch s) {
 		sketch = s;
 		explored = false;
-		color = sketch.color(64, 96, sketch.random(128));
-		bgColor = sketch.color(64, sketch.random(128), 96);
+		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
+		color = sketch.color(hue, sat, bri);
+		bgColor = sketch.color(hue + sketch.random(90) - 45, sat - sketch.random(25), bri - sketch.random(25));
 		portalRadius = 50;
 		radius = 1000;
 		parent = null;
@@ -62,7 +63,7 @@ public class World extends GameObject {
 		//add a nest
 		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
 		//sprinkle food
-		for(int i=0; i<30; i++){
+		for(int i=0; i<20; i++){
 			float rx = sketch.random(radius) - (radius / 2);
 			float ry = sketch.random(radius) - (radius / 2);
 			Food f= new Food(sketch, rx, ry);

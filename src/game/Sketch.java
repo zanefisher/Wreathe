@@ -10,8 +10,8 @@ public class Sketch extends PApplet {
 	static int screenWidth = 1080, screenHeight = 700;
 	static int screenSize = screenWidth * screenHeight;
 	
-	static int obstacleSpawnPeriod=100;
-	static int obstacleMax=8;
+	static int obstacleSpawnPeriod=300;
+	static int obstacleMax=3;
 	
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
@@ -38,6 +38,8 @@ public class Sketch extends PApplet {
 		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
+		leader.x = world.contents.get(0).x;
+		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
 		camera = new WorldView(0, 0, 1);
@@ -139,9 +141,10 @@ public class Sketch extends PApplet {
 		
 		if(leader.leading){
 		      noFill();
-		      stroke(255);
+		      stroke(0, 0, 255);
 		      strokeWeight(2);
-		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y),
+		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 	}
 	
