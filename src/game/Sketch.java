@@ -15,7 +15,7 @@ public class Sketch extends PApplet {
 	
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
-	
+	boolean wholeView; 
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -75,6 +75,15 @@ public class Sketch extends PApplet {
 		// Draw the current world.
 		//world= new World(this);
 		background(0);
+		
+		if(wholeView){
+			//Sketch.println("pressed");
+			camera.x = world.x;
+			camera.y = world.y;
+			WorldView wholeView = new WorldView(world.x, world.y, 0.4f);
+			world.draw(wholeView);
+			return;
+		}
 		
 		// Update the leader
 		leader.update();
@@ -151,7 +160,19 @@ public class Sketch extends PApplet {
 		}
 	}
 	
+	public void keyPressed(){
+		//stop everything and show the whole level in one view
+		if(key == 'b'){
+			wholeView = true;
+		}
+	}
+	
+	public void keyReleased(){
+		wholeView = false;
+	}
+	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
 	}
+	
 }

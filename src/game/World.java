@@ -136,8 +136,8 @@ public class World extends GameObject {
 				if(lineOrArc < 1){
 					
 					float lineRadius = radius * sketch.random(0.3f, 0.5f);
-					float offsetX = sketch.random(-(radius * 0.9f), (radius * 0.9f));
-					float offsetY = sketch.random(-(radius * 0.9f), (radius * 0.9f));
+					float offsetX = sketch.random(-(radius), (radius));
+					float offsetY = sketch.random(-(radius), (radius));
 					
 					//float lineDiameter = lineRadius * 2;
 					float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
@@ -173,8 +173,8 @@ public class World extends GameObject {
 					
 					//draw line
 					//int lineLength = (int)(radius / sketch.random(80, 120));
-					float startX = sketch.random(-(radius * 0.8f), (radius * 0.8f));
-					float startY = sketch.random(-(radius * 0.8f), (radius * 0.8f));
+					float startX = sketch.random(-(radius), (radius));
+					float startY = sketch.random(-(radius), (radius));
 					float endX = sketch.random(-(radius), (radius));
 					float endY = sketch.random(-(radius), (radius));
 					

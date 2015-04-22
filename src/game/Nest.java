@@ -76,6 +76,19 @@ public class Nest extends GameObject {
 		}
 	}
 
+	public boolean update(){
+		
+		if(sketch.world.count % 60 == 30){
+			float rx = x + sketch.random(radius) - (radius / 2);
+			float ry = y + sketch.random(radius) - (radius / 2);
+			Echo re = new Echo(sketch, rx, ry);
+			
+			sketch.world.contents.add(re);
+		}
+		
+		return true;
+	}
+	
 	public void draw(WorldView view) {
 		super.draw(view);
 		sketch.stroke(color);
