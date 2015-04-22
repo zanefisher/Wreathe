@@ -33,14 +33,14 @@ public class Swarmling extends GameObject {
 		avoidRadius = 10f;
 		color = sketch.color(40, 65, 40);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-//		sketch.audio.swarmSound(0,this);
+		sketch.audio.swarmSound(0,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown=30;
-//		sketch.audio.swarmSound(1,this);
+		sketch.audio.swarmSound(1,this);
 
 	}
 	
@@ -69,7 +69,7 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-//		sketch.audio.swarmSound(5,this);
+		sketch.audio.swarmSound(5,this);
 	}
 	
 	public boolean update() {
@@ -120,7 +120,7 @@ public class Swarmling extends GameObject {
 				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
 					unfollow();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-//					sketch.audio.swarmSound(6,this);
+					sketch.audio.swarmSound(6,this);
 					return false;
 				}	
 
@@ -129,7 +129,7 @@ public class Swarmling extends GameObject {
 					Carryable carrything = (Carryable) other;
 					if (carrything.carryCap > carrything.carriedBy.size()) {
 						//collect the food
-//						sketch.audio.swarmSound(3,this);
+						sketch.audio.swarmSound(3,this);
 						carrything.carriedBy.add(this);
 						carrying = carrything;
 						carryX = x - carrything.x;
