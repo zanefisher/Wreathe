@@ -1,7 +1,7 @@
 package game;
 import java.util.ArrayList;
 public class Echo extends GameObject{
-	static int burstLength = 150;
+	static int burstLength = 360;
 	static float foodRadius = 10;
 	int ttl=0;
 	

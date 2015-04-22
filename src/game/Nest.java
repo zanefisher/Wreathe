@@ -82,16 +82,6 @@ public class Nest extends GameObject {
 		}
 	}
 
-	public boolean update(){
-		
-		if(sketch.world.count % 90 == 60){
-			Echo re = new Echo(sketch, x, y);
-			
-			sketch.world.contents.add(re);
-		}
-		
-		return true;
-	}
 	
 	public void draw(WorldView view) {
 		super.draw(view);
@@ -103,6 +93,13 @@ public class Nest extends GameObject {
 	}
 	
 	public boolean update() {
+		
+		if(sketch.world.count % 360 == 60){
+			Echo re = new Echo(sketch, x, y);
+			
+			sketch.world.contents.add(re);
+		}
+		
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
 			if (sketch.world.contents.get(i) instanceof Swarmling) {
 				return true;
