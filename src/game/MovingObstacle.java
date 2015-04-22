@@ -42,7 +42,7 @@ public class MovingObstacle extends Obstacle {
 		int count = 0;
 		boolean hitNest = true;
 		while(hitNest && nest !=null && count<500){
-			float randomRadians = radians - Sketch.PI/2 + sketch.random(1) * Sketch.PI;
+			float randomRadians = radians - Sketch.PI/4 + sketch.random(1) * Sketch.PI/2;
 			dx = Sketch.sin(randomRadians) * speed * -1;
 			dy = Sketch.cos(randomRadians) * speed * -1;
 			float k = dy/dx;

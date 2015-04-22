@@ -11,8 +11,8 @@ public class Sketch extends PApplet {
 	static int screenSize = screenWidth * screenHeight;
 	
 
-	static int obstacleSpawnPeriod=300;
-	static int obstacleMax=3;
+	static int obstacleSpawnPeriod=1;
+	static int obstacleMax=300000;
 	
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
