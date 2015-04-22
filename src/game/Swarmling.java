@@ -132,16 +132,14 @@ public class Swarmling extends GameObject {
 				
 				// special interactions with obstacles
 				if (other instanceof Obstacle) {
-					// check if it can be our new target.
-					if ((attackCooldown == 0) && (distance < targetDist)) {
 					// death on collision
 					if (distance <= 0) {
 						unfollow();
 						sketch.world.contents.add(new Burst(sketch, x, y, color));
 						return false;
-						
+					}
 					// check if it can be our new target.
-					} else if ((distance < targetDist) && (carrying == null)) {
+					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
 						targetDist = distance;
 					}

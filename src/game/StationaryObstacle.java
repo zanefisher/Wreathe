@@ -50,6 +50,8 @@ public class StationaryObstacle extends Obstacle {
 			if(entrance!=null){
 				entrance.obstaclesRemainingAroundEntrance-=1;
 			}
+			Burst ob = new Burst(sketch, x, y, color);
+			sketch.world.contents.add(ob);
 			return false;
 		}
 
