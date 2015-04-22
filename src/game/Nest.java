@@ -76,12 +76,13 @@ public class Nest extends GameObject {
 		radius = 100;
 		color = sketch.color(40, 80, 80);
 		branches = new ArrayList<Branch>();
-		int branchCount = (int) sketch.random(3, 6);
+		int branchCount = (int) sketch.random(5, 10);
 		for (int i = 0; i < branchCount; ++i) {
 			branches.add(new Branch());
 		}
 	}
 
+	
 	public void draw(WorldView view) {
 		super.draw(view);
 		sketch.stroke(color);
@@ -91,7 +92,25 @@ public class Nest extends GameObject {
 		animationDelay -= Sketch.min(0.0004f, animationDelay);
 	}
 	
+	public boolean update() {
+		
+		if(sketch.world.count % 360 == 60){
+			Echo re = new Echo(sketch, x, y);
+			
+			sketch.world.contents.add(re);
+		}
+		
+		for (int i = 0; i < sketch.world.contents.size(); ++i) {
+			if (sketch.world.contents.get(i) instanceof Swarmling) {
+				return true;
+			}
+		}
+		sketch.world.contents.add(new Swarmling(sketch, x, y));
+		return true;
+	}
+	
 	public void feed() {
+		sketch.audio.swarmSound(4);
 		float amt = 1 / (growth * 50);
 		growth += amt;
 		animationDelay += amt;

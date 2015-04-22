@@ -27,6 +27,12 @@ public class Audio extends PApplet {
 		
 	}
 
+	public void swarmSound(int input, float amp){
+		
+		swarmling[input].set("amp",amp);
+		swarmling[input].create();
+		
+	}
 	public void exit(){
 		for(int i=0;i<swarmling.length;i++)swarmling[i].free();
 		super.exit();
