@@ -4,8 +4,8 @@ public class MovingObstacle extends Obstacle {
 	
 	static float minRadius = 40;
 	static float maxRadius = 200;
-	static float maxSpeed = 13.8f;
-	static float minSpeed = 10.6f;
+	static float maxSpeed = 3.8f;
+	static float minSpeed = 0.6f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	
 	MovingObstacle(Sketch s){
@@ -52,6 +52,7 @@ public class MovingObstacle extends Obstacle {
 		}
 		if(count<500)
 		world.contents.add(this);
+		else Sketch.println("a movingObstacle doesn't init");
 	}
 	
 	public boolean update(){
