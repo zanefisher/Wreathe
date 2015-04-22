@@ -110,8 +110,21 @@ public class Nest extends GameObject {
 	}
 	
 	public void feed() {
-		float amt = 1 / (growth * 50);
-		growth += amt;
-		animationDelay += amt;
+		if (growth < 1) {
+			float amt = 1 / (growth * 50);
+			growth += amt;
+			animationDelay += amt;
+			Sketch.println(growth);
+			if (growth > 0.8) {
+				World w = new World(sketch);
+				for (Branch b = branches.get(0); b.children.size() != 0; b = b.children.get(0)) {
+					w.x = b.x2;
+					w.y = b.y2;
+				}
+				sketch.world.children.add(w);
+				animationDelay += 1 - growth;
+				growth = 1;
+			}
+		}
 	}
 }
