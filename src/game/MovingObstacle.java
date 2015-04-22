@@ -52,6 +52,11 @@ public class MovingObstacle extends Obstacle {
 				sketch.world.contents.add(new Food(sketch, rx, ry));
 			}
 			sketch.world.obstacleNumber-=1;
+			
+			//add bursts
+			Burst ob = new Burst(sketch, x, y, color);
+			sketch.world.contents.add(ob);
+			
 			return false;
 		}
 		else{
