@@ -28,7 +28,7 @@ public class Sketch extends PApplet {
 	Controller controller = new Controller();
 	boolean usingController = controller.device != null;
 	
-	Audio audio =  new Audio();
+	Audio audio =  null;
 
 	
 	
@@ -36,6 +36,8 @@ public class Sketch extends PApplet {
 		frameRate(60);
 		colorMode(HSB, 360, 100, 100, 100);
 		size(screenWidth, screenHeight);
+		camera = new WorldView(0, 0, 1);
+		audio = new Audio(this);
 		world = new World(this);
 		world.explore();
 		world.parent = world;
@@ -45,7 +47,7 @@ public class Sketch extends PApplet {
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
-		camera = new WorldView(0, 0, 1);
+
 	}
 	
 	private void updateCamera() {
