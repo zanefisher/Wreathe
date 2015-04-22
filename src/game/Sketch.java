@@ -119,9 +119,10 @@ public class Sketch extends PApplet {
 		
 		if(leader.leading){
 		      noFill();
-		      stroke(255);
+		      stroke(0, 0, 255);
 		      strokeWeight(2);
-		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y),
+		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 	}
 	

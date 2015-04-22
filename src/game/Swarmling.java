@@ -220,7 +220,7 @@ public class Swarmling extends GameObject {
 	
 	public static void drawLine(WorldView view) {
 		sketch.noFill();
-		sketch.stroke(255);
+		sketch.stroke(0, 0, 255);
 		sketch.strokeWeight(2);
 		sketch.beginShape();
 		
