@@ -17,7 +17,7 @@ public class Echo extends GameObject{
 	}
 	
 	public boolean update(){
-		radius = Sketch.map(ttl, burstLength, 0, foodRadius, 50 * foodRadius);
+		radius = Sketch.map(ttl, burstLength, 0, 0, 800);
 		for(int i = 0; i < sketch.world.contents.size(); i++){
 			GameObject other = sketch.world.contents.get(i);
 			float dist = Sketch.dist(other.x, other.y, x, y);
