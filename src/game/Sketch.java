@@ -12,7 +12,7 @@ public class Sketch extends PApplet {
 	
 	static int obstacleSpawnPeriod=100;
 	static int obstacleMax=8;
-	
+
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
 	
