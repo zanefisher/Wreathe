@@ -19,7 +19,7 @@ public class Swarmling extends GameObject {
 	int attackCooldownCount = 30;	
 	int attackCooldown = (int)Math.random()*attackCooldownCount;
 	
-	GameObject carrying = null;
+	Carryable carrying = null;
 	float carryX, carryY; // swarmling's position relative to what it's carrying
 
 	
@@ -42,6 +42,12 @@ public class Swarmling extends GameObject {
 	
 	public void unfollow() {
 		if (carrying != null) {
+			for (int i = 0; i < carrying.carriedBy.size(); ++i) {
+				if (carrying.carriedBy.get(i) == this) {
+					carrying.carriedBy.remove(i);
+					break;
+				}
+			}
 			carrying = null;
 			following = null;
 		} else if (following != null) {
@@ -100,17 +106,21 @@ public class Swarmling extends GameObject {
 			if (other != this) {
 				float distance = distTo(other);
 				
-				if ((following != null) && (carrying == null) && (other.carryable) && (distance <= 0)) {
-					carrying = other;
-					carryX = x - other.x;
-					carryY = y - other.y;
-					if (lastInLine == this) {
-						lastInLine = this.following;
-					} else {
-						for (Swarmling s = lastInLine; s != null; s = s.following) {
-							if (s.following == this) {
-								s.following = following;
-								break;
+				if ((following != null) && (carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
+					Carryable carrything = (Carryable) other;
+					if (carrything.carryCap > carrything.carriedBy.size()) {
+						carrything.carriedBy.add(this);
+						carrying = carrything;
+						carryX = x - carrything.x;
+						carryY = y - carrything.y;
+						if (lastInLine == this) {
+							lastInLine = this.following;
+						} else {
+							for (Swarmling s = lastInLine; s != null; s = s.following) {
+								if (s.following == this) {
+									s.following = following;
+									break;
+								}
 							}
 						}
 					}
@@ -176,10 +186,10 @@ public class Swarmling extends GameObject {
 			x += dx;
 			y += dy;
 		} else {
-			carrying.dx += dx * (weight / carrying.weight);
-			carrying.dy += dy * (weight / carrying.weight);
+			carrying.dx += dx * (1 / carrying.weight);
+			carrying.dy += dy * (1 / carrying.weight);
 			float carrySpeed = Sketch.mag(dx, dy);
-			float maxCarrySpeed = maxSpeed * weight / carrying.weight;
+			float maxCarrySpeed = maxSpeed / carrying.weight;
 			if (carrySpeed > maxCarrySpeed) {
 				carrying.dx *= maxCarrySpeed / carrySpeed;
 				carrying.dy *= maxCarrySpeed / carrySpeed;
