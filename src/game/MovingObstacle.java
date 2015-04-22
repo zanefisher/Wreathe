@@ -4,8 +4,8 @@ public class MovingObstacle extends Obstacle {
 	
 	static float minRadius = 40;
 	static float maxRadius = 200;
-	static float maxSpeed = 3.8f;
-	static float minSpeed = 0.6f;
+	static float maxSpeed = 13.8f;
+	static float minSpeed = 10.6f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	
 	MovingObstacle(Sketch s){
@@ -39,50 +39,18 @@ public class MovingObstacle extends Obstacle {
 				break;
 			}
 		}
-//		int count = 0;
-//		boolean hitNest = true;
-//		while(hitNest && nest !=null && count<500){
-//			radians = sketch.random(2) * Sketch.PI;
-//			dx = Sketch.sin(radians) * speed * -1;
-//			dy = Sketch.cos(radians) * speed * -1;
-//			float k = dy/dx;
-//			float distance = Sketch.abs(k*nest.x-nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-//			if(distance >= (nest.radius+radius))hitNest = false;
-//			count++;
-//		}
-//		if(count<500)
-//		world.contents.add(this);
-//		else Sketch.println("hahahah");
-		float R = nest.radius+radius;
-		float deltax = nest.x-x;
-		float deltay = nest.y-y;
-		float a = deltax*deltax - R*R;
-		float b = -2*deltax*deltay;
-		float c = deltay*deltay - R*R;
-		float k1,k2,theta1,theta2;
-		float delta = b*b-4*a*c;
-
-		if(delta > 0 && nest !=null){
-			k1 = (-b-Sketch.sqrt(delta))/(2*a);
-			k2 = (-b+Sketch.sqrt(delta))/(2*a);
-			theta1 = Sketch.atan(k1);
-			theta2 = Sketch.atan(k2);
-			if((nest.x-x)>R);
-			if((nest.x-x)<-R){theta1+=Sketch.PI;theta2-=Sketch.PI;}
-			if((nest.x-x)>-R&&(nest.x-x)<R)
-				if(nest.y>y)theta2+=Sketch.PI;
-				if(nest.y<y)theta1-=Sketch.PI;
-			float deltaTheta = Sketch.abs(theta2 - theta1);
-			if (deltaTheta < Sketch.PI) deltaTheta = 2*Sketch.PI - deltaTheta;
-			radians = (theta2>theta1)?sketch.random(deltaTheta)+theta1:sketch.random(deltaTheta)+theta2;
-			dx = Sketch.sin(radians) * speed * -1;
-			dy = Sketch.cos(radians) * speed * -1;
+		int count = 0;
+		boolean hitNest = true;
+		while(hitNest && nest !=null && count<500){
+			float randomRadians = radians - Sketch.PI/2 + sketch.random(1) * Sketch.PI;
+			dx = Sketch.sin(randomRadians) * speed * -1;
+			dy = Sketch.cos(randomRadians) * speed * -1;
+			float k = dy/dx;
+			float distance = Sketch.abs(k*nest.x-nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+			if(distance >= (nest.radius+radius))hitNest = false;
+			count++;
 		}
-		else{
-			dx = Sketch.sin(radians) * speed * -1;
-			dy = Sketch.cos(radians) * speed * -1;
-		}
-		
+		if(count<500)
 		world.contents.add(this);
 	}
 	
