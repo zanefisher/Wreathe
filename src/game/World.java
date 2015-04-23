@@ -52,14 +52,7 @@ public class World extends GameObject {
 	public void generateContents() {
 		
 		// contents generation in the setup of the world
-		//swarmling generation
-//		for(int i=0; i<swarmlingsGenerated; i++){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			Swarmling rs= new Swarmling(sketch, rx, ry);
-//			contents.add(rs);
-//		}
-		
+
 		//add a nest
 		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
 		//sprinkle food
@@ -69,20 +62,7 @@ public class World extends GameObject {
 			Food f= new Food(sketch, rx, ry);
 			contents.add(f);
 		}
-		//stationary obstacles generation
-		
-		//other stationary obstacles randomly generated
-//		int otherStationaryObstaclesNumber = (int) sketch.random(1, 3);
-//		for(int i = 0; i < otherStationaryObstaclesNumber; i++){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			StationaryObstacle sob = new StationaryObstacle(sketch);
-//			sob.x=rx;
-//			sob.y=ry;
-//			
-//			contents.add(sob);
-//		}
-		
+
 		StationaryPattern pattern = StationaryPattern.random;
 		
 		//change this line for static number for learning level
@@ -310,8 +290,10 @@ public class World extends GameObject {
 			sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 			sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 			sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+
 			this.parent = sketch.world;
 			sketch.world = this;
+
 		}
 		
 		//if the leader goes out of the world, change the parent world as the current world
@@ -337,10 +319,7 @@ public class World extends GameObject {
 		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
 				view.scale * radius * 2, view.scale * radius * 2);
 
-		if (sketch.world == this) {
-			Swarmling.drawLine(view);
-		}
-		
+
 		for (int i = 0; i < contents.size(); ++i) {
 			contents.get(i).draw(view);
 		}
@@ -352,5 +331,10 @@ public class World extends GameObject {
 			childView.trans(child.x, child.y);
 			child.draw(childView);
 		}
+		
+		if (sketch.world == this) {
+			Swarmling.drawLine(view);
+		}
+		
 	}
 }

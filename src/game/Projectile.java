@@ -17,6 +17,7 @@ public class Projectile extends GameObject{
 		y = from.y;
 		color = defaultColor;
 		sketch.world.contents.add(this);
+		sketch.audio.swarmSound(2,this);
 	}
 	
 	public boolean update() {
