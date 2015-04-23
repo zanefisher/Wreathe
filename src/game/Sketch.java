@@ -9,9 +9,14 @@ public class Sketch extends PApplet {
 	
 	static int screenWidth = 1080, screenHeight = 700;
 	static int screenSize = screenWidth * screenHeight;
-	static int obstacleSpawnPeriod=100;
+	
 
-	static int obstacleMax=8;
+	static int obstacleSpawnPeriod=300;
+	static int obstacleMax=3;
+	
+	static int wanderingEnemySpawnPeriod=200;
+	static int wanderingEnemyMax=5;
+	boolean wholeView; 
 	
 	Leader leader;
 	World world; // the world the player is currently in
@@ -20,36 +25,48 @@ public class Sketch extends PApplet {
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
-	static Controller control = new Controller();
+	Controller controller = new Controller();
+	boolean usingController = controller.device != null;
+	
+	Audio audio =  null;
 
 	
 	
 	public void setup() {
 		frameRate(60);
-		colorMode(RGB, 255);
+		colorMode(HSB, 360, 100, 100, 100);
 		size(screenWidth, screenHeight);
+		camera = new WorldView(0, 0, 1);
+		audio = new Audio(this);
 		world = new World(this);
 		world.explore();
+		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
+		leader.x = world.contents.get(0).x;
+		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
-
-		camera = new WorldView(0, 0, 1);
 	}
 	
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (20 * leader.dx);
+		float minX = leader.x + (40 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (20 * leader.dy);
+		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
-		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
-			minX = min(minX, s.x);
-			maxX = max(maxX, s.x);
-			minY = min(minY, s.y);
-			maxY = max(maxY, s.y);
+//		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
+		for (int i = 0; i < world.contents.size(); ++i) {
+			if (world.contents.get(i) instanceof Swarmling) {
+				Swarmling s = (Swarmling) world.contents.get(i);
+				if (s.following != null) {
+					minX = min(minX, s.x);
+					maxX = max(maxX, s.x);
+					minY = min(minY, s.y);
+					maxY = max(maxY, s.y);
+				}
+			}
 		}
 		
 		float midX = lerp(minX, maxX, 0.5f);
@@ -71,10 +88,21 @@ public class Sketch extends PApplet {
 		//world= new World(this);
 		background(0);
 		
+		if(wholeView){
+			//Sketch.println("pressed");
+			camera.x = world.x;
+			camera.y = world.y;
+			WorldView wholeView = new WorldView(world.x, world.y, 0.4f);
+			world.draw(wholeView);
+			return;
+		}
+		
 		// Update the leader
 		leader.update();
+		
+		//lle the current world
+		world.update();		
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		//println(leader.x +  ", " + leader.y);
 		world.count+=1;
 		
 		//generate the obstacle
@@ -87,22 +115,23 @@ public class Sketch extends PApplet {
 			}
 			
 		}
-				
+//		if(world.count%wanderingEnemySpawnPeriod == 0){
+//			world.wanderingEnemyNumber+=1;
+//			if(world.wanderingEnemyNumber<=wanderingEnemyMax){
+//				WanderingEnemy wanderingEnemy= new WanderingEnemy(this);			
+//				wanderingEnemy.initInWorld(world);
+//			}
+//			
+//		}		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (! obj.update()) {
 				contents.remove(i--);
-				if(obj.getClass().getName().equals("game.Swarmling") || 
-						obj.getClass().getName().equals("game.Obstacle") || 
-						obj.getClass().getName().equals("game.StationaryObstacle")){
-					Burst nb = new Burst(this, obj.x, obj.y);
-					world.contents.add(nb);
-				}
 			}
 		}
-			
+		
 		for (int i = 0; i < world.children.size(); ++i) {
 			World w = world.children.get(i);
 			if (! w.update()) {
@@ -111,15 +140,15 @@ public class Sketch extends PApplet {
 		}
 		
 		updateCamera();
-		
 		world.draw(camera);
 		leader.draw(camera);
 		
-		if(Sketch.control.isPressed()){
+		if(leader.leading){
 		      noFill();
-		      stroke(255);
-		      strokeWeight(1);
-		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y), Swarmling.attractRadius*2, Swarmling.attractRadius*2);
+		      stroke(0, 0, 255);
+		      strokeWeight(2);
+		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y),
+		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 	}
 	
@@ -144,7 +173,19 @@ public class Sketch extends PApplet {
 		}
 	}
 	
+	public void keyPressed(){
+		//stop everything and show the whole level in one view
+		if(key == 'b'){
+			wholeView = true;
+		}
+	}
+	
+	public void keyReleased(){
+		wholeView = false;
+	}
+	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
 	}
+	
 }

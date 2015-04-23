@@ -1,19 +1,30 @@
 package game;
 
-public class Burst extends CircularGameObject {
+public class Burst extends GameObject {
 	static int burstLength = 90;
 	int ttl=0;
-	Burst(Sketch s, float ix, float iy){
+	float burstParameter = Swarmling.swarmlingRadius;
+	Burst(Sketch s, float ix, float iy, int icolor){
 		sketch=s;
 		x=ix;
 		y=iy;
 		ttl=burstLength;
-		radius = Sketch.map(ttl, burstLength, 0, Swarmling.swarmlingRadius, 20 * Swarmling.swarmlingRadius);
-		color=sketch.color(0,0,255,255);
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
+		color = icolor;
+	}
+	
+	Burst(Sketch s, float ix, float iy, int icolor, float r){
+		sketch=s;
+		x=ix;
+		y=iy;
+		ttl=burstLength;
+		burstParameter = r;
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
+		color = icolor;
 	}
 	
 	public boolean update(){
-		radius = Sketch.map(ttl, burstLength, 0, Swarmling.swarmlingRadius, 20 * Swarmling.swarmlingRadius);
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
 		return --ttl > 0;
 	}
 	
