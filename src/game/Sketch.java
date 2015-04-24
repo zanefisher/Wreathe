@@ -48,7 +48,7 @@ public class Sketch extends PApplet {
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
-
+		
 	}
 	
 	private void updateCamera() {

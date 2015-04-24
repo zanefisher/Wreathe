@@ -20,7 +20,6 @@ public class Food extends Carryable {
 			if ((other instanceof Nest) && (distTo(other) <= 0)) {
 				Nest nest = (Nest) other;
 				int spawnCount = (int) (1 + sketch.random(3));
-				Sketch.println(spawnCount);
 				while (spawnCount-- > 0) {
 					float spawnX = sketch.random(nest.x - (nest.radius / 2), nest.x + (nest.radius / 2));
 					float spawnY = sketch.random(nest.y - (nest.radius / 2), nest.y + (nest.radius / 2));
