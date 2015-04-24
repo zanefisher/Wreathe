@@ -26,29 +26,33 @@ public class Projectile extends GameObject{
 		
 		distance = Sketch.dist(x, y, to.x, to.y);
 		if(fixedDx == 0){
+			//targeting the initial target
 			dx = attackSpeed*(to.x-x)/distance;
 			dy = attackSpeed*(to.y-y)/distance;
 		}
 		else{
+			//on a fixed angle instead 
 			dx = fixedDx;
 			dy = fixedDy;
 		}
+		
 		x += dx;
 		y += dy;
-		distance = Sketch.dist(x, y, to.x, to.y);
-
+		
+		//if initial target died
 		if(to.obstacleLife<=0 && fixedDx ==0){
 			fixedDx = dx;
 			fixedDy = dy;
 		}
 		
-		if(fixedDx == 0 && distance<=to.radius+this.radius){
+		if(fixedDx == 0 && distTo(to)<=0){
 			//hit the current Obstacle
 			Obstacle tmp = to;
 			tmp.obstacleLife -= attackPower;
 			return false;
 		}
 		
+		//if hits other obstacles
 		if(fixedDx != 0 ){
 			for (int i = 0; i < sketch.world.contents.size(); ++i) {
 				GameObject other = sketch.world.contents.get(i);
@@ -60,7 +64,7 @@ public class Projectile extends GameObject{
 			}
 		}
 		//if outside of the world
-		if(Sketch.dist(0, 0, x, y)>sketch.world.radius) return false;
+		if(distTo(sketch.world)>0) return false;
 			
 
 		return true;
