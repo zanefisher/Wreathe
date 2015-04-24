@@ -105,7 +105,7 @@ public class Swarmling extends GameObject {
 		if (carrying != null) {
 			ddx += (nest.x - x) / 5;
 			ddy += (nest.y - y) / 5;
-			avoidFactor = 100f;
+			avoidFactor = 1000f;
 		}
 		
 		// Add friction drag.
@@ -134,6 +134,7 @@ public class Swarmling extends GameObject {
 				// death on collision 
 				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
 					unfollow();
+					uncarry();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.swarmSound(6,this);
 					return false;
@@ -171,12 +172,7 @@ public class Swarmling extends GameObject {
 				
 				// special interactions with obstacles
 				if (other instanceof Obstacle) {
-					// death on collision
-					if (distance <= 0) {
-						unfollow();
-						sketch.world.contents.add(new Burst(sketch, x, y, color));
-						return false;
-					}
+
 					// check if it can be our new target.
 					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
