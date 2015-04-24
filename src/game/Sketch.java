@@ -12,7 +12,7 @@ public class Sketch extends PApplet {
 	
 
 	static int obstacleSpawnPeriod=300;
-	static int obstacleMax=3;
+	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
@@ -28,7 +28,7 @@ public class Sketch extends PApplet {
 	Controller controller = new Controller();
 	boolean usingController = controller.device != null;
 	
-	Audio audio =  null;
+	//Audio audio =  null;
 
 	
 	
@@ -37,7 +37,7 @@ public class Sketch extends PApplet {
 		colorMode(HSB, 360, 100, 100, 100);
 		size(screenWidth, screenHeight);
 		camera = new WorldView(0, 0, 1);
-		audio = new Audio(this);
+		//audio = new Audio(this);
 		world = new World(this);
 		world.explore();
 		world.parent = world;

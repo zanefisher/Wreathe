@@ -10,6 +10,7 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
+	static final float swarmlingAvoidRadius = 10f;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
@@ -31,17 +32,17 @@ public class Swarmling extends GameObject {
 		dx = sketch.random(-1 * maxSpeed, maxSpeed);
 		dy = sketch.random(-1 * maxSpeed, maxSpeed);
 		radius = swarmlingRadius;
-		avoidRadius = 10f;
+		avoidRadius = swarmlingAvoidRadius;
 		color = sketch.color(40, 65, 40);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-		sketch.audio.swarmSound(0,this);
+		//sketch.audio.swarmSound(0,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown=30;
-		sketch.audio.swarmSound(1,this);
+		//sketch.audio.swarmSound(1,this);
 
 	}
 	
@@ -70,7 +71,7 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		sketch.audio.swarmSound(5,this);
+		//sketch.audio.swarmSound(5,this);
 	}
 	
 	public boolean update() {
@@ -122,7 +123,7 @@ public class Swarmling extends GameObject {
 				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
 					unfollow();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					sketch.audio.swarmSound(6,this);
+					//sketch.audio.swarmSound(6,this);
 					return false;
 				}	
 
@@ -131,7 +132,7 @@ public class Swarmling extends GameObject {
 					Carryable carrything = (Carryable) other;
 					if (carrything.carryCap > carrything.carriedBy.size()) {
 						//collect the food
-						sketch.audio.swarmSound(3,this);
+						//sketch.audio.swarmSound(3,this);
 						carrything.carriedBy.add(this);
 						carrying = carrything;
 						carryX = x - carrything.x;
@@ -148,18 +149,15 @@ public class Swarmling extends GameObject {
 						}
 					}
 				}
-
-
-
 				
-				// special interactions with obstacles
+				// attack behavoiur with obstacles
 				if (other instanceof Obstacle) {
 					// death on collision
-					if (distance <= 0) {
-						unfollow();
-						sketch.world.contents.add(new Burst(sketch, x, y, color));
-						return false;
-					}
+//					if (distance <= 0) {
+//						unfollow();
+//						sketch.world.contents.add(new Burst(sketch, x, y, color));
+//						return false;
+//					}
 					// check if it can be our new target.
 					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
@@ -173,12 +171,21 @@ public class Swarmling extends GameObject {
 						wanderingEnemy = tmpEnemy;
 						predateDist = distance;
 					}	
-				}	
+				}
+				
 				// try to avoid whatever this is.
 				if (distance < other.avoidRadius) {
+					if(other instanceof Swarmling  ){
+						float centerDist = Sketch.dist(x, y, other.x, other.y);
+
+						ddx -= ((other.x - x) / centerDist) ;
+						ddy -= ((other.y - y) / centerDist) ;
+					}else{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
-					ddx += ((other.x - x) / centerDist) * (1 - (distance / avoidRadius)) / 4;
-					ddy += ((other.y - y) / centerDist) * (1 - (distance / avoidRadius)) / 4;
+
+					ddx += ((other.x - x) / centerDist) * (1 - (distance / avoidRadius)) / 10;
+					ddy += ((other.y - y) / centerDist) * (1 - (distance / avoidRadius)) / 10;
+					}
 				}
 			}
 		}
