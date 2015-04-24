@@ -84,6 +84,9 @@ public class Sketch extends PApplet {
 	}
 	
 	public void draw() {
+		
+		if (!focused) return;
+		
 		screenHeight = height;
 		screenWidth = width;
 		screenSize = width * height;

@@ -124,7 +124,7 @@ public class Swarmling extends GameObject {
 					return false;
 				}	
 
-
+				// start carrying carryable objects on contact
 				if ((following != null) && (carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					Carryable carrything = (Carryable) other;
 					if (carrything.carryCap > carrything.carriedBy.size()) {
