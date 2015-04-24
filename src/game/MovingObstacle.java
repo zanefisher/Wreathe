@@ -11,7 +11,7 @@ public class MovingObstacle extends Obstacle {
 	MovingObstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(30,30,60);
-		avoidRadius = 80f;
+		avoidRadius = radius/2f;
 	}
 	
 	MovingObstacle(Sketch s,World w, float ix, float iy){
@@ -19,7 +19,7 @@ public class MovingObstacle extends Obstacle {
 		x=ix;
 		y=iy;
 		color=sketch.color(30,30,60);
-		avoidRadius = 80f;
+		avoidRadius = radius/2f;
 	}
 	
 	public void initInWorld(World world){

@@ -319,8 +319,17 @@ public class World extends GameObject {
 		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
 				view.scale * radius * 2, view.scale * radius * 2);
 
-
+		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
+			
+			//draw the line at the start of drawing swarmlings
+			if(contents.get(i) instanceof Swarmling && !startDrawSwarmling){
+				startDrawSwarmling = true;
+				if (sketch.world == this) {
+					Swarmling.drawLine(view);
+				}
+			}
+			
 			contents.get(i).draw(view);
 		}
 		
@@ -332,9 +341,7 @@ public class World extends GameObject {
 			child.draw(childView);
 		}
 		
-		if (sketch.world == this) {
-			Swarmling.drawLine(view);
-		}
+
 		
 	}
 }

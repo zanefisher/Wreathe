@@ -26,8 +26,9 @@ public class Food extends Carryable {
 				nest.feed();
 				for (int j = carriedBy.size() - 1; j >= 0; --j) {
 					Swarmling carrier = carriedBy.get(i);
-					carrier.unfollow();
+					carrier.uncarry();
 				}
+				
 				return false;
 			}
 		}

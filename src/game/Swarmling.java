@@ -23,6 +23,8 @@ public class Swarmling extends GameObject {
 	
 	Carryable carrying = null;
 	float carryX, carryY; // swarmling's position relative to what it's carrying
+	
+	Nest nest = null;
 
 	
 	Swarmling(Sketch s, float ix, float iy) {
@@ -47,16 +49,7 @@ public class Swarmling extends GameObject {
 	}
 	
 	public void unfollow() {
-		if (carrying != null) {
-			for (int i = 0; i < carrying.carriedBy.size(); ++i) {
-				if (carrying.carriedBy.get(i) == this) {
-					carrying.carriedBy.remove(i);
-					break;
-				}
-			}
-			carrying = null;
-			following = null;
-		} else if (following != null) {
+		if (following != null) {
 	        if (lastInLine == this) {
 	        	lastInLine = following;
 	        } else {
@@ -74,10 +67,22 @@ public class Swarmling extends GameObject {
 		//sketch.audio.swarmSound(5,this);
 	}
 	
+	public void uncarry(){
+		if (carrying != null) {
+		for (int i = 0; i < carrying.carriedBy.size(); ++i) {
+			if (carrying.carriedBy.get(i) == this) {
+				carrying.carriedBy.remove(i);
+				break;
+			}
+		}
+		carrying = null;
+		} 
+	}
+	
 	public boolean update() {
 		
 		float ddx = 0, ddy = 0; //acceleration
-		float avoidFactor = 0.25f;
+		float avoidFactor = 1f;
 		
 		// Check for following/unfollowing.
 		followCooldown = Sketch.max(0, followCooldown - 1);
@@ -86,6 +91,7 @@ public class Swarmling extends GameObject {
 	            (followCooldown == 0) && 
 	            (following == null) &&
 	            (queueCooldown == 0) &&
+	            (carrying == null) &&
 	            (Sketch.dist(x, y, lastInLine.x, lastInLine.y) < attractRadius)){
 			follow(lastInLine);
 		} else if(following != null && !sketch.leader.leading){
@@ -96,6 +102,13 @@ public class Swarmling extends GameObject {
 		if (following != null) {
 			ddx += (following.x - x) / 4;
 			ddy += (following.y - y) / 4;
+		}
+		
+		//  Add carry vector.
+		if (carrying != null) {
+			ddx += (nest.x - x) / 5;
+			ddy += (nest.y - y) / 5;
+			avoidFactor = 1000f;
 		}
 		
 		// Add friction drag.
@@ -118,46 +131,37 @@ public class Swarmling extends GameObject {
 			if (other != this) {
 				float distance = distTo(other);
 				
+				//find nest
+				if (other instanceof Nest) nest = (Nest)other;
 
 				// death on collision 
 				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
 					unfollow();
+					uncarry();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					//sketch.audio.swarmSound(6,this);
 					return false;
 				}	
 
-
-				if ((following != null) && (carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
+			
+				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
+					//start carrying
 					Carryable carrything = (Carryable) other;
 					if (carrything.carryCap > carrything.carriedBy.size()) {
 						//collect the food
-						//sketch.audio.swarmSound(3,this);
+						sketch.audio.swarmSound(3,this);
 						carrything.carriedBy.add(this);
 						carrying = carrything;
 						carryX = x - carrything.x;
 						carryY = y - carrything.y;
-						if (lastInLine == this) {
-							lastInLine = this.following;
-						} else {
-							for (Swarmling s = lastInLine; s != null; s = s.following) {
-								if (s.following == this) {
-									s.following = following;
-									break;
-								}
-							}
-						}
+
+						unfollow();
 					}
 				}
 				
 				// attack behavoiur with obstacles
 				if (other instanceof Obstacle) {
-					// death on collision
-//					if (distance <= 0) {
-//						unfollow();
-//						sketch.world.contents.add(new Burst(sketch, x, y, color));
-//						return false;
-//					}
+
 					// check if it can be our new target.
 					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
@@ -182,9 +186,14 @@ public class Swarmling extends GameObject {
 						ddy -= ((other.y - y) / centerDist) ;
 					}else{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
-
-					ddx += ((other.x - x) / centerDist) * (1 - (distance / avoidRadius)) / 10;
-					ddy += ((other.y - y) / centerDist) * (1 - (distance / avoidRadius)) / 10;
+//<<<<<<< HEAD
+//
+//					ddx += ((other.x - x) / centerDist) * (1 - (distance / avoidRadius)) / 10;
+//					ddy += ((other.y - y) / centerDist) * (1 - (distance / avoidRadius)) / 10;
+//					}
+//=======
+					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
+					ddy += avoidFactor * (-(other.y - y) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
 					}
 				}
 			}
@@ -211,7 +220,9 @@ public class Swarmling extends GameObject {
 			attackCooldown = 30;
 		}
 		
-		//- wandering behavior
+		// wandering behavior
+		
+
 		
 		// Clamp and apply acceleration.
 		float accel = Sketch.mag(ddx, ddy);
@@ -227,11 +238,18 @@ public class Swarmling extends GameObject {
 			dx *= maxSpeed / speed;
 			dy *= maxSpeed / speed;
 		}
+
+		
+		
+//		x += dx;
+//		y += dy;
+		
 		
 		if (carrying == null) {
 			x += dx;
 			y += dy;
-		} else {
+		} 
+		else {
 			carrying.dx += dx * (1 / carrying.weight);
 			carrying.dy += dy * (1 / carrying.weight);
 			float carrySpeed = Sketch.mag(dx, dy);
