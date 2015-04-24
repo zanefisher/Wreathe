@@ -7,8 +7,8 @@ public class Nest extends GameObject {
 	static float minWidth = 10;
 	static float minWidthReduction = 1f;
 	static float maxWidthReduction = 3f;
-	static float minLength = 10;
-	static float maxLength = 40;
+	static float minLength = 15;
+	static float maxLength = 70;
 	static float branchRate = 0.05f;
 	
 	float growth = 0.1f;
