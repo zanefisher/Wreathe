@@ -154,16 +154,6 @@ public class Swarmling extends GameObject {
 						carryY = y - carrything.y;
 
 						unfollow();
-//						if (lastInLine == this) {
-//							lastInLine = this.following;
-//						} else {
-//							for (Swarmling s = lastInLine; s != null; s = s.following) {
-//								if (s.following == this) {
-//									s.following = following;
-//									break;
-//								}
-//							}
-//						}
 					}
 				}
 
