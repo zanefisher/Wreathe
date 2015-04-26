@@ -23,6 +23,10 @@ public class World extends GameObject {
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
 	
+	public float difficulty = 0f; // from 0~1 
+
+	Key key = null;
+	
 	//TO DO: rewrite this
 	World(Sketch s) {
 		sketch = s;
@@ -271,6 +275,17 @@ public class World extends GameObject {
 		}
 
 
+	}
+	
+	public void generateKey(){
+
+		float tmp = sketch.random(0, 1);
+		if(Sketch.sq(tmp)<difficulty)
+		{
+			float ix = sketch.random(0,Sketch.sqrt(sketch.world.radius));
+			float iy = sketch.random(0,Sketch.sqrt(sketch.world.radius));		
+			key = new Key(sketch,ix,iy);
+		}
 	}
 	
 	public boolean update() {
