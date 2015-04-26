@@ -5,8 +5,11 @@ public class Key extends Collectable {
 		sketch = s;
 		x = ix;
 		y = iy;
-		color = sketch.color(60, 99, 99);
-		radius = 12;
+		color = sketch.color(0, 99, 99);
+		radius = 30;
 	}
 	
+	public boolean update() {
+		return !isCollected;
+	}
 }

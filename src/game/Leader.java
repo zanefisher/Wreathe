@@ -1,9 +1,12 @@
 package game;
 
+import java.util.ArrayList;
+
 public class Leader extends Swarmling {
 	
 	public boolean leading;
 	float mouseMaxSpeedRadius = 100;
+	ArrayList<Collectable> vault;
 	
 	Leader(Sketch s) {
 		super(s, 0, 0);
@@ -11,6 +14,7 @@ public class Leader extends Swarmling {
 		color = sketch.color(0, 0, 255);
 		avoidRadius = 10f;
 		leading = false;
+		vault = new ArrayList<Collectable>();
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {

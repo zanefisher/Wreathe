@@ -142,7 +142,13 @@ public class Swarmling extends GameObject {
 					//sketch.audio.swarmSound(6,this);
 					return false;
 				}	
-
+				
+				if (other instanceof Collectable){
+					if(distance <= 0) {
+						Collectable collectable = (Collectable)other;
+						collectable.collected();
+					}
+				}
 			
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying

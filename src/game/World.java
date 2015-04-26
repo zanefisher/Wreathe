@@ -23,7 +23,9 @@ public class World extends GameObject {
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
 	
-	public float difficulty = 0f; // from 0~1 
+	// TO DO: level difference
+	public int level = 1; //from 1 to infinite
+	public float difficulty = 1f; // from 0~1 
 
 	Key key = null;
 	
@@ -55,6 +57,8 @@ public class World extends GameObject {
 	
 	public void generateContents() {
 		
+		
+		
 		// contents generation in the setup of the world
 
 		//add a nest
@@ -66,7 +70,10 @@ public class World extends GameObject {
 			Food f= new Food(sketch, rx, ry);
 			contents.add(f);
 		}
-
+		
+		//generate key
+		generateKey();
+		
 		StationaryPattern pattern = StationaryPattern.random;
 		
 		//change this line for static number for learning level
@@ -113,6 +120,8 @@ public class World extends GameObject {
 			float nestY = contents.get(0).y;
 			float nestR = contents.get(0).radius;
 			
+
+			//Generate Stationary Obstacles
 			for(int obstaclesCount = 0; obstaclesCount < stationaryObstaclesNumber;){
 				//Sketch.println(count);
 				int lineOrArc = (int)sketch.random(0, 2);
@@ -285,6 +294,7 @@ public class World extends GameObject {
 			float ix = sketch.random(0,Sketch.sqrt(sketch.world.radius));
 			float iy = sketch.random(0,Sketch.sqrt(sketch.world.radius));		
 			key = new Key(sketch,ix,iy);
+			this.contents.add(key);
 		}
 	}
 	
