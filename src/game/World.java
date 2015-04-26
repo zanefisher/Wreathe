@@ -346,7 +346,7 @@ public class World extends GameObject {
 		
 		sketch.noStroke();
 		sketch.fill(color);
-		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
+		sketch.ellipse(sketch.camera.screenX(0), sketch.camera.screenY(0),
 				view.scale * radius * 2, view.scale * radius * 2);
 		
 		// Draw blotches.

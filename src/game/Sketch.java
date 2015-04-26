@@ -19,7 +19,7 @@ public class Sketch extends PApplet {
 	Leader leader;
 	World world; // the world the player is currently in
 	WorldView camera;
-	float focusMargin = 100; // how close objects in focus can get to the edge before the camera moves
+	float focusMargin; // how close objects in focus can get to the edge before the camera moves
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	
@@ -89,6 +89,7 @@ public class Sketch extends PApplet {
 		screenHeight = height;
 		screenWidth = width;
 		screenSize = width * height;
+		focusMargin = min(width, height) / 10;
 		
 		// Draw the current world.
 		//world= new World(this);
