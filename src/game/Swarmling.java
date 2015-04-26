@@ -10,11 +10,13 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
+	static final float attackPower = 0.2f;
 	static final float swarmlingAvoidRadius = 10f;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	static int queueCooldown = 0; //how much frame should wait for the next swarmling to follow
+
 
 	float leastDistance = 10000f;
 	Obstacle target = null;
@@ -38,14 +40,14 @@ public class Swarmling extends GameObject {
 		avoidRadius = swarmlingAvoidRadius;
 		color = sketch.color(40, 65, 40);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-		//sketch.audio.swarmSound(0,this);
+		sketch.audio.swarmSound(0,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown=30;
-		//sketch.audio.swarmSound(1,this);
+		sketch.audio.swarmSound(1,this);
 
 	}
 	
@@ -65,7 +67,7 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		//sketch.audio.swarmSound(5,this);
+		sketch.audio.swarmSound(5,this);
 	}
 	
 	public void uncarry(){
@@ -246,7 +248,8 @@ public class Swarmling extends GameObject {
 		
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;
-			tmp.obstacleLife -= 0.2;
+			tmp.obstacleLife -= attackPower;
+//			sketch.audio.swarmSound(2,this);
 		}
 		
 		// wandering behavior
