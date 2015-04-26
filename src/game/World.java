@@ -356,6 +356,16 @@ public class World extends GameObject {
 			float r = view.scale * b.r * 2;
 			sketch.ellipse(view.screenX(b.x), view.screenY(b.y), r, r);
 		}
+		
+		// Draw stationary obstace shadows.
+		sketch.fill(0);
+		for (int i = 0; i < contents.size(); ++i) {
+			GameObject obj = contents.get(i);
+			if (obj instanceof StationaryObstacle) {
+				float r = view.scale * (obj.radius + 2) * 2;
+				sketch.ellipse(view.screenX(obj.x), view.screenY(obj.y), r, r);
+			}
+		}
 
 		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
