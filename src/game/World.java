@@ -16,12 +16,26 @@ public class World extends GameObject {
 	static int stationaryObstacleMinNumber = 300;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
+	int blotchColor;
 	public int wanderingEnemyNumber=0;
-	
+	Nest nest;
 	
 	World parent;
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
+	ArrayList<Blotch> blotches;
+	
+	class Blotch {
+		float x, y, r;
+		
+		Blotch() {
+			r = sketch.random(radius / 100, radius / 10);
+			float distFromCenter = Sketch.sq(sketch.random(Sketch.sqrt(radius - r)));
+			float angle = sketch.random(Sketch.PI * 2);
+			x = distFromCenter * Sketch.cos(angle);
+			y = distFromCenter * Sketch.sin(angle);
+		}
+	}
 	
 	//TO DO: rewrite this
 	World(Sketch s) {
@@ -29,12 +43,20 @@ public class World extends GameObject {
 		explored = false;
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
-		bgColor = sketch.color(hue + sketch.random(90) - 45, sat - sketch.random(25), bri - sketch.random(25));
+		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		portalRadius = 50;
 		radius = 1000;
 		parent = null;
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
+		
+		//add blotches
+		blotches = new ArrayList<Blotch>();
+		int blotchCount = (int) (radius * radius) / 10000;
+		for (int i = 0; i < blotchCount; ++i) {
+			blotches.add(new Blotch());
+		}
+		
 	//generateContents();
 	}
 	
@@ -54,17 +76,69 @@ public class World extends GameObject {
 		// contents generation in the setup of the world
 
 		//add a nest
-		contents.add(new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2)));
+		nest = new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2));
+		contents.add(nest);
+		
+		generateStationaryObstacles(StationaryPattern.random);
+		
 		//sprinkle food
 		for(int i=0; i<20; i++){
 			float rx = sketch.random(radius) - (radius / 2);
 			float ry = sketch.random(radius) - (radius / 2);
-			Food f= new Food(sketch, rx, ry);
-			contents.add(f);
+			Food f = new Food(sketch, rx, ry);
+			if (f.distTo(nest) > 0) {
+				contents.add(f);
+			} else {
+				i--;
+			}
 		}
-
-		StationaryPattern pattern = StationaryPattern.random;
 		
+		//add obstacles covering the entrances
+		for(int i=0; i< children.size(); i++){
+			float theta = sketch.random(Sketch.TWO_PI);
+			//if still need stationary obstacles to cover the entrance
+			while(obstaclesAroundEntrance>0){
+				StationaryObstacle sob= new StationaryObstacle(sketch);
+				//set the entrance and set the obstacle's position around the world
+				sob.entrance=children.get(i);
+				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+				
+				//recalculate theta
+				theta += Sketch.PI / 3;
+				
+				contents.add(sob);
+				obstaclesAroundEntrance--;
+			}
+			obstaclesAroundEntrance=6;
+		}
+		
+		
+		//swarmling generation, they should try not to be spawned on the stationary obstacles
+		for(int i=0; i<swarmlingsGenerated;){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			//check if the swarmlins are generated in with in the stationary ostacles
+			for(int j = 0; j < contents.size() - i; j++){
+				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
+					break;
+				}
+				if(j >= contents.size() - i - 1){
+					Swarmling rs= new Swarmling(sketch, rx, ry);
+					contents.add(rs);
+					 i++;
+				}
+			}
+
+		}
+		
+		
+		//would like to add some untouchable stuffs in the backgroud to potential empty space
+		
+	}
+	
+	public void generateStationaryObstacles(StationaryPattern pattern) {
+	
 		//change this line for static number for learning level
 		stationaryObstaclesNumber = (int)sketch.random(stationaryObstacleMinNumber, stationaryObstacleMaxNumber);
 		
@@ -184,54 +258,10 @@ public class World extends GameObject {
 					obstaclesCount+=lineLengthWithNoise;
 					
 				}
-
+	
 				if (obstaclesCount > stationaryObstaclesNumber) break;
 			}
 		}
-		
-		
-		//add obstacles covering the entrances
-		for(int i=0; i< children.size(); i++){
-			float theta = sketch.random(Sketch.TWO_PI);
-			//if still need stationary obstacles to cover the entrance
-			while(obstaclesAroundEntrance>0){
-				StationaryObstacle sob= new StationaryObstacle(sketch);
-				//set the entrance and set the obstacle's position around the world
-				sob.entrance=children.get(i);
-				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-				
-				//recalculate theta
-				theta += Sketch.PI / 3;
-				
-				contents.add(sob);
-				obstaclesAroundEntrance--;
-			}
-			obstaclesAroundEntrance=6;
-		}
-		
-		
-		//swarmling generation, they should try not to be spawned on the stationary obstacles
-		for(int i=0; i<swarmlingsGenerated;){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			//check if the swarmlins are generated in with in the stationary ostacles
-			for(int j = 0; j < contents.size() - i; j++){
-				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
-					break;
-				}
-				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry);
-					contents.add(rs);
-					 i++;
-				}
-			}
-
-		}
-		
-		
-		//would like to add some untouchable stuffs in the backgroud to potential empty space
-		
 	}
 		
 	
@@ -318,6 +348,14 @@ public class World extends GameObject {
 		sketch.fill(color);
 		sketch.ellipse(sketch.camera.screenX(x), sketch.camera.screenY(y),
 				view.scale * radius * 2, view.scale * radius * 2);
+		
+		// Draw blotches.
+		sketch.fill(blotchColor);
+		for (int i = 0; i < blotches.size(); ++i) {
+			Blotch b = blotches.get(i);
+			float r = view.scale * b.r * 2;
+			sketch.ellipse(view.screenX(b.x), view.screenY(b.y), r, r);
+		}
 
 		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
