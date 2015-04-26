@@ -124,6 +124,10 @@ public class Swarmling extends GameObject {
 		WanderingEnemy wanderingEnemy = null;
 		float predateDist = WanderingEnemy.predateRadius;
 		
+		//closest food
+		Food targetFood = null;
+		float foodDist = Food.distanceCarry;
+		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
@@ -139,7 +143,7 @@ public class Swarmling extends GameObject {
 					unfollow();
 					uncarry();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					//sketch.audio.swarmSound(6,this);
+					sketch.audio.swarmSound(6,this);
 					return false;
 				}	
 				
@@ -149,7 +153,11 @@ public class Swarmling extends GameObject {
 						collectable.collected();
 					}
 				}
-			
+				//find closest food
+				if ((carrying == null) && (other instanceof Food) && (distance>0) && (distance <= foodDist)) {
+					targetFood = (Food)other;
+				}
+				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
 					Carryable carrything = (Carryable) other;
@@ -211,6 +219,12 @@ public class Swarmling extends GameObject {
 			ddy += (wanderingEnemy.y - y) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
 		}
 		
+		// Add food vector if we found a food
+		if(targetFood != null){
+			ddx += (targetFood.x - x) / (1+distTo(targetFood)/Food.distanceCarry);
+			ddy += (targetFood.y - y) / (1+distTo(targetFood)/Food.distanceCarry);
+
+		}
 		
 		// Avoid the leader
 		float leaderDistance = distTo(sketch.leader);

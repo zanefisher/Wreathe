@@ -23,7 +23,7 @@ public class World extends GameObject {
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
 	
-	// TO DO: level difference
+	// TO DO: update level after entering new world
 	public int level = 1; //from 1 to infinite
 	public float difficulty = 1f; // from 0~1 
 
