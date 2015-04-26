@@ -43,7 +43,7 @@ public class Swarmling extends GameObject {
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
-		queueCooldown=30;
+		queueCooldown = 15;
 		//sketch.audio.swarmSound(1,this);
 
 	}

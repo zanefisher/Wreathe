@@ -357,18 +357,28 @@ public class World extends GameObject {
 			sketch.ellipse(view.screenX(b.x), view.screenY(b.y), r, r);
 		}
 		
+		// Draw the Nest;
+		if (nest != null) {
+			nest.draw(view);
+		}
+		
 		// Draw stationary obstace shadows.
+		sketch.noStroke();
 		sketch.fill(0);
 		for (int i = 0; i < contents.size(); ++i) {
 			GameObject obj = contents.get(i);
 			if (obj instanceof StationaryObstacle) {
-				float r = view.scale * (obj.radius + 2) * 2;
+				float r = view.scale * (obj.radius + 3) * 2;
 				sketch.ellipse(view.screenX(obj.x), view.screenY(obj.y), r, r);
 			}
 		}
 
 		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
+			
+			if (contents.get(i) instanceof Nest) {
+				continue;
+			}
 			
 			//draw the line at the start of drawing swarmlings
 			if(contents.get(i) instanceof Swarmling && !startDrawSwarmling){
