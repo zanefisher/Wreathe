@@ -30,16 +30,18 @@ public class StationaryObstacle extends Obstacle {
 
 		radius = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 				(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-		avoidRadius = radius / 2f;
+
 		obstacleLife = radius / 2;
+		avoidRadius = radius;
 	}
 	
 	StationaryObstacle(Sketch s, float r){
 		sketch = s;
 		color = sketch.color(0,0,50);
-		avoidRadius = 40f;
+
 		radius = r;
 		obstacleLife = radius / 2;
+		avoidRadius = radius;
 	}
 	
 	public void initInWorld(){
