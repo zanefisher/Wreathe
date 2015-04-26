@@ -18,8 +18,9 @@ public class Swarmling extends GameObject {
 
 	float leastDistance = 10000f;
 	Obstacle target = null;
-	int attackCooldownCount = 30;	
-	int attackCooldown = (int)Math.random()*attackCooldownCount;
+//	int attackCooldownCount = 30;	
+//	int attackCooldown = (int)Math.random()*attackCooldownCount;
+	int attackCooldown  = 0;
 	
 	Carryable carrying = null;
 	float carryX, carryY; // swarmling's position relative to what it's carrying
@@ -118,7 +119,10 @@ public class Swarmling extends GameObject {
 		//closest target
 		target = null;
 		float targetDist = attackRadius;
-		attackCooldown = Sketch.max(0, attackCooldown-1);
+		//attackCooldown is set to 0 now	
+//		attackCooldown = Sketch.max(0, attackCooldown-1);
+
+
 		
 		//closest wandering enemy
 		WanderingEnemy wanderingEnemy = null;
@@ -235,9 +239,14 @@ public class Swarmling extends GameObject {
 		}
 		
 		// Attack if we found a target.
-		if ((target != null) && (attackCooldown == 0)) {
-			new Projectile(sketch, this, target);
-			attackCooldown = 30;
+//		if ((target != null)&&attackCooldown == 0) {
+//			new Projectile(sketch, this, target);
+//			attackCooldown = 30;
+//		}
+		
+		if (target != null){
+			Obstacle tmp = (Obstacle)target;
+			tmp.obstacleLife -= 0.2;
 		}
 		
 		// wandering behavior

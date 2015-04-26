@@ -5,7 +5,7 @@ public class Projectile extends GameObject{
 	Obstacle to;
 	float attackSpeed = 6f;
 	float distance = 0f;
-	float attackPower = 5f;
+	float attackPower = 0.1f;
 	static int defaultColor = sketch.color(0, 99, 99);
 	float fixedDx = 0f;
 	float fixedDy = 0f;
@@ -14,7 +14,7 @@ public class Projectile extends GameObject{
 		sketch = s;
 		from = a;
 		to = b;
-		radius = 3f;
+		radius = 1f;
 		x = from.x;
 		y = from.y;
 		color = defaultColor;
