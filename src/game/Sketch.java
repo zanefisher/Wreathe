@@ -10,7 +10,7 @@ public class Sketch extends PApplet {
 	static int screenWidth, screenHeight;
 
 	static int obstacleSpawnPeriod=300;
-	static int obstacleMax=3;
+	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
 	static int wanderingEnemyMax=5;
@@ -48,7 +48,6 @@ public class Sketch extends PApplet {
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
-		
 	}
 	
 	private void updateCamera() {

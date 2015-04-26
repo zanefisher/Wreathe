@@ -14,9 +14,6 @@ public class Leader extends Swarmling {
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
-		
-
-		
 		float minOffset;
 		
 		if (sketch.usingController) {
