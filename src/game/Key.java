@@ -4,11 +4,12 @@ import java.util.ArrayList;
 class Sparkling extends GameObject {
 	int ttl = 0;
 	static int sparkleLength = 150;
-	float sparkleOuterRadius = 80;
-	float sparkleInnerRadius = 10;
+	float sparkleOuterRadius = 60;
+	float sparkleInnerRadius = 8;
 	int startTime = 0;
 	float startAngle = 0;
 	float rotateAngle = 0;
+
 	Sparkling(Sketch s, float ix, float iy, int ic) {
 		sketch = s;
 		x = ix;
@@ -16,7 +17,7 @@ class Sparkling extends GameObject {
 		color = ic;
 		//it is not a circle
 		radius = 0;
-		startTime = (int)sketch.random(40);
+		startTime = (int)sketch.random(1, 40);
 		startAngle = sketch.random(Sketch.PI);
 		rotateAngle = sketch.random(Sketch.PI / 200);
 	}
@@ -27,7 +28,7 @@ class Sparkling extends GameObject {
 		//reset ttl
 		if(ttl >= sparkleLength){
 			//only one or two of them are shining
-			startTime = (int)sketch.random(40);
+			startTime = (int)sketch.random(1, 40);
 			rotateAngle = sketch.random(Sketch.PI / 200);
 			ttl = 0;
 		}
@@ -69,9 +70,15 @@ class Sparkling extends GameObject {
 		}
 }
 
-public class Key extends Collectable {
-	static int sparklingNumber = 5;
+public class Key extends GameObject {
+	boolean isInVault = false;
+	int amtCount = 1;
+	static int sparklingNumber = 3;
+	float startX = -5000;
+	float startY = -5000;
 	ArrayList<Sparkling> sparklings;
+	boolean isCollected = false;
+
 	Key(Sketch s, float ix, float iy) {
 		sketch = s;
 		x = ix;
@@ -91,22 +98,53 @@ public class Key extends Collectable {
 		
 	}
 	
+	public void collected(){
+		isCollected = true;
+	}
+	
 	public boolean update() {
 		
 		//maintain the sparkling list before it is collected;
 		//draw the sparklings first
-		for(int i = 0; i < sparklingNumber; i++){
-			Sparkling sp = sparklings.get(i);
-			sp.update();
+		if(!isCollected){
+			return true;
 		}
-		return !isCollected;
+		else{
+			return !isInVault;
+		}
+		
 	}
 	
 	public void draw(WorldView camera){
-		for(int i = 0; i < sparklingNumber; i++){
-			Sparkling sp = sparklings.get(i);
-			sp.draw(camera);
+		// do the animation to the vault;
+		if(!isCollected){
+			for(int i = 0; i < sparklingNumber; i++){
+				Sparkling sp = sparklings.get(i);
+				sp.update();
+				if((40 % sp.startTime) < 5){
+					sp.draw(camera);
+				}
+			}
+			super.draw(camera);
 		}
-		super.draw(camera);
+		else{
+			float amt = 0.015f * amtCount;
+			if(startX < -3000 && startY < -3000){
+				startX = camera.screenX(x);
+				startY = camera.screenY(y);
+			}
+			float drawX = Sketch.lerp(startX, sketch.nextKeyX, amt);
+			float drawY = Sketch.lerp(startY, sketch.nextKeyY, amt);
+			sketch.noStroke();
+			sketch.fill(color, 125);
+			sketch.ellipse(drawX, drawY,
+					camera.scale * radius * 2, camera.scale * radius * 2);
+			amtCount++;
+			if(drawX >= sketch.nextKeyX && drawY >= sketch.nextKeyY){
+				amtCount = 1;
+				sketch.vault.add(this);
+				isInVault = true;
+			}
+		}
 	}
 }

@@ -72,7 +72,6 @@ public class World extends GameObject {
 		}
 		
 		//generate key
-		generateKey();
 		
 		StationaryPattern pattern = StationaryPattern.random;
 		
@@ -234,7 +233,7 @@ public class World extends GameObject {
 					break;
 				}
 				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry);
+					Swarmling rs= new Swarmling(sketch, rx, ry) ;
 					contents.add(rs);
 					 i++;
 				}
@@ -245,6 +244,7 @@ public class World extends GameObject {
 		
 		//would like to add some untouchable stuffs in the backgroud to potential empty space
 		
+		generateKey();
 	}
 		
 	
