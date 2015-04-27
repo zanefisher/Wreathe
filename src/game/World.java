@@ -5,7 +5,7 @@ public class World extends GameObject {
 	
 	boolean explored;
 	static float transitionRadius = 40;
-	float portalRadius; //radius of the world while you're in it.
+	float portalRadius; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=20;
 	public int count=0;

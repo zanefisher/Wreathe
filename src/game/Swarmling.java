@@ -240,6 +240,13 @@ public class Swarmling extends GameObject {
 			ddy += ((y - sketch.leader.y) / centerDist) * (1 - (leaderDistance / avoidRadius)) / 4;
 		}
 		
+		// Move back into the world if outside it.
+		float distOutsideWorld = Sketch.mag(x, y) - sketch.world.radius;
+		if (distOutsideWorld > 0) {
+			ddx -= distOutsideWorld * x / sketch.world.radius;
+			ddy -= distOutsideWorld * y / sketch.world.radius;
+		}
+		
 		// Attack if we found a target.
 //		if ((target != null)&&attackCooldown == 0) {
 //			new Projectile(sketch, this, target);
@@ -309,7 +316,7 @@ public class Swarmling extends GameObject {
 			float x2 = view.screenX(Sketch.lerp(target.x, x, amtFromTarget));
 			float y2 = view.screenY(Sketch.lerp(target.y, y, amtFromTarget));
 			sketch.stroke(Projectile.defaultColor);
-			sketch.strokeWeight(2);
+			sketch.strokeWeight(2 * view.scale);
 			sketch.line(x1, y1, x2, y2);
 		}
 	}
