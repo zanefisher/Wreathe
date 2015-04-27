@@ -7,8 +7,8 @@ public class Nest extends GameObject {
 	static float minWidth = 10;
 	static float minWidthReduction = 1f;
 	static float maxWidthReduction = 3f;
-	static float minLength = 10;
-	static float maxLength = 40;
+	static float minLength = 15;
+	static float maxLength = 70;
 	static float branchRate = 0.05f;
 	
 	float growth = 0.1f;
@@ -86,6 +86,7 @@ public class Nest extends GameObject {
 	public void draw(WorldView view) {
 		super.draw(view);
 		sketch.stroke(color);
+		sketch.strokeCap(Sketch.ROUND);
 		for (int i = 0; i < branches.size(); ++i) {
 			branches.get(i).draw(view);
 		}
@@ -110,14 +111,13 @@ public class Nest extends GameObject {
 	}
 	
 	public void feed() {
-		//sketch.audio.swarmSound(4,this);
+		sketch.audio.swarmSound(4,this);
 		if (growth < 1) {
 			float amt = 1 / (growth * 50);
 			growth += amt;
 			animationDelay += amt;
-			Sketch.println(growth);
 			if (growth > 0.8) {
-				World w = new World(sketch);
+				World w = new World(sketch,sketch.world.level+1);
 				for (Branch b = branches.get(0); b.children.size() != 0; b = b.children.get(0)) {
 					w.x = b.x2;
 					w.y = b.y2;

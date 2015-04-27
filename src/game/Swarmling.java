@@ -10,16 +10,19 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
+	static final float attackPower = 0.2f;
 	static final float swarmlingAvoidRadius = 10f;
 	static float seed=0;
 	Swarmling following = null;
 	int followCooldown = 0; // how many frames until ready to follow again
 	static int queueCooldown = 0; //how much frame should wait for the next swarmling to follow
 
+
 	float leastDistance = 10000f;
 	Obstacle target = null;
-	int attackCooldownCount = 30;	
-	int attackCooldown = (int)Math.random()*attackCooldownCount;
+//	int attackCooldownCount = 30;	
+//	int attackCooldown = (int)Math.random()*attackCooldownCount;
+	int attackCooldown  = 0;
 	
 	Carryable carrying = null;
 	float carryX, carryY; // swarmling's position relative to what it's carrying
@@ -37,14 +40,14 @@ public class Swarmling extends GameObject {
 		avoidRadius = swarmlingAvoidRadius;
 		color = sketch.color(40, 65, 40);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-		//sketch.audio.swarmSound(0,this);
+		sketch.audio.swarmSound(0,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown=30;
-		//sketch.audio.swarmSound(1,this);
+		sketch.audio.swarmSound(1,this);
 
 	}
 	
@@ -64,7 +67,7 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		//sketch.audio.swarmSound(5,this);
+		sketch.audio.swarmSound(5,this);
 	}
 	
 	public void uncarry(){
@@ -118,11 +121,18 @@ public class Swarmling extends GameObject {
 		//closest target
 		target = null;
 		float targetDist = attackRadius;
-		attackCooldown = Sketch.max(0, attackCooldown-1);
+		//attackCooldown is set to 0 now	
+//		attackCooldown = Sketch.max(0, attackCooldown-1);
+
+
 		
 		//closest wandering enemy
 		WanderingEnemy wanderingEnemy = null;
 		float predateDist = WanderingEnemy.predateRadius;
+		
+		//closest food
+		Food targetFood = null;
+		float foodDist = Food.distanceCarry;
 		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
@@ -139,7 +149,7 @@ public class Swarmling extends GameObject {
 					unfollow();
 					uncarry();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					//sketch.audio.swarmSound(6,this);
+					sketch.audio.swarmSound(6,this);
 					return false;
 				}	
 				
@@ -149,7 +159,11 @@ public class Swarmling extends GameObject {
 						collectable.collected();
 					}
 				}
-			
+				//find closest food
+				if ((carrying == null) && (other instanceof Food) && (distance>0) && (distance <= foodDist)) {
+					targetFood = (Food)other;
+				}
+				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
 					Carryable carrything = (Carryable) other;
@@ -211,6 +225,12 @@ public class Swarmling extends GameObject {
 			ddy += (wanderingEnemy.y - y) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
 		}
 		
+		// Add food vector if we found a food
+		if(targetFood != null){
+			ddx += (targetFood.x - x) / (1+distTo(targetFood)/Food.distanceCarry);
+			ddy += (targetFood.y - y) / (1+distTo(targetFood)/Food.distanceCarry);
+
+		}
 		
 		// Avoid the leader
 		float leaderDistance = distTo(sketch.leader);
@@ -220,10 +240,23 @@ public class Swarmling extends GameObject {
 			ddy += ((y - sketch.leader.y) / centerDist) * (1 - (leaderDistance / avoidRadius)) / 4;
 		}
 		
+		// Move back into the world if outside it.
+		float distOutsideWorld = Sketch.mag(x, y) - sketch.world.radius;
+		if (distOutsideWorld > 0) {
+			ddx -= distOutsideWorld * x / sketch.world.radius;
+			ddy -= distOutsideWorld * y / sketch.world.radius;
+		}
+		
 		// Attack if we found a target.
-		if ((target != null) && (attackCooldown == 0)) {
-			new Projectile(sketch, this, target);
-			attackCooldown = 30;
+//		if ((target != null)&&attackCooldown == 0) {
+//			new Projectile(sketch, this, target);
+//			attackCooldown = 30;
+//		}
+		
+		if (target != null){
+			Obstacle tmp = (Obstacle)target;
+			tmp.obstacleLife -= attackPower;
+//			sketch.audio.swarmSound(2,this);
 		}
 		
 		// wandering behavior
@@ -283,7 +316,7 @@ public class Swarmling extends GameObject {
 			float x2 = view.screenX(Sketch.lerp(target.x, x, amtFromTarget));
 			float y2 = view.screenY(Sketch.lerp(target.y, y, amtFromTarget));
 			sketch.stroke(Projectile.defaultColor);
-			sketch.strokeWeight(2);
+			sketch.strokeWeight(2 * view.scale);
 			sketch.line(x1, y1, x2, y2);
 		}
 	}

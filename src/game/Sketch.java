@@ -6,12 +6,10 @@ import java.util.ArrayList;
 
 
 public class Sketch extends PApplet {
-	
-	static int screenWidth = 1080, screenHeight = 700;
-	static int screenSize = screenWidth * screenHeight;
-	
+	static int screenSize;
+	static int screenWidth, screenHeight;
 
-	static int obstacleSpawnPeriod=300;
+
 	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
@@ -35,12 +33,15 @@ public class Sketch extends PApplet {
 	float nextKeyY;
 	
 	public void setup() {
-		frameRate(60);
+		frameRate(30);
 		colorMode(HSB, 360, 100, 100, 100);
-		size(screenWidth, screenHeight);
+		size(1080, 700);
+		screenHeight = height;
+		screenWidth = width;
+		screenSize = width * height;
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
-		world = new World(this);
+		world = new World(this,1);
 		world.explore();
 		world.parent = world;
 		leader = new Leader(this);
@@ -78,8 +79,8 @@ public class Sketch extends PApplet {
 		float midX = lerp(minX, maxX, 0.5f);
 		float midY = lerp(minY, maxY, 0.5f);
 		
-		float xZoomTarget = (screenWidth - (2 * focusMargin)) / (maxX - minX);
-		float yZoomTarget = (screenHeight - (2 * focusMargin)) / (maxY - minY);
+		float xZoomTarget = (width - (2 * focusMargin)) / (maxX - minX);
+		float yZoomTarget = (height - (2 * focusMargin)) / (maxY - minY);
 		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom);
 		
 		camera.x = lerp(camera.x, midX, 0.05f);
@@ -88,7 +89,12 @@ public class Sketch extends PApplet {
 	}
 	
 	public void draw() {
-
+		
+		if (!focused) return;
+		
+		screenHeight = height;
+		screenWidth = width;
+		screenSize = width * height;
 		
 		// Draw the current world.
 		//world= new World(this);
@@ -109,18 +115,7 @@ public class Sketch extends PApplet {
 		//lle the current world
 		world.update();		
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		world.count+=1;
-		
-		//generate the obstacle
-		//moving
-		if(world.count%obstacleSpawnPeriod == 0){
-			world.obstacleNumber+=1;
-			if(world.obstacleNumber<=obstacleMax){
-			MovingObstacle obstacle= new MovingObstacle(this);			
-			obstacle.initInWorld(world);
-			}
-			
-		}
+
 //		if(world.count%wanderingEnemySpawnPeriod == 0){
 //			world.wanderingEnemyNumber+=1;
 //			if(world.wanderingEnemyNumber<=wanderingEnemyMax){

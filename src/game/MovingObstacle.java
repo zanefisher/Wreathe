@@ -11,7 +11,6 @@ public class MovingObstacle extends Obstacle {
 	MovingObstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(30,30,60);
-		avoidRadius = radius/2f;
 	}
 	
 	MovingObstacle(Sketch s,World w, float ix, float iy){
@@ -19,7 +18,7 @@ public class MovingObstacle extends Obstacle {
 		x=ix;
 		y=iy;
 		color=sketch.color(30,30,60);
-		avoidRadius = radius/2f;
+
 	}
 	
 	public void initInWorld(World world){
@@ -39,6 +38,9 @@ public class MovingObstacle extends Obstacle {
 				break;
 			}
 		}
+		
+		avoidRadius = radius;
+		
 		int count = 0;
 		boolean hitNest = true;
 		while(hitNest && nest !=null && count<500){
@@ -94,6 +96,7 @@ public class MovingObstacle extends Obstacle {
 	    sketch.noFill();
 	    sketch.stroke(0, 0, 0, 255);
 	    sketch.strokeWeight(6 * view.scale);
+	    sketch.strokeCap(Sketch.SQUARE);
 	    float halfArcLength = Sketch.PI * (1-obstacleLife / radius);
 	    sketch.arc(view.screenX(x), view.screenY(y), radius*2*view.scale, radius*2*view.scale, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
 	}
