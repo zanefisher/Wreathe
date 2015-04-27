@@ -117,7 +117,7 @@ public class Nest extends GameObject {
 			animationDelay += amt;
 			Sketch.println(growth);
 			if (growth > 0.8) {
-				World w = new World(sketch);
+				World w = new World(sketch,sketch.world.level+1);
 				for (Branch b = branches.get(0); b.children.size() != 0; b = b.children.get(0)) {
 					w.x = b.x2;
 					w.y = b.y2;

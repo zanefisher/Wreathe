@@ -11,7 +11,7 @@ public class Sketch extends PApplet {
 	static int screenSize = screenWidth * screenHeight;
 	
 
-	static int obstacleSpawnPeriod=300;
+
 	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
@@ -38,7 +38,7 @@ public class Sketch extends PApplet {
 		size(screenWidth, screenHeight);
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
-		world = new World(this);
+		world = new World(this,1);
 		world.explore();
 		world.parent = world;
 		leader = new Leader(this);
@@ -103,18 +103,7 @@ public class Sketch extends PApplet {
 		//lle the current world
 		world.update();		
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		world.count+=1;
-		
-		//generate the obstacle
-		//moving
-		if(world.count%obstacleSpawnPeriod == 0){
-			world.obstacleNumber+=1;
-			if(world.obstacleNumber<=obstacleMax){
-			MovingObstacle obstacle= new MovingObstacle(this);			
-			obstacle.initInWorld(world);
-			}
-			
-		}
+
 //		if(world.count%wanderingEnemySpawnPeriod == 0){
 //			world.wanderingEnemyNumber+=1;
 //			if(world.wanderingEnemyNumber<=wanderingEnemyMax){
