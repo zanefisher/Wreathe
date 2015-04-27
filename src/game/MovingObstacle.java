@@ -4,8 +4,8 @@ public class MovingObstacle extends Obstacle {
 	
 	static float minRadius = 40;
 	static float maxRadius = 200;
-	static float maxSpeed = 1.9f;
-	static float minSpeed = 0.6f;
+	static float maxSpeed = 3.8f;
+	static float minSpeed = 1.2f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	
 	MovingObstacle(Sketch s){
@@ -31,8 +31,8 @@ public class MovingObstacle extends Obstacle {
 
 		//find the nest
 		Nest nest=null;
-		for (int i = 0; i < sketch.world.contents.size(); ++i) {
-			GameObject other = sketch.world.contents.get(i);
+		for (int i = 0; i < world.contents.size(); ++i) {
+			GameObject other = world.contents.get(i);
 			if (other instanceof Nest) {
 				nest = (Nest)other;
 				break;

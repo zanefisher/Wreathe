@@ -9,7 +9,7 @@ public class Sketch extends PApplet {
 	static int screenSize;
 	static int screenWidth, screenHeight;
 
-	static int obstacleSpawnPeriod=300;
+
 	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
@@ -41,17 +41,12 @@ public class Sketch extends PApplet {
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
 		world = new World(this, null);
-		world.explore();
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
-		World w = new World(this, world);
-		w.x = 0;
-		w.y = 0;
-		world.children.add(w);
 	}
 	
 	private void updateCamera() {
@@ -109,7 +104,7 @@ public class Sketch extends PApplet {
 		
 		// Draw the current world.
 		//world= new World(this);
-		background(0);
+		background(world.parent == null ? 0 : world.parent.color);
 		
 		if(wholeView){
 			//Sketch.println("pressed");
@@ -122,31 +117,27 @@ public class Sketch extends PApplet {
 		
 		// Calculate distortion
 		distortion = 1;
-		for (int i = 0; i < world.children.size(); ++i) {
-			World w = world.children.get(i);
-			float dist = dist(leader.x, leader.y, w.x, w.y);
-			distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
-					1, w.portalRadius / w.radius));
+		if (world.parent != null) {
+			distortion = max(distortion, map(mag(leader.x, leader.y),
+					world.radius - World.transitionRadius, world.radius,
+					1, (world.radius + world.portalRadius) / (2 *world.portalRadius)));
+		}
+		if (distortion == 1) {
+			for (int i = 0; i < world.children.size(); ++i) {
+				World w = world.children.get(i);
+				float dist = dist(leader.x, leader.y, w.x, w.y);
+				distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
+						1, (w.radius + w.portalRadius) / (2 * w.radius)));
+			}
 		}
 		
 		// Update the leader
 		leader.update();
 		
 		//lle the current world
-		world.update();		
+		world.update();
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		world.count+=1;
-		
-		//generate the obstacle
-		//moving
-		if(world.count%obstacleSpawnPeriod == 0){
-			world.obstacleNumber+=1;
-			if(world.obstacleNumber<=obstacleMax){
-			MovingObstacle obstacle= new MovingObstacle(this);			
-			obstacle.initInWorld(world);
-			}
-			
-		}
+
 //		if(world.count%wanderingEnemySpawnPeriod == 0){
 //			world.wanderingEnemyNumber+=1;
 //			if(world.wanderingEnemyNumber<=wanderingEnemyMax){

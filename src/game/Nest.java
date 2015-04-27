@@ -118,10 +118,12 @@ public class Nest extends GameObject {
 			animationDelay += amt;
 			if (growth > 0.8) {
 				World w = new World(sketch, sketch.world);
-				for (Branch b = branches.get(0); b.children.size() != 0; b = b.children.get(0)) {
-					w.x = b.x2;
-					w.y = b.y2;
-				}
+				do {
+					for (Branch b = branches.get((int) sketch.random(branches.size())); b.children.size() != 0; b = b.children.get(0)) {
+						w.x = b.x2;
+						w.y = b.y2;
+					}
+				} while (Sketch.mag(w.x, w.y) > sketch.world.radius - w.portalRadius);
 				sketch.world.children.add(w);
 				animationDelay += 1 - growth;
 				growth = 1;

@@ -7,18 +7,21 @@ public class World extends GameObject {
 	static float transitionRadius = 200;
 	float portalRadius; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
-	static int swarmlingsGenerated=20;
+	static int swarmlingsGenerated=10;
 	public int count=0;
 	public int obstacleNumber=0;
 	public int obstaclesAroundEntrance=6;
 	public int obstaclesRemainingAroundEntrance=6;
-	static int stationaryObstacleMaxNumber = 350;
-	static int stationaryObstacleMinNumber = 300;
+	static int stationaryObstacleMaxNumber = 250;
+	static int stationaryObstacleMinNumber = 150;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 	int blotchColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
+	
+	static int obstacleSpawnPeriod=300;
+	static int obstacleMax=10;
 	
 	World parent;
 	ArrayList<World> children;
@@ -37,7 +40,6 @@ public class World extends GameObject {
 		}
 	}
 	
-	// TO DO: update level after entering new world
 	public int level = 1; //from 1 to infinite
 	public float difficulty = 1f; // from 0~1 
 
@@ -46,13 +48,16 @@ public class World extends GameObject {
 	//TO DO: rewrite this
 	World(Sketch s, World p) {
 		sketch = s;
+		parent = p;
+		level = (p == null ? 3 : p.level + 1);
+		//TO DO Add some noise
+		difficulty = 1 - 1/level;
 		explored = false;
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		portalRadius = 50;
 		radius = 1000;
-		parent = p;
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		
@@ -63,7 +68,7 @@ public class World extends GameObject {
 			blotches.add(new Blotch());
 		}
 		
-		//generateContents();
+		generateContents();
 	}
 	
 	public void generateContents() {
@@ -75,39 +80,32 @@ public class World extends GameObject {
 		//add a nest
 		nest = new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2));
 		contents.add(nest);
+
+		if(level == 1)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2),(int)(stationaryObstacleMaxNumber*0.2));
 		
-		generateStationaryObstacles(StationaryPattern.random);
+		if(level == 2)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5),(int)(stationaryObstacleMaxNumber*0.5));
+
+		if(level >= 2)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
 		
 		//sprinkle food
-		for(int i=0; i<20; i++){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			Food f = new Food(sketch, rx, ry);
-			if (f.distTo(nest) > 0) {
+		if(level == 1){
+			for(int i=0; i<20; i++){
+				float rx = sketch.random(radius) - (radius / 2);
+				float ry = sketch.random(radius) - (radius / 2);
+				Food f= new Food(sketch, rx, ry);
 				contents.add(f);
-			} else {
-				i--;
 			}
 		}
 		
-		//add obstacles covering the entrances
-		for(int i=0; i< children.size(); i++){
-			float theta = sketch.random(Sketch.TWO_PI);
-			//if still need stationary obstacles to cover the entrance
-			while(obstaclesAroundEntrance>0){
-				StationaryObstacle sob= new StationaryObstacle(sketch);
-				//set the entrance and set the obstacle's position around the world
-				sob.entrance=children.get(i);
-				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-				
-				//recalculate theta
-				theta += Sketch.PI / 3;
-				
-				contents.add(sob);
-				obstaclesAroundEntrance--;
+		if (level == 2) {
+			for (int i = 0; i < 10; ++i) {
+				obstacleNumber+=1;
+				MovingObstacle obstacle= new MovingObstacle(sketch);			
+				obstacle.initInWorld(this);
 			}
-			obstaclesAroundEntrance=6;
 		}
 		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
@@ -131,17 +129,90 @@ public class World extends GameObject {
 		//generate key
 		generateKey();
 		
-		StationaryPattern pattern = StationaryPattern.random;
+		if(level == 1)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
+
+		if(level >= 3)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+
+		//swarmling generation, they should try not to be spawned on the stationary obstacles
+		for(int i=0; i<swarmlingsGenerated;){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			//check if the swarmlins are generated in with in the stationary ostacles
+			for(int j = 0; j < contents.size() - i; j++){
+				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
+					break;
+				}
+				if(j >= contents.size() - i - 1){
+					Swarmling rs= new Swarmling(sketch, rx, ry);
+					contents.add(rs);
+					 i++;
+				}
+			}
+
+		}
 		
 		
 		//would like to add some untouchable stuffs in the backgroud to potential empty space
 		
 	}
+		
 	
-	public void generateStationaryObstacles(StationaryPattern pattern) {
+	public void explore() {
+		if (!explored) {
+			int childCount = (int) sketch.random(4) + 1;
+			//comment out the generation of children
+//			for (int i = 0; i < childCount; ++i) {
+//				World nw = new World(sketch);
+//				nw.x = sketch.random(radius) - (radius / 2);
+//				nw.y = sketch.random(radius) - (radius / 2);
+//				children.add(nw);
+//			}
+			explored = true;
+			generateContents();
+			
+			//add obstacles covering the entrances
+//			for(int i=0; i< children.size(); i++){
+//				float theta = sketch.random(Sketch.TWO_PI);
+//				//if still need stationary obstacles to cover the entrance
+//				while(obstaclesAroundEntrance>0){
+//					StationaryObstacle sob= new StationaryObstacle(sketch, this);
+//					
+//					//set the entrance and set the obstacle's position around the world
+//					sob.entrance=children.get(i);
+//					sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+//					sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+//					
+//					//recalculate theta
+//					theta += Sketch.TWO_PI*(1/3);
+//					
+//					contents.add(sob);
+//					obstaclesAroundEntrance--;
+//				}
+//				obstaclesAroundEntrance=3;
+//			}
+		}
+
+
+	}
 	
-		//change this line for static number for learning level
-		stationaryObstaclesNumber = (int)sketch.random(stationaryObstacleMinNumber, stationaryObstacleMaxNumber);
+	public void generateKey(){
+
+		float tmp = sketch.random(0, 1);
+		if(tmp<difficulty && level >=3)
+		{
+			float ix = sketch.random(0,Sketch.sqrt(radius));
+			float iy = sketch.random(0,Sketch.sqrt(radius));		
+			key = new Key(sketch,ix,iy);
+			this.contents.add(key);
+		}
+	}
+	
+	public void generateStationaryObstacles(int minNumber, int maxNumber){
+		
+		StationaryPattern pattern = StationaryPattern.random;
+		stationaryObstaclesNumber = (int)sketch.random(minNumber, maxNumber);
 		
 		//contain a pattern switch here.
 		if(pattern == StationaryPattern.circle){
@@ -265,92 +336,82 @@ public class World extends GameObject {
 				if (obstaclesCount > stationaryObstaclesNumber) break;
 			}
 		}
-	}
 		
-	
-	public void explore() {
-		if (!explored) {
-			int childCount = (int) sketch.random(4) + 1;
-			//comment out the generation of children
-//			for (int i = 0; i < childCount; ++i) {
-//				World nw = new World(sketch);
-//				nw.x = sketch.random(radius) - (radius / 2);
-//				nw.y = sketch.random(radius) - (radius / 2);
-//				children.add(nw);
-//			}
-			explored = true;
-			generateContents();
-			
-			//add obstacles covering the entrances
-//			for(int i=0; i< children.size(); i++){
-//				float theta = sketch.random(Sketch.TWO_PI);
-//				//if still need stationary obstacles to cover the entrance
-//				while(obstaclesAroundEntrance>0){
-//					StationaryObstacle sob= new StationaryObstacle(sketch, this);
-//					
-//					//set the entrance and set the obstacle's position around the world
-//					sob.entrance=children.get(i);
-//					sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-//					sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-//					
-//					//recalculate theta
-//					theta += Sketch.TWO_PI*(1/3);
-//					
-//					contents.add(sob);
-//					obstaclesAroundEntrance--;
-//				}
-//				obstaclesAroundEntrance=3;
-//			}
+		
+		//add obstacles covering the entrances
+		for(int i=0; i< children.size(); i++){
+			float theta = sketch.random(Sketch.TWO_PI);
+			//if still need stationary obstacles to cover the entrance
+			while(obstaclesAroundEntrance>0){
+				StationaryObstacle sob= new StationaryObstacle(sketch);
+				//set the entrance and set the obstacle's position around the world
+				sob.entrance=children.get(i);
+				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+				
+				//recalculate theta
+				theta += Sketch.PI / 3;
+				
+				contents.add(sob);
+				obstaclesAroundEntrance--;
+			}
+			obstaclesAroundEntrance=6;
 		}
-
-
+		
 	}
 	
-	public void generateKey(){
-
-		float tmp = sketch.random(0, 1);
-		if(Sketch.sq(tmp)<difficulty)
-		{
-			float ix = sketch.random(0,Sketch.sqrt(sketch.world.radius));
-			float iy = sketch.random(0,Sketch.sqrt(sketch.world.radius));		
-			key = new Key(sketch,ix,iy);
-			this.contents.add(key);
+	public void generateMovingObstacles(){
+		int period = (level == 2 ? obstacleSpawnPeriod / 2 : obstacleSpawnPeriod);
+		count+=1;
+		if(count%period == 0){
+			obstacleNumber+=1;
+			if(obstacleNumber<=obstacleMax){
+			MovingObstacle obstacle= new MovingObstacle(sketch);			
+			obstacle.initInWorld(this);
+			}
 		}
 	}
 	
 	public boolean update() {
-		float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
-		if (distToLeader < portalRadius && obstaclesRemainingAroundEntrance<=0) {
-			// if the leader goes in to the inner world, change the inner world as the current world
-			while(Swarmling.lastInLine != sketch.leader){
-				Swarmling.lastInLine.unfollow();
+
+		if (sketch.world == this) {
+			if (level >=2)
+				generateMovingObstacles();
+			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
+				while(Swarmling.lastInLine != sketch.leader){
+					Swarmling.lastInLine.unfollow();
+				}
+				float r = portalRadius / radius;
+				sketch.camera.scale *= 1 / r;
+				float x0 = sketch.leader.x;
+				float y0 = sketch.leader.y;
+				sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - (portalRadius + 10), x + portalRadius + 10);
+				sketch.leader.y = Sketch.map(sketch.leader.y, -1 * radius, radius, y - (portalRadius + 10), y + portalRadius + 10);
+				sketch.leader.x *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+				sketch.leader.y *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+				sketch.camera.trans(x0 - sketch.leader.x, y0 - sketch.leader.y);
+				sketch.world = parent;
 			}
-			this.explore();
-			float r = radius / portalRadius;
-			sketch.camera.scale *= 1 / r;
-			float x0 = sketch.leader.x;
-			float y0 = sketch.leader.y;
-			sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
-			sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-			sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-			sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-			sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
-
-			this.parent = sketch.world;
-			sketch.world = this;
-
+		} else {
+			float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
+			if (distToLeader < portalRadius) {
+				// if the leader goes in to the inner world, change the inner world as the current world
+				while(Swarmling.lastInLine != sketch.leader){
+					Swarmling.lastInLine.unfollow();
+				}
+				float r = radius / portalRadius;
+				sketch.camera.scale *= 1 / r;
+				float x0 = sketch.leader.x;
+				float y0 = sketch.leader.y;
+				sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
+				sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
+				sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+				sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+				sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+				sketch.world = this;
+	
+			}
 		}
-		
-		//if the leader goes out of the world, change the parent world as the current world
-		
-//		else if(distToLeader > radius && sketch.world == this){
-//			while(Swarmling.lastInLine != sketch.leader){
-//				Swarmling.lastInLine.unfollow();
-//			}
-//			sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - portalRadius, x + portalRadius);
-//			sketch.leader.y = Sketch.map(sketch.leader.y, -1  * radius, radius, y - portalRadius, y + portalRadius);
-//			sketch.world = this.parent;
-//		}
 		
 		return true;
 	}
