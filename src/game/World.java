@@ -81,9 +81,12 @@ public class World extends GameObject {
 		//generate key
 		generateKey();
 		
+		if(level == 1)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
+
 		if(level >= 3)
-			generateStationaryObstacles();
-		
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
 		for(int i=0; i<swarmlingsGenerated;){
 			float rx = sketch.random(radius) - (radius / 2);
@@ -149,7 +152,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(Sketch.sq(tmp)<difficulty)
+		if(tmp<difficulty && level >=3)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(sketch.world.radius));
 			float iy = sketch.random(0,Sketch.sqrt(sketch.world.radius));		
@@ -158,12 +161,11 @@ public class World extends GameObject {
 		}
 	}
 	
-	public void generateStationaryObstacles(){
+	public void generateStationaryObstacles(int minNumber, int maxNumber){
 		
 		StationaryPattern pattern = StationaryPattern.random;
 		
-		//change this line for static number for learning level
-		stationaryObstaclesNumber = (int)sketch.random(stationaryObstacleMinNumber, stationaryObstacleMaxNumber);
+		stationaryObstaclesNumber = (int)sketch.random(minNumber, maxNumber);
 		
 		//contain a pattern switch here.
 		if(pattern == StationaryPattern.circle){
