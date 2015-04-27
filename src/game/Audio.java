@@ -41,7 +41,6 @@ public class Audio extends PApplet {
 			if (distance<=maxDist)
 			{
 				float amp = Sketch.sqrt(1-distance/maxDist)/10;
-//				Sketch.println(amp);
 				swarmling[input].set("amp",amp);
 				swarmling[input].create();
 			}
