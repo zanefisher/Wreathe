@@ -17,14 +17,21 @@ public class WorldView {
 	}
 	
 	public void scale(float s) {
-		x *= s;
-		y *= s;
+		x /= s;
+		y /= s;
 		scale *= s;
 	}
 	
 	public void trans(float dx, float dy) {
 		x += dx;
 		y += dy;
+	}
+	
+	public WorldView innerView(float innerX, float innerY, float innerScale) {
+		WorldView out = new WorldView(this);
+		out.trans(-1 * innerX, -1 * innerY);
+		out.scale(innerScale);
+		return out;
 	}
 	
 	public void setViewPosition(float ix, float iy){

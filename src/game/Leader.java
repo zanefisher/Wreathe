@@ -48,9 +48,16 @@ public class Leader extends Swarmling {
 		dx *= speed;
 		dy *= speed;
 		
-		x += dx;
-		y += dy;
+		x += dx * sketch.distortion;
+		y += dy * sketch.distortion;
 		
 		return true;
+	}
+	
+	public void draw(WorldView view) {
+		sketch.noStroke();
+		sketch.fill(color);
+		sketch.ellipse(view.screenX(x), view.screenY(y),
+				view.scale * radius * 2 * sketch.distortion, view.scale * radius * 2 * sketch.distortion);
 	}
 }

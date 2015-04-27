@@ -22,6 +22,7 @@ public class Sketch extends PApplet {
 	float focusMargin; // how close objects in focus can get to the edge before the camera moves
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
+	float distortion = 1;
 	
 	Controller controller = new Controller();
 	boolean usingController = controller.device != null;
@@ -39,15 +40,18 @@ public class Sketch extends PApplet {
 		screenSize = width * height;
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
-		world = new World(this);
+		world = new World(this, null);
 		world.explore();
-		world.parent = world;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
+		World w = new World(this, world);
+		w.x = 0;
+		w.y = 0;
+		world.children.add(w);
 	}
 	
 	private void updateCamera() {
@@ -70,12 +74,24 @@ public class Sketch extends PApplet {
 			}
 		}
 		
+//		float modMinZoom = minZoom;
+//		for (int i = 0; i < world.children.size(); ++i) {
+//			World w = world.children.get(i);
+//			float dist = dist(leader.x, leader.y, w.x, w.y);
+//			modMinZoom = min(modMinZoom, map(dist, w.portalRadius, w.portalRadius + World.transitionRadius,
+//					minZoom * w.portalRadius / w.radius, minZoom));
+//		}
+//		float modMaxZoom = max(maxZoom, modMinZoom);
+		
 		float midX = lerp(minX, maxX, 0.5f);
 		float midY = lerp(minY, maxY, 0.5f);
 		
+		midX = lerp(leader.x, midX, distortion);
+		midY = lerp(leader.y, midY, distortion);
+		
 		float xZoomTarget = (width - (2 * focusMargin)) / (maxX - minX);
 		float yZoomTarget = (height - (2 * focusMargin)) / (maxY - minY);
-		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom);
+		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom) / distortion;
 		
 		camera.x = lerp(camera.x, midX, 0.05f);
 		camera.y = lerp(camera.y, midY, 0.05f);
@@ -102,6 +118,15 @@ public class Sketch extends PApplet {
 			WorldView wholeView = new WorldView(world.x, world.y, 0.4f);
 			world.draw(wholeView);
 			return;
+		}
+		
+		// Calculate distortion
+		distortion = 1;
+		for (int i = 0; i < world.children.size(); ++i) {
+			World w = world.children.get(i);
+			float dist = dist(leader.x, leader.y, w.x, w.y);
+			distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
+					1, w.portalRadius / w.radius));
 		}
 		
 		// Update the leader

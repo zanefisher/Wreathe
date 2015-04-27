@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class World extends GameObject {
 	
 	boolean explored;
-	static float transitionRadius = 40;
+	static float transitionRadius = 200;
 	float portalRadius; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=20;
@@ -44,7 +44,7 @@ public class World extends GameObject {
 	Key key = null;
 	
 	//TO DO: rewrite this
-	World(Sketch s) {
+	World(Sketch s, World p) {
 		sketch = s;
 		explored = false;
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
@@ -52,7 +52,7 @@ public class World extends GameObject {
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		portalRadius = 50;
 		radius = 1000;
-		parent = null;
+		parent = p;
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		
@@ -63,18 +63,7 @@ public class World extends GameObject {
 			blotches.add(new Blotch());
 		}
 		
-	//generateContents();
-	}
-	
-	public WorldView getView() {
-		World w = this;
-		WorldView view = new WorldView(x, y, 1);
-		while (w != sketch.world) {
-			view.scale(portalRadius / radius);
-			w = w.parent;
-			view.trans(w.x, w.y);
-		}
-		return view;
+		//generateContents();
 	}
 	
 	public void generateContents() {
@@ -366,13 +355,26 @@ public class World extends GameObject {
 		return true;
 	}
 	
+	public WorldView getView() {
+		World w = this;
+		WorldView view = new WorldView(x, y, 1);
+		while (w != sketch.world) {
+			view.scale(portalRadius / radius);
+			w = w.parent;
+			view.trans(w.x, w.y);
+		}
+		view.scale(sketch.camera.scale);
+		view.trans(sketch.camera.x, sketch.camera.y);
+		return view;
+	}
+	
 	public void draw(WorldView view) {
 		//base case do not draw worlds that are too small
-		if(view.scale < 0.01) return;
+		if(view.scale < 0.001) return;
 		
 		sketch.noStroke();
 		sketch.fill(color);
-		sketch.ellipse(sketch.camera.screenX(0), sketch.camera.screenY(0),
+		sketch.ellipse(view.screenX(0), view.screenY(0),
 				view.scale * radius * 2, view.scale * radius * 2);
 		
 		// Draw blotches.
@@ -419,13 +421,8 @@ public class World extends GameObject {
 		
 		for (int i = 0; i < children.size(); ++i) {
 			World child = children.get(i);
-			WorldView childView = new WorldView(view);
-			childView.scale(child.portalRadius / child.radius);
-			childView.trans(child.x, child.y);
+			WorldView childView = view.innerView(child.x, child.y, child.portalRadius / child.radius);
 			child.draw(childView);
 		}
-		
-
-		
 	}
 }
