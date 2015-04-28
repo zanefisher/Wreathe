@@ -29,6 +29,7 @@ public class Swarmling extends GameObject {
 	
 	Nest nest = null;
 
+	Obstacle lastFrameTarget = null; // find if the swarmling start to attack, for use of audio
 	
 	Swarmling(Sketch s, float ix, float iy) {
 		sketch = s;
@@ -234,8 +235,20 @@ public class Swarmling extends GameObject {
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;
 			tmp.obstacleLife -= attackPower;
-//			sketch.audio.swarmSound(2,this);
+
 		}
+		
+		if (lastFrameTarget == null && target != null){
+			sketch.audio.swarmSound(2,this);
+			//play audio
+		}
+		
+		if (lastFrameTarget != null && target == null){
+			//TO DO: free audio
+			
+		}
+		
+		lastFrameTarget = target;
 		
 		// wandering behavior
 		

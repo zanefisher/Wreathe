@@ -36,7 +36,10 @@ public class Audio extends PApplet {
 	}
 	public void swarmSound(int input, float ix, float iy){
 		if(useAudio){
-			float maxDist = 1.5f*sketch.world.radius;
+			//TO DO: change it to match the view of current window
+			float worldRadius = 1000;
+			float maxDist = 1.5f*worldRadius;
+			
 			float distance = Sketch.sqrt((ix-sketch.camera.x)*(ix-sketch.camera.x)+(iy-sketch.camera.y)*(iy-sketch.camera.y));
 			if (distance<=maxDist)
 			{
