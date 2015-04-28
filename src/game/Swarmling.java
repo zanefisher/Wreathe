@@ -123,17 +123,11 @@ public class Swarmling extends GameObject {
 		float targetDist = attackRadius;
 		//attackCooldown is set to 0 now	
 //		attackCooldown = Sketch.max(0, attackCooldown-1);
-
-
-		
-		//closest wandering enemy
-		WanderingEnemy wanderingEnemy = null;
-		float predateDist = WanderingEnemy.predateRadius;
 		
 		//closest food
 		Food targetFood = null;
 		float foodDist = Food.distanceCarry;
-		
+		float nestDist = 0; 
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
@@ -142,10 +136,13 @@ public class Swarmling extends GameObject {
 				float distance = distTo(other);
 				
 				//find nest
-				if (other instanceof Nest) nest = (Nest)other;
-
+				if (other instanceof Nest) {
+					nest = (Nest)other;
+					nestDist = distTo(nest);
+				}
+				
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy)) {
+				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy) && nestDist > 0) {
 					unfollow();
 					uncarry();
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
@@ -191,32 +188,25 @@ public class Swarmling extends GameObject {
 				
 				if (other instanceof WanderingEnemy){
 					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
-					if(distance < predateDist && tmpEnemy.isAttacking==true){
-						wanderingEnemy = tmpEnemy;
-						predateDist = distance;
+					if(distance < WanderingEnemy.predateRadius && tmpEnemy.isAttacking==true && nestDist > 0){
+						ddx += (tmpEnemy.x - x) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
+						ddy += (tmpEnemy.y - y) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
 					}	
 				}
 				
 				// try to avoid whatever this is.
 				if (distance < other.avoidRadius) {
-					if(other instanceof Swarmling  ){
+					if(other instanceof Swarmling){
 						float centerDist = Sketch.dist(x, y, other.x, other.y);
-
-						ddx -= ((other.x - x) / centerDist) ;
-						ddy -= ((other.y - y) / centerDist) ;
-					}else{
+						ddx -= ((other.x - x) / centerDist) / 10;
+						ddy -= ((other.y - y) / centerDist) / 10;
+					}else if (distTo(nest) > 0){
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
 					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
 					ddy += avoidFactor * (-(other.y - y) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
 					}
 				}
 			}
-		}
-		
-		// Add predate vector if we found a wandering enemy,
-		if(wanderingEnemy != null){
-			ddx += (wanderingEnemy.x - x) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
-			ddy += (wanderingEnemy.y - y) / (1+distTo(wanderingEnemy)/WanderingEnemy.predateRadius);
 		}
 		
 		// Add food vector if we found a food
@@ -240,12 +230,6 @@ public class Swarmling extends GameObject {
 			ddx -= distOutsideWorld * x / sketch.world.radius;
 			ddy -= distOutsideWorld * y / sketch.world.radius;
 		}
-		
-		// Attack if we found a target.
-//		if ((target != null)&&attackCooldown == 0) {
-//			new Projectile(sketch, this, target);
-//			attackCooldown = 30;
-//		}
 		
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;
@@ -272,12 +256,7 @@ public class Swarmling extends GameObject {
 			dy *= maxSpeed / speed;
 		}
 
-		
-		
-//		x += dx;
-//		y += dy;
-		
-		
+				
 		if (carrying == null) {
 			x += dx;
 			y += dy;

@@ -13,7 +13,7 @@ public class Sketch extends PApplet {
 	static int obstacleMax=10;
 	
 	static int wanderingEnemySpawnPeriod=200;
-	static int wanderingEnemyMax=5;
+	static int wanderingEnemyMax=1;
 	boolean wholeView; 
 	
 	Leader leader;
@@ -144,14 +144,15 @@ public class Sketch extends PApplet {
 		world.update();
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
 
-//		if(world.count%wanderingEnemySpawnPeriod == 0){
-//			world.wanderingEnemyNumber+=1;
-//			if(world.wanderingEnemyNumber<=wanderingEnemyMax){
-//				WanderingEnemy wanderingEnemy= new WanderingEnemy(this);			
-//				wanderingEnemy.initInWorld(world);
-//			}
-//			
-//		}		
+		if(world.count % wanderingEnemySpawnPeriod == 0){
+			world.wanderingEnemyNumber+=1;
+			if(world.wanderingEnemyNumber <= wanderingEnemyMax){
+				WanderingEnemy wanderingEnemy= new WanderingEnemy(this);			
+				wanderingEnemy.initInWorld(world);
+			}	
+		}	
+		
+		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {

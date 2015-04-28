@@ -36,6 +36,11 @@ public class WanderingEnemy extends GameObject {
 	
 	public boolean update(){
 		
+		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
+			sketch.world.wanderingEnemyNumber-=1;
+			return false;
+		}
+		
 		int predateeCount = 0;
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
 			GameObject other = sketch.world.contents.get(i);
@@ -43,7 +48,6 @@ public class WanderingEnemy extends GameObject {
 				predateeCount++;
 			}
 		}
-		
 		
 		
 		//update isAttacking
@@ -69,10 +73,6 @@ public class WanderingEnemy extends GameObject {
 		//set movement
 		x += dx;
 		y += dy;
-		if(Sketch.dist(0,0, x, y) > sketch.world.radius + radius *2){
-			sketch.world.wanderingEnemyNumber-=1;
-			return false;
-		}
 		return true;
 	}
 

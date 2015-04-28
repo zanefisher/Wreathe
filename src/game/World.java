@@ -16,6 +16,7 @@ public class World extends GameObject {
 	static int stationaryObstacleMinNumber = 150;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
+
 	int blotchColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
@@ -356,7 +357,7 @@ public class World extends GameObject {
 			}
 			obstaclesAroundEntrance=6;
 		}
-		
+
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
 		for(int i=0; i<swarmlingsGenerated;){
 			float rx = sketch.random(radius) - (radius / 2);
