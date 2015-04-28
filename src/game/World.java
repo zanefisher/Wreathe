@@ -16,7 +16,7 @@ public class World extends GameObject {
 	static int stationaryObstacleMinNumber = 300;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
-	public int wanderingEnemyNumber=0;
+	public int wanderingEnemyNumber = 0;
 	
 	
 	static int obstacleSpawnPeriod=300;
