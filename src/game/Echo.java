@@ -36,12 +36,12 @@ public class Echo extends GameObject{
 		return --ttl > 0;
 	}
 	
-	public void draw(WorldView camera){
+	public void draw(WorldView view){
 		float alpha = Sketch.map(ttl, burstLength, 0, 255, 0);
 	    sketch.noFill();
 	    sketch.stroke(color, alpha);
-	    sketch.strokeWeight(4);
-	    sketch.ellipse(camera.screenX(x), camera.screenY(y),
-				camera.scale * radius * 2, camera.scale * radius * 2);
+	    sketch.strokeWeight(4 * view.scale);
+	    sketch.ellipse(view.screenX(x), view.screenY(y),
+	    		view.scale * radius * 2, view.scale * radius * 2);
 	}
 }

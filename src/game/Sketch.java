@@ -29,7 +29,9 @@ public class Sketch extends PApplet {
 	
 	Audio audio =  null;
 
-	
+	ArrayList<Key> vault;
+	float nextKeyX;
+	float nextKeyY;
 	
 	public void setup() {
 		frameRate(30);
@@ -47,6 +49,10 @@ public class Sketch extends PApplet {
 		leader.y = world.contents.get(0).y;
 		world.obstacleNumber=0;
 		world.count=0;
+		
+		vault = new ArrayList<Key>();
+		nextKeyX = width - 40;
+		nextKeyY = height - 40;
 	}
 	
 	private void updateCamera() {
@@ -173,6 +179,20 @@ public class Sketch extends PApplet {
 		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y),
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
+		
+		//above all stuff, render the Vault on the right buttom corner
+		noFill();
+		stroke(0, 0, 255);
+		strokeWeight(2);
+		rect((width - 40 * (vault.size() + 1)), height - 40, 40 * (vault.size() + 1), 40, 7);
+		for(int i = 0; i < vault.size(); i++){
+			Key key = vault.get(i);
+			fill(key.color, 125);
+			noStroke();
+			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
+			
+		}
+		
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.

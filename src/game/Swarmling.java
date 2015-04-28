@@ -153,9 +153,9 @@ public class Swarmling extends GameObject {
 					return false;
 				}	
 				
-				if (other instanceof Collectable){
+				if (other instanceof Key){
 					if(distance <= 0) {
-						Collectable collectable = (Collectable)other;
+						Key collectable = (Key)other;
 						collectable.collected();
 					}
 				}

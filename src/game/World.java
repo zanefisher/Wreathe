@@ -49,7 +49,7 @@ public class World extends GameObject {
 	World(Sketch s, World p) {
 		sketch = s;
 		parent = p;
-		level = (p == null ? 3 : p.level + 1);
+		level = (p == null ? 1 : p.level + 1);
 		//TO DO Add some noise
 		difficulty = 1 - 1/level;
 		explored = false;
@@ -127,7 +127,6 @@ public class World extends GameObject {
 		}
 
 		//generate key
-		generateKey();
 		
 		if(level == 1)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
@@ -358,6 +357,28 @@ public class World extends GameObject {
 			obstaclesAroundEntrance=6;
 		}
 		
+		//swarmling generation, they should try not to be spawned on the stationary obstacles
+		for(int i=0; i<swarmlingsGenerated;){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			//check if the swarmlins are generated in with in the stationary ostacles
+			for(int j = 0; j < contents.size() - i; j++){
+				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
+					break;
+				}
+				if(j >= contents.size() - i - 1){
+					Swarmling rs= new Swarmling(sketch, rx, ry) ;
+					contents.add(rs);
+					 i++;
+				}
+			}
+
+		}
+		
+		
+		//would like to add some untouchable stuffs in the backgroud to potential empty space
+		
+		generateKey();
 	}
 	
 	public void generateMovingObstacles(){
