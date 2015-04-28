@@ -38,8 +38,8 @@ public class MovingObstacle extends Obstacle {
 				break;
 			}
 		}
-		
-		avoidRadius = radius;
+
+		avoidRadius = Sketch.min(radius/2f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 		
 		int count = 0;
 		boolean hitNest = true;
