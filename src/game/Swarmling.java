@@ -176,6 +176,7 @@ public class Swarmling extends GameObject {
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
+					if(lastFrameTarget != null) sketch.audio.beamSound(false);
 					return false;
 				}	
 				

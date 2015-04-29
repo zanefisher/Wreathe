@@ -227,4 +227,7 @@ public class Sketch extends PApplet {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
 	}
 	
+	public void stop() {
+		audio.exit();
+	} 
 }

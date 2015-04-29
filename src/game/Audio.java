@@ -17,7 +17,7 @@ public class Audio extends PApplet {
 	Sketch sketch;
 	boolean useAudio = true;
 	
-	int beaming = 0;
+	static int beaming = 0;
 	
 	Audio(Sketch s){
 		sketch = s;
@@ -50,6 +50,11 @@ public class Audio extends PApplet {
 		beaming = Sketch.max(0,beaming);
 		if(beaming < 12)
 			beam.set("amp", Sketch.sqrt(beaming / 48f));
+	}
+	
+	public void beamSetZero(){
+		beaming = 0;
+		beam.set("amp", beaming);
 	}
 	
 	public void localSound(int input, GameObject other){
