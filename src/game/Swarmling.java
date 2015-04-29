@@ -268,8 +268,8 @@ public class Swarmling extends GameObject {
 		// Add food vector if we found a food
 		if(targetFood != null && targetFood.carriedBy.size()<targetFood.carryCap){
 			unfollow();
-			ddx += 1.5f*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
-			ddy += 1.5f*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddx += 2f*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddy += 2f*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
 
 		}
 		
