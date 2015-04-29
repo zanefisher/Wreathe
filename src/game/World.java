@@ -106,9 +106,10 @@ public class World extends GameObject {
 		parent = p;
 		
 		level = (p == null ? 1 : p.level + 1);
-
+		
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
+
 		ran =  Sketch.max(-1,ran);
 		ran =  Sketch.min(1,ran);
 		difficulty = (level >= maxLevel ? 1 : Sketch.sq(level+ran)/Sketch.sq(maxLevel));
@@ -468,6 +469,7 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
+		Sketch.println(sketch.randomGaussian());
 		count+=1;
 		if (sketch.world == this) {
 			if (level >=1)

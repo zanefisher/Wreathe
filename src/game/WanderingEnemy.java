@@ -45,7 +45,7 @@ public class WanderingEnemy extends GameObject {
 		int predateeCount = 0;
 		float sumX = 0;
 		float sumY = 0;
-		int scount = 0;
+		int scount = 1;
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
 			GameObject other = sketch.world.contents.get(i);
 			//float centerDist = Sketch.dist(other.x, other.y, sketch.world.nest.x, sketch.world.nest.y);
