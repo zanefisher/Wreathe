@@ -111,7 +111,7 @@ public class Nest extends GameObject {
 	}
 	
 	public void feed() {
-		sketch.audio.swarmSound(4,this);
+		sketch.audio.localSound(5,this);
 		if (growth < 1) {
 			float amt = 1 / (growth * 50);
 			growth += amt;

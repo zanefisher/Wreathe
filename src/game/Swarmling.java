@@ -47,14 +47,14 @@ public class Swarmling extends GameObject {
 		color = sketch.color(40, 65, 40);
 		puffPhase = (int) sketch.random(puffPeriod);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-		sketch.audio.swarmSound(0,this);
+		sketch.audio.localSound(6,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown = 15;
-		sketch.audio.swarmSound(1,this);
+		sketch.audio.localSound(2,this);
 
 	}
 	
@@ -74,13 +74,13 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		sketch.audio.swarmSound(5,this);
+		sketch.audio.globalSound(0);
 	}
 	
 	public void carry(Carryable carrything){
 		if (carrything.carryCap > carrything.carriedBy.size()) {
 			//collect the food
-			sketch.audio.swarmSound(3,this);
+			sketch.audio.localSound(1,this);
 			carrything.carriedBy.add(this);
 			carrying = carrything;
 			carryX = x - carrything.x;
@@ -175,7 +175,7 @@ public class Swarmling extends GameObject {
 						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					sketch.audio.swarmSound(6,this);
+					sketch.audio.localSound(4,this);
 					return false;
 				}	
 				
@@ -253,12 +253,14 @@ public class Swarmling extends GameObject {
 		}
 		
 		if (lastFrameTarget == null && target != null){
-			sketch.audio.swarmSound(2,this);
+			sketch.audio.localSound(0,this);
+			sketch.audio.beamSound(true);
 			//play audio
 		}
 		
 		if (lastFrameTarget != null && target == null){
 			//TO DO: free audio
+			sketch.audio.beamSound(false);
 			
 		}
 		

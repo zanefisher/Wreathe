@@ -139,6 +139,8 @@ public class World extends GameObject {
 		generateClouds();
 		
 		generateContents();
+		
+		sketch.audio.localSound(7,this);
 	}
 	
 	public void generateContents() {
@@ -508,6 +510,7 @@ public class World extends GameObject {
 				sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 				sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
 				sketch.world = this;
+				sketch.audio.globalSound(1);
 	
 			}
 		}
