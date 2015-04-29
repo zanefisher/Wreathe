@@ -43,10 +43,12 @@ public class Leader extends Swarmling {
 		// ignore small offsets;
 		dx = Sketch.abs(dx) < minOffset ? 0 : dx;
 		dy = Sketch.abs(dy) < minOffset ? 0 : dy;
-		
-//		float speed = leading ? maxSpeed : 2 * maxSpeed;
-		float speed = maxSpeed + sketch.controller.getJrz()*maxSpeed;
-		
+		float speed ;
+		if (sketch.usingController) 
+			speed = maxSpeed + sketch.controller.getJrz()*maxSpeed;
+		else 
+			speed = leading ? maxSpeed : 2 * maxSpeed;
+			
 		dx *= speed;
 		dy *= speed;
 		
