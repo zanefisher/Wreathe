@@ -12,7 +12,7 @@ public class Food extends Carryable {
 		weight = 2f;
 		color = sketch.color(60, 99, 99);
 		radius = 12;
-		distanceCarry = this.radius;
+		distanceCarry = this.radius * 2f;
 	}
 	
 	public boolean update() {

@@ -11,7 +11,7 @@ public class Controller extends PApplet {
 	ControlDevice device = null;
 	
 	float jx,jy;
-	boolean pressed;
+	boolean leading;
 	
 	public Controller() {
 		// Initialise the ControlIO
@@ -36,8 +36,14 @@ public class Controller extends PApplet {
 	}
 	
 	public boolean isPressed(){
-		pressed = device.getButton("FOLLOW").pressed()||device.getButton("FOLLOWA").pressed()||device.getButton("FOLLOWB").pressed();
-		return pressed;
+		boolean pressed = device.getButton("FOLLOW").pressed()||device.getButton("FOLLOWA").pressed()||device.getButton("FOLLOWB").pressed();
+		if(pressed)leading=!leading;
+		return leading;
 	}
+	
+	public float getJz(){
+		return (device.getSlider("Z").getValue()+1)/2f;
+	}
+	
 	
 }
