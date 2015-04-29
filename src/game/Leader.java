@@ -57,13 +57,18 @@ public class Leader extends Swarmling {
 		
 		//flap over when go out of the first world
 		float centerDist = Sketch.dist(0, 0, x, y);
-		if(centerDist > sketch.world.radius + radius / 3){
+		//Sketch.println("x: " + x);
+		if(centerDist > (sketch.world.radius + (Sketch.max(sketch.height, sketch.width)))){
+			
+			while(Swarmling.lastInLine != (Swarmling)this){
+				Swarmling.lastInLine.unfollow();
+			}
 			
 			sketch.camera.x -= 1.9 * x;
 			sketch.camera.y -= 1.9 * y;
 			
 			x = - x * 0.9f;
-			y = - x * 0.9f;
+			y = - y * 0.9f;
 		}
 		
 		return true;
