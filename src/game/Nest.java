@@ -95,7 +95,7 @@ public class Nest extends GameObject {
 	
 	public boolean update() {
 		
-		if(sketch.world.count % 360 == 60){
+		if ((growth < 1) && (sketch.world.count % 360 == 60)) {
 			Echo re = new Echo(sketch, x, y);
 			
 			sketch.world.contents.add(re);

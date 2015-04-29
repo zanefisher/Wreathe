@@ -123,11 +123,11 @@ public class Sketch extends PApplet {
 		
 		// Calculate distortion
 		distortion = 1;
-		if (world.parent != null) {
-			distortion = max(distortion, map(mag(leader.x, leader.y),
-					world.radius - World.transitionRadius, world.radius,
-					1, (world.radius + world.portalRadius) / (2 *world.portalRadius)));
-		}
+//		if (world.parent != null) {
+//			distortion = max(distortion, map(mag(leader.x, leader.y),
+//					world.radius - World.transitionRadius, world.radius,
+//					1, (world.radius + world.portalRadius) / (2 *world.portalRadius)));
+//		}
 		if (distortion == 1) {
 			for (int i = 0; i < world.children.size(); ++i) {
 				World w = world.children.get(i);
