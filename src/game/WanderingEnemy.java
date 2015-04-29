@@ -105,7 +105,7 @@ public class WanderingEnemy extends GameObject {
 			dx *= maxSpeed / speed;
 			dy *= maxSpeed / speed;
 		}
-		Sketch.println("towards: " + dx + " " + dy);
+		//Sketch.println("towards: " + dx + " " + dy);
 		x += dx;
 		y += dy;
 		

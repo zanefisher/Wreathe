@@ -14,7 +14,7 @@ public class World extends GameObject {
 	public int obstaclesRemainingAroundEntrance=6;
 	static int stationaryObstacleMaxNumber = 250;
 	static int stationaryObstacleMinNumber = 150;
-
+	static float worldRadius = 1000;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 
@@ -62,7 +62,7 @@ public class World extends GameObject {
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		portalRadius = 50;
-		radius = 1000;
+		radius = worldRadius;
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		

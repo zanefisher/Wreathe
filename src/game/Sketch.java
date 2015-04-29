@@ -42,6 +42,7 @@ public class Sketch extends PApplet {
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
 		world = new World(this, null);
+
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
