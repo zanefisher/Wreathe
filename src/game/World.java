@@ -5,7 +5,7 @@ public class World extends GameObject {
 	
 	boolean explored;
 	static float transitionRadius = 200;
-	float portalRadius; //radius of the world while you're outside it.
+	static float portalRadius = 50; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=10;
 	public int count=0;
@@ -71,7 +71,6 @@ public class World extends GameObject {
 		int cloudCount = (int) sketch.random(radius / 30, radius / 20); 
 		for(int i = 0; i < cloudCount; ++i) {
 			float speed = (float) sketch.random(1) * 0.009f;
-			Sketch.println(speed);
 			int cloudSize = (int) sketch.random(5, 15);
 			float phase = sketch.random(2 * Sketch.PI);
 			for (int j = 0; j < cloudSize; ++j) {
@@ -90,9 +89,11 @@ public class World extends GameObject {
 	Key key = null;
 	
 	//TO DO: rewrite this
-	World(Sketch s, World p) {
+	World(Sketch s, World p, float ix, float iy) {
 		sketch = s;
 		parent = p;
+		x = ix;
+		y = iy;
 		level = (p == null ? 1 : p.level + 1);
 		//TO DO Add some noise
 		difficulty = 1 - 1/level;
@@ -100,12 +101,15 @@ public class World extends GameObject {
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
-		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (20 + sketch.random(20)), bri + (20 + sketch.random(20)));
-		portalRadius = 50;
+		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
 		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();
+		
+		if (p != null) {
+			parent.contents.add(new Puffer(sketch, x, y, portalRadius * 15, cloudColor));
+		}
 		
 		//add blotches
 		blotches = new ArrayList<Blotch>();
@@ -215,7 +219,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(/*tmp<difficulty &&*/ level >=1)
+		if(tmp<difficulty && level >= 3)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(radius));
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
@@ -380,9 +384,9 @@ public class World extends GameObject {
 	public boolean update() {
 		count+=1;
 		if (sketch.world == this) {
-			if (level >=1)
+			if (level >= 2)
 				generateMovingObstacles();
-			if (level >=1)
+			if (level >= 3)
 				generateWanderingEnemy();
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){
@@ -496,7 +500,7 @@ public class World extends GameObject {
 		
 		for (int i = 0; i < clouds.size(); ++i) {
 			sketch.noStroke();
-			sketch.fill(255);
+			sketch.fill(cloudColor);
 			clouds.get(i).draw(view);
 		}
 	}
