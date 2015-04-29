@@ -5,7 +5,7 @@ public class World extends GameObject {
 	
 	boolean explored;
 	static float transitionRadius = 200;
-	float portalRadius; //radius of the world while you're outside it.
+	static float portalRadius = 50; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=10;
 	public int count=0;
@@ -83,9 +83,11 @@ public class World extends GameObject {
 	Key key = null;
 	
 	//TO DO: rewrite this
-	World(Sketch s, World p) {
+	World(Sketch s, World p, float ix, float iy) {
 		sketch = s;
 		parent = p;
+		x = ix;
+		y = iy;
 		level = (p == null ? 1 : p.level + 1);
 		//TO DO Add some noise
 		difficulty = 1 - 1/level;
@@ -94,11 +96,14 @@ public class World extends GameObject {
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
-		portalRadius = 50;
 		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();
+		
+		if (p != null) {
+			parent.contents.add(new Puffer(sketch, x, y, portalRadius * 15, cloudColor));
+		}
 		
 		//add blotches
 		blotches = new ArrayList<Blotch>();
