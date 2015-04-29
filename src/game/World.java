@@ -34,7 +34,7 @@ public class World extends GameObject {
 	static int hardestObstacleSpawnPeriod=100;
 	static int hardestObstacleMax=30;
 	static int hardestWanderingEnemySpawnPeriod=200;
-	static int hardestWanderingEnemyMax=10;
+	static int hardestWanderingEnemyMax=15;
 	
 	int obstacleSpawnPeriod=300;
 	int obstacleMax=10;
@@ -468,7 +468,6 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
-		Sketch.println(sketch.randomGaussian());
 		count+=1;
 		if (sketch.world == this) {
 			if (level >=1)
