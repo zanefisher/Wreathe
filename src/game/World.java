@@ -21,9 +21,21 @@ public class World extends GameObject {
 	int blotchColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
+	//for moving obstacles and wandering enemies
+	static int easiestObstacleSpawnPeriod=300;
+	static int easiestObstacleMax=10;
+	static int easiestWanderingEnemySpawnPeriod=200;
+	static int easiestWanderingEnemyMax=1;
 	
-	static int obstacleSpawnPeriod=300;
-	static int obstacleMax=10;
+	static int hardestObstacleSpawnPeriod=100;
+	static int hardestObstacleMax=30;
+	static int hardestWanderingEnemySpawnPeriod=200;
+	static int hardestWanderingEnemyMax=10;
+	
+	int obstacleSpawnPeriod=300;
+	int obstacleMax=10;
+	int wanderingEnemySpawnPeriod=200;
+	int wanderingEnemyMax=1;
 	
 	World parent;
 	ArrayList<World> children;
@@ -51,9 +63,20 @@ public class World extends GameObject {
 	World(Sketch s, World p) {
 		sketch = s;
 		parent = p;
+		
 		level = (p == null ? 1 : p.level + 1);
-		//TO DO Add some noise
-		difficulty = 1 - 1/level;
+
+		//generate random difficulty
+		float ran = sketch.randomGaussian();
+		ran =  Sketch.max(-1,ran);
+		ran =  Sketch.min(1,ran);
+		difficulty = (level >= 10 ? 1 : Sketch.sq(level+ran)/100f);
+		
+		obstacleSpawnPeriod= easiestObstacleSpawnPeriod + (int)(difficulty * (hardestObstacleSpawnPeriod - easiestObstacleSpawnPeriod ));
+		obstacleMax= easiestObstacleMax + (int)(difficulty * (hardestObstacleMax - easiestObstacleMax));
+		wanderingEnemySpawnPeriod = easiestWanderingEnemySpawnPeriod + (int)(difficulty * (hardestWanderingEnemySpawnPeriod - easiestWanderingEnemySpawnPeriod));;
+		wanderingEnemyMax = easiestWanderingEnemyMax + (int)(difficulty * (hardestWanderingEnemyMax - easiestWanderingEnemyMax));
+		
 		explored = false;
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
@@ -89,7 +112,7 @@ public class World extends GameObject {
 		if(level == 2)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5),(int)(stationaryObstacleMaxNumber*0.5));
 
-		if(level >= 2)
+		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
 		
 		//sprinkle food
@@ -385,7 +408,7 @@ public class World extends GameObject {
 	
 	public void generateMovingObstacles(){
 		int period = (level == 2 ? obstacleSpawnPeriod / 2 : obstacleSpawnPeriod);
-		count+=1;
+
 		if(count%period == 0){
 			obstacleNumber+=1;
 			if(obstacleNumber<=obstacleMax){
@@ -395,11 +418,24 @@ public class World extends GameObject {
 		}
 	}
 	
+	
+	public void generateWanderingEnemies(){
+		if(count % wanderingEnemySpawnPeriod == 0){
+		wanderingEnemyNumber+=1;
+		if(wanderingEnemyNumber <= wanderingEnemyMax){
+			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
+			wanderingEnemy.initInWorld(this);
+		}	
+	}	
+	
+	}
 	public boolean update() {
-
+		count+=1;
 		if (sketch.world == this) {
 			if (level >=2)
 				generateMovingObstacles();
+			if (level >= 3)
+				generateWanderingEnemies();
 			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 				while(Swarmling.lastInLine != sketch.leader){
 					Swarmling.lastInLine.unfollow();
