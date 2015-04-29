@@ -219,7 +219,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(/*tmp<difficulty &&*/ level >=1)
+		if(tmp<difficulty && level >= 3)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(radius));
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
@@ -384,9 +384,9 @@ public class World extends GameObject {
 	public boolean update() {
 		count+=1;
 		if (sketch.world == this) {
-			if (level >=1)
+			if (level >= 2)
 				generateMovingObstacles();
-			if (level >=1)
+			if (level >= 3)
 				generateWanderingEnemy();
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){
