@@ -12,6 +12,8 @@ public class Swarmling extends GameObject {
 	static final float attackRadius = 100f;
 	static final float attackPower = 0.2f;
 	static final float swarmlingAvoidRadius = 10f;
+	static final int puffPeriod = 10;
+	int puffPhase;
 	static float seed=0;
 	
 	static float attractRadius;
@@ -43,6 +45,7 @@ public class Swarmling extends GameObject {
 		radius = swarmlingRadius;
 		avoidRadius = swarmlingAvoidRadius;
 		color = sketch.color(40, 65, 40);
+		puffPhase = (int) sketch.random(puffPeriod);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
 		sketch.audio.swarmSound(0,this);
 	}
@@ -305,6 +308,10 @@ public class Swarmling extends GameObject {
 			}
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
+		}
+		
+		if (sketch.leader.leading && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
 		}
 
 		return true;

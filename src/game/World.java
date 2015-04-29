@@ -82,7 +82,6 @@ public class World extends GameObject {
 		int cloudCount = (int) sketch.random(radius / 30, radius / 20); 
 		for(int i = 0; i < cloudCount; ++i) {
 			float speed = (float) sketch.random(1) * 0.009f;
-			Sketch.println(speed);
 			int cloudSize = (int) sketch.random(5, 15);
 			float phase = sketch.random(2 * Sketch.PI);
 			for (int j = 0; j < cloudSize; ++j) {
@@ -123,7 +122,7 @@ public class World extends GameObject {
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
-		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (20 + sketch.random(20)), bri + (20 + sketch.random(20)));
+		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
 		portalRadius = 50;
 		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
@@ -590,7 +589,7 @@ public class World extends GameObject {
 		
 		for (int i = 0; i < clouds.size(); ++i) {
 			sketch.noStroke();
-			sketch.fill(255);
+			sketch.fill(cloudColor);
 			clouds.get(i).draw(view);
 		}
 	}
