@@ -143,7 +143,6 @@ public class Sketch extends PApplet {
 		//lle the current world
 		world.update();
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
@@ -174,6 +173,11 @@ public class Sketch extends PApplet {
 		}
 		
 		//above all stuff, render the Vault on the right buttom corner
+		drawVault();
+		
+	}
+
+	void drawVault(){
 		noFill();
 		stroke(0, 0, 255);
 		strokeWeight(2);
@@ -185,11 +189,9 @@ public class Sketch extends PApplet {
 			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
 			
 		}
-		
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
-	
 	float montecarlo(float max){
 		return montecarlo(max, 0);
 	}
@@ -209,6 +211,7 @@ public class Sketch extends PApplet {
 		}
 	}
 	
+	//development use only
 	public void keyPressed(){
 		//stop everything and show the whole level in one view
 		if(key == 'b'){

@@ -3,6 +3,9 @@ import java.util.ArrayList;
 
 public class World extends GameObject {
 	
+	
+	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
+	
 	boolean explored;
 	static float transitionRadius = 200;
 	float portalRadius; //radius of the world while you're outside it.
@@ -19,6 +22,7 @@ public class World extends GameObject {
 	int bgColor; //background color
 
 	int blotchColor;
+	int cloudColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
 	//for moving obstacles and wandering enemies
@@ -41,6 +45,7 @@ public class World extends GameObject {
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
 	ArrayList<Blotch> blotches;
+	ArrayList<Cloud> clouds;
 	
 	class Blotch {
 		float x, y, r;
@@ -51,6 +56,42 @@ public class World extends GameObject {
 			float angle = sketch.random(Sketch.PI * 2);
 			x = distFromCenter * Sketch.cos(angle);
 			y = distFromCenter * Sketch.sin(angle);
+		}
+	}
+	
+	class Cloud {
+		float orbitRadius, phase, radius, speed;
+		
+		Cloud (float ior, float ip, float ir, float is) {
+			orbitRadius = ior;
+			phase = ip;
+			radius = ir;
+			speed = is;
+		}
+
+		void draw(WorldView view) {
+			float angle = (phase + (speed * sketch.frameCount));
+			float x = orbitRadius * Sketch.cos(angle);
+			float y = orbitRadius * Sketch.sin(angle);
+			float drawDiameter = view.scale * radius * 2;
+			sketch.ellipse(view.screenX(x), view.screenY(y), drawDiameter, drawDiameter);
+		}
+	}
+	
+	void generateClouds() {
+		int cloudCount = (int) sketch.random(radius / 30, radius / 20); 
+		for(int i = 0; i < cloudCount; ++i) {
+			float speed = (float) sketch.random(1) * 0.009f;
+			Sketch.println(speed);
+			int cloudSize = (int) sketch.random(5, 15);
+			float phase = sketch.random(2 * Sketch.PI);
+			for (int j = 0; j < cloudSize; ++j) {
+				phase += sketch.random(1) * speed * 10;
+				float maxRadius = Sketch.sin(Sketch.PI * (((float) j + 0.5f) / (float) cloudSize));
+				float cloudRadius = sketch.random(radius / 40, radius / 10) * maxRadius;
+				float orbitRadius = sketch.random(radius, radius + cloudRadius);
+				clouds.add(new Cloud(orbitRadius, phase, cloudRadius, speed));
+			}
 		}
 	}
 	
@@ -70,7 +111,7 @@ public class World extends GameObject {
 		float ran = sketch.randomGaussian();
 		ran =  Sketch.max(-1,ran);
 		ran =  Sketch.min(1,ran);
-		difficulty = (level >= 10 ? 1 : Sketch.sq(level+ran)/100f);
+		difficulty = (level >= maxLevel ? 1 : Sketch.sq(level+ran)/Sketch.sq(maxLevel));
 		
 		obstacleSpawnPeriod= easiestObstacleSpawnPeriod + (int)(difficulty * (hardestObstacleSpawnPeriod - easiestObstacleSpawnPeriod ));
 		obstacleMax= easiestObstacleMax + (int)(difficulty * (hardestObstacleMax - easiestObstacleMax));
@@ -81,10 +122,12 @@ public class World extends GameObject {
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
+		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (20 + sketch.random(20)), bri + (20 + sketch.random(20)));
 		portalRadius = 50;
-		radius = worldRadius;
+		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
+		clouds = new ArrayList<Cloud>();
 		
 		//add blotches
 		blotches = new ArrayList<Blotch>();
@@ -92,6 +135,8 @@ public class World extends GameObject {
 		for (int i = 0; i < blotchCount; ++i) {
 			blotches.add(new Blotch());
 		}
+		
+		generateClouds();
 		
 		generateContents();
 	}
@@ -125,14 +170,6 @@ public class World extends GameObject {
 			}
 		}
 		
-		if (level == 2) {
-			for (int i = 0; i < 10; ++i) {
-				obstacleNumber+=1;
-				MovingObstacle obstacle= new MovingObstacle(sketch);			
-				obstacle.initInWorld(this);
-			}
-		}
-		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
 		for(int i=0; i<swarmlingsGenerated;){
 			float rx = sketch.random(radius) - (radius / 2);
@@ -152,30 +189,30 @@ public class World extends GameObject {
 		}
 
 		//generate key
-		
-		if(level == 1)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
-
-		if(level >= 3)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
-
-		//swarmling generation, they should try not to be spawned on the stationary obstacles
-		for(int i=0; i<swarmlingsGenerated;){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			//check if the swarmlins are generated in with in the stationary ostacles
-			for(int j = 0; j < contents.size() - i; j++){
-				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
-					break;
-				}
-				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry);
-					contents.add(rs);
-					 i++;
-				}
-			}
-
-		}
+		generateKey();
+//		if(level == 1)
+//			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
+//
+//		if(level >= 3)
+//			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+//
+//		//swarmling generation, they should try not to be spawned on the stationary obstacles
+//		for(int i=0; i<swarmlingsGenerated;){
+//			float rx = sketch.random(radius) - (radius / 2);
+//			float ry = sketch.random(radius) - (radius / 2);
+//			//check if the swarmlins are generated in with in the stationary ostacles
+//			for(int j = 0; j < contents.size() - i; j++){
+//				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
+//					break;
+//				}
+//				if(j >= contents.size() - i - 1){
+//					Swarmling rs= new Swarmling(sketch, rx, ry);
+//					contents.add(rs);
+//					 i++;
+//				}
+//			}
+//
+//		}
 		
 		
 		//would like to add some untouchable stuffs in the backgroud to potential empty space
@@ -410,47 +447,50 @@ public class World extends GameObject {
 		int period = (level == 2 ? obstacleSpawnPeriod / 2 : obstacleSpawnPeriod);
 
 		if(count%period == 0){
-			obstacleNumber+=1;
 			if(obstacleNumber<=obstacleMax){
-			MovingObstacle obstacle= new MovingObstacle(sketch);			
-			obstacle.initInWorld(this);
+				obstacleNumber+=1;
+				MovingObstacle obstacle= new MovingObstacle(sketch);			
+				obstacle.initInWorld(this);
 			}
 		}
 	}
 	
-	
-	public void generateWanderingEnemies(){
-		if(count % wanderingEnemySpawnPeriod == 0){
-		wanderingEnemyNumber+=1;
-		if(wanderingEnemyNumber <= wanderingEnemyMax){
-			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
-			wanderingEnemy.initInWorld(this);
+	public void generateWanderingEnemy(){
+		int period = (level == 3 ? wanderingEnemySpawnPeriod / 2 : wanderingEnemySpawnPeriod);
+		
+		if(count % period == 10){
+			wanderingEnemyNumber+=1;
+			if(wanderingEnemyNumber <= wanderingEnemyMax){
+				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
+				wanderingEnemy.initInWorld(this);
+			}	
 		}	
-	}	
-	
 	}
+	
 	public boolean update() {
 		count+=1;
 		if (sketch.world == this) {
-			if (level >=2)
+			if (level >=1)
 				generateMovingObstacles();
-			if (level >= 3)
-				generateWanderingEnemies();
-			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
-				while(Swarmling.lastInLine != sketch.leader){
-					Swarmling.lastInLine.unfollow();
-				}
-				float r = portalRadius / radius;
-				sketch.camera.scale *= 1 / r;
-				float x0 = sketch.leader.x;
-				float y0 = sketch.leader.y;
-				sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - (portalRadius + 10), x + portalRadius + 10);
-				sketch.leader.y = Sketch.map(sketch.leader.y, -1 * radius, radius, y - (portalRadius + 10), y + portalRadius + 10);
-				sketch.leader.x *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
-				sketch.leader.y *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
-				sketch.camera.trans(x0 - sketch.leader.x, y0 - sketch.leader.y);
-				sketch.world = parent;
-			}
+
+			if (level >=3)
+				generateWanderingEnemy();
+//			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
+//				while(Swarmling.lastInLine != sketch.leader){
+//					Swarmling.lastInLine.unfollow();
+//				}
+//				float r = portalRadius / radius;
+//				sketch.camera.scale *= 1 / r;
+//				float x0 = sketch.leader.x;
+//				float y0 = sketch.leader.y;
+//				sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - (portalRadius + 10), x + portalRadius + 10);
+//				sketch.leader.y = Sketch.map(sketch.leader.y, -1 * radius, radius, y - (portalRadius + 10), y + portalRadius + 10);
+//				sketch.leader.x *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+//				sketch.leader.y *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+//				sketch.camera.trans(x0 - sketch.leader.x, y0 - sketch.leader.y);
+//				sketch.world = parent;
+//			}
+
 		} else {
 			float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
 			if (distToLeader < portalRadius) {
@@ -490,7 +530,7 @@ public class World extends GameObject {
 	
 	public void draw(WorldView view) {
 		//base case do not draw worlds that are too small
-		if(view.scale < 0.001) return;
+		if(view.scale < 0.01) return;
 		
 		sketch.noStroke();
 		sketch.fill(color);
@@ -520,7 +560,8 @@ public class World extends GameObject {
 				sketch.ellipse(view.screenX(obj.x), view.screenY(obj.y), r, r);
 			}
 		}
-
+		
+		//we need to avoid draw too much stuff in the inner world, which will slow down the game
 		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
 			
@@ -543,6 +584,12 @@ public class World extends GameObject {
 			World child = children.get(i);
 			WorldView childView = view.innerView(child.x, child.y, child.portalRadius / child.radius);
 			child.draw(childView);
+		}
+		
+		for (int i = 0; i < clouds.size(); ++i) {
+			sketch.noStroke();
+			sketch.fill(255);
+			clouds.get(i).draw(view);
 		}
 	}
 }

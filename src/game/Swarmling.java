@@ -165,9 +165,12 @@ public class Swarmling extends GameObject {
 				}
 				
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy) && nestDist > 0) {
+				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy) /*&& nestDist > 0*/) {
 					unfollow();
 					uncarry();
+					if(other instanceof Obstacle){
+						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
+					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.swarmSound(6,this);
 					return false;
@@ -202,7 +205,7 @@ public class Swarmling extends GameObject {
 				
 				if (other instanceof WanderingEnemy){
 					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
-					if(distance < WanderingEnemy.predateRadius && tmpEnemy.isAttacking==true && nestDist > 0){
+					if(distance < WanderingEnemy.predateRadius && tmpEnemy.isAttacking==true /*&& nestDist > 0*/){
 						ddx += (tmpEnemy.x - x) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
 						ddy += (tmpEnemy.y - y) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
 					}	
@@ -214,7 +217,7 @@ public class Swarmling extends GameObject {
 						float centerDist = Sketch.dist(x, y, other.x, other.y);
 						ddx -= ((other.x - x) / centerDist) / 10;
 						ddy -= ((other.y - y) / centerDist) / 10;
-					}else if (distTo(nest) > 0){
+					}else /*if (nestDist > 0)*/{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
 					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
 					ddy += avoidFactor * (-(other.y - y) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
