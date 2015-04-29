@@ -17,6 +17,7 @@ public class World extends GameObject {
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 	int blotchColor;
+	int cloudColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
 	
@@ -27,6 +28,7 @@ public class World extends GameObject {
 	ArrayList<World> children;
 	ArrayList<GameObject> contents;
 	ArrayList<Blotch> blotches;
+	ArrayList<Cloud> clouds;
 	
 	class Blotch {
 		float x, y, r;
@@ -37,6 +39,42 @@ public class World extends GameObject {
 			float angle = sketch.random(Sketch.PI * 2);
 			x = distFromCenter * Sketch.cos(angle);
 			y = distFromCenter * Sketch.sin(angle);
+		}
+	}
+	
+	class Cloud {
+		float orbitRadius, phase, radius, speed;
+		
+		Cloud (float ior, float ip, float ir, float is) {
+			orbitRadius = ior;
+			phase = ip;
+			radius = ir;
+			speed = is;
+		}
+
+		void draw(WorldView view) {
+			float angle = (phase + (speed * sketch.frameCount));
+			float x = orbitRadius * Sketch.cos(angle);
+			float y = orbitRadius * Sketch.sin(angle);
+			float drawDiameter = view.scale * radius * 2;
+			sketch.ellipse(view.screenX(x), view.screenY(y), drawDiameter, drawDiameter);
+		}
+	}
+	
+	void generateClouds() {
+		int cloudCount = (int) sketch.random(radius / 30, radius / 20); 
+		for(int i = 0; i < cloudCount; ++i) {
+			float speed = (float) sketch.random(1) * 0.009f;
+			Sketch.println(speed);
+			int cloudSize = (int) sketch.random(5, 15);
+			float phase = sketch.random(2 * Sketch.PI);
+			for (int j = 0; j < cloudSize; ++j) {
+				phase += sketch.random(1) * speed * 10;
+				float maxRadius = Sketch.sin(Sketch.PI * (((float) j + 0.5f) / (float) cloudSize));
+				float cloudRadius = sketch.random(radius / 40, radius / 10) * maxRadius;
+				float orbitRadius = sketch.random(radius, radius + cloudRadius);
+				clouds.add(new Cloud(orbitRadius, phase, cloudRadius, speed));
+			}
 		}
 	}
 	
@@ -56,10 +94,12 @@ public class World extends GameObject {
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
+		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (20 + sketch.random(20)), bri + (20 + sketch.random(20)));
 		portalRadius = 50;
-		radius = 1000;
+		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
+		clouds = new ArrayList<Cloud>();
 		
 		//add blotches
 		blotches = new ArrayList<Blotch>();
@@ -67,6 +107,8 @@ public class World extends GameObject {
 		for (int i = 0; i < blotchCount; ++i) {
 			blotches.add(new Blotch());
 		}
+		
+		generateClouds();
 		
 		generateContents();
 	}
@@ -505,6 +547,12 @@ public class World extends GameObject {
 			World child = children.get(i);
 			WorldView childView = view.innerView(child.x, child.y, child.portalRadius / child.radius);
 			child.draw(childView);
+		}
+		
+		for (int i = 0; i < clouds.size(); ++i) {
+			sketch.noStroke();
+			sketch.fill(255);
+			clouds.get(i).draw(view);
 		}
 	}
 }
