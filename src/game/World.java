@@ -14,6 +14,7 @@ public class World extends GameObject {
 	public int obstaclesRemainingAroundEntrance=6;
 	static int stationaryObstacleMaxNumber = 250;
 	static int stationaryObstacleMinNumber = 150;
+
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 
@@ -21,8 +22,11 @@ public class World extends GameObject {
 	public int wanderingEnemyNumber=0;
 	Nest nest;
 	
-	static int obstacleSpawnPeriod=300;
+	static int obstacleSpawnPeriod=100;
 	static int obstacleMax=10;
+	
+	static int wanderingEnemySpawnPeriod=200;
+	static int wanderingEnemyMax=1;
 	
 	World parent;
 	ArrayList<World> children;
@@ -101,14 +105,6 @@ public class World extends GameObject {
 			}
 		}
 		
-		if (level == 2) {
-			for (int i = 0; i < 10; ++i) {
-				obstacleNumber+=1;
-				MovingObstacle obstacle= new MovingObstacle(sketch);			
-				obstacle.initInWorld(this);
-			}
-		}
-		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
 		for(int i=0; i<swarmlingsGenerated;){
 			float rx = sketch.random(radius) - (radius / 2);
@@ -128,30 +124,30 @@ public class World extends GameObject {
 		}
 
 		//generate key
-		
-		if(level == 1)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
-
-		if(level >= 3)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
-
-		//swarmling generation, they should try not to be spawned on the stationary obstacles
-		for(int i=0; i<swarmlingsGenerated;){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			//check if the swarmlins are generated in with in the stationary ostacles
-			for(int j = 0; j < contents.size() - i; j++){
-				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
-					break;
-				}
-				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry);
-					contents.add(rs);
-					 i++;
-				}
-			}
-
-		}
+		generateKey();
+//		if(level == 1)
+//			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
+//
+//		if(level >= 3)
+//			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+//
+//		//swarmling generation, they should try not to be spawned on the stationary obstacles
+//		for(int i=0; i<swarmlingsGenerated;){
+//			float rx = sketch.random(radius) - (radius / 2);
+//			float ry = sketch.random(radius) - (radius / 2);
+//			//check if the swarmlins are generated in with in the stationary ostacles
+//			for(int j = 0; j < contents.size() - i; j++){
+//				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
+//					break;
+//				}
+//				if(j >= contents.size() - i - 1){
+//					Swarmling rs= new Swarmling(sketch, rx, ry);
+//					contents.add(rs);
+//					 i++;
+//				}
+//			}
+//
+//		}
 		
 		
 		//would like to add some untouchable stuffs in the backgroud to potential empty space
@@ -384,21 +380,35 @@ public class World extends GameObject {
 	
 	public void generateMovingObstacles(){
 		int period = (level == 2 ? obstacleSpawnPeriod / 2 : obstacleSpawnPeriod);
-		count+=1;
+		
 		if(count%period == 0){
-			obstacleNumber+=1;
 			if(obstacleNumber<=obstacleMax){
-			MovingObstacle obstacle= new MovingObstacle(sketch);			
-			obstacle.initInWorld(this);
+				obstacleNumber+=1;
+				MovingObstacle obstacle= new MovingObstacle(sketch);			
+				obstacle.initInWorld(this);
 			}
 		}
 	}
 	
+	public void generateWanderingEnemy(){
+		int period = (level == 3 ? wanderingEnemySpawnPeriod / 2 : wanderingEnemySpawnPeriod);
+		
+		if(count % period == 10){
+			wanderingEnemyNumber+=1;
+			if(wanderingEnemyNumber <= wanderingEnemyMax){
+				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
+				wanderingEnemy.initInWorld(this);
+			}	
+		}	
+	}
+	
 	public boolean update() {
-
+		count+=1;
 		if (sketch.world == this) {
-			if (level >=2)
+			if (level >=1)
 				generateMovingObstacles();
+			if (level >=1)
+				generateWanderingEnemy();
 			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 				while(Swarmling.lastInLine != sketch.leader){
 					Swarmling.lastInLine.unfollow();
@@ -453,7 +463,7 @@ public class World extends GameObject {
 	
 	public void draw(WorldView view) {
 		//base case do not draw worlds that are too small
-		if(view.scale < 0.001) return;
+		if(view.scale < 0.01) return;
 		
 		sketch.noStroke();
 		sketch.fill(color);
@@ -483,7 +493,8 @@ public class World extends GameObject {
 				sketch.ellipse(view.screenX(obj.x), view.screenY(obj.y), r, r);
 			}
 		}
-
+		
+		//we need to avoid draw too much stuff in the inner world, which will slow down the game
 		boolean startDrawSwarmling = false;
 		for (int i = 0; i < contents.size(); ++i) {
 			

@@ -1,16 +1,19 @@
 package game;
+import java.util.ArrayList;
 
 public class MovingObstacle extends Obstacle {
 	
 	static float minRadius = 40;
 	static float maxRadius = 200;
 	static float maxSpeed = 3.8f;
-	static float minSpeed = 1.2f;
+	static float minSpeed = 2.4f;
 	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	
+	ArrayList<Food> foodContained;
 	MovingObstacle(Sketch s){
 		sketch = s;
 		color=sketch.color(30,30,60);
+		foodContained = new ArrayList<Food>();
 	}
 	
 	MovingObstacle(Sketch s,World w, float ix, float iy){
@@ -18,7 +21,7 @@ public class MovingObstacle extends Obstacle {
 		x=ix;
 		y=iy;
 		color=sketch.color(30,30,60);
-
+		foodContained = new ArrayList<Food>();
 	}
 	
 	public void initInWorld(World world){
@@ -30,16 +33,22 @@ public class MovingObstacle extends Obstacle {
 		y = Sketch.cos(radians) * (radius + world.radius);
 
 		//find the nest
-		Nest nest=null;
-		for (int i = 0; i < world.contents.size(); ++i) {
-			GameObject other = world.contents.get(i);
-			if (other instanceof Nest) {
-				nest = (Nest)other;
-				break;
-			}
-		}
-
+		Nest nest = (Nest)world.contents.get(0);
+//		for (int i = 0; i < world.contents.size(); ++i) {
+//			GameObject other = world.contents.get(i);
+//			if (other instanceof Nest) {
+//				nest = (Nest)other;
+//				break;
+//			}
+//		}
+		
 		avoidRadius = Sketch.min(radius/2f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
+		
+		for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
+			float rx = x + sketch.random(radius) - (radius/2);
+			float ry = y + sketch.random(radius) - (radius/2);
+			foodContained.add(new Food(sketch, rx, ry));
+		}
 		
 		int count = 0;
 		boolean hitNest = true;
@@ -58,9 +67,14 @@ public class MovingObstacle extends Obstacle {
 	}
 	
 	public boolean update(){
-				
 		x += dx;
 		y += dy;
+		
+		for(int i = 0 ; i< foodContained.size(); i++){
+			foodContained.get(i).x += dx;
+			foodContained.get(i).y += dy;
+		}
+		
 		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
 			sketch.world.obstacleNumber-=1;
 			return false;
@@ -69,15 +83,13 @@ public class MovingObstacle extends Obstacle {
 		//check if it has died
 		if(obstacleLife <= 0f) {
 			//Generate New Swarmlings
-			for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
-				float rx = x + sketch.random(radius);
-				float ry = y + sketch.random(radius);
-				sketch.world.contents.add(new Food(sketch, rx, ry));
+			for(int i=0; i< foodContained.size(); i++){
+				sketch.world.contents.add(foodContained.get(i));
 			}
 			sketch.world.obstacleNumber-=1;
 			
 			//add bursts
-			Burst ob = new Burst(sketch, x, y, color);
+			Burst ob = new Burst(sketch, x, y, color, 10);
 			sketch.world.contents.add(ob);
 			
 			return false;
@@ -92,6 +104,10 @@ public class MovingObstacle extends Obstacle {
 	
 	public void draw(WorldView view){
 		super.draw(view);
+		
+		for(int i = 0 ; i< foodContained.size(); i++){
+			foodContained.get(i).draw(view);
+		}
 		
 	    sketch.noFill();
 	    sketch.stroke(0, 0, 0, 255);
