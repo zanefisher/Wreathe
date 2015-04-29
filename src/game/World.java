@@ -440,21 +440,21 @@ public class World extends GameObject {
 		if (sketch.world == this) {
 			if (level >=2)
 				generateMovingObstacles();
-			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
-				while(Swarmling.lastInLine != sketch.leader){
-					Swarmling.lastInLine.unfollow();
-				}
-				float r = portalRadius / radius;
-				sketch.camera.scale *= 1 / r;
-				float x0 = sketch.leader.x;
-				float y0 = sketch.leader.y;
-				sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - (portalRadius + 10), x + portalRadius + 10);
-				sketch.leader.y = Sketch.map(sketch.leader.y, -1 * radius, radius, y - (portalRadius + 10), y + portalRadius + 10);
-				sketch.leader.x *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
-				sketch.leader.y *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
-				sketch.camera.trans(x0 - sketch.leader.x, y0 - sketch.leader.y);
-				sketch.world = parent;
-			}
+//			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
+//				while(Swarmling.lastInLine != sketch.leader){
+//					Swarmling.lastInLine.unfollow();
+//				}
+//				float r = portalRadius / radius;
+//				sketch.camera.scale *= 1 / r;
+//				float x0 = sketch.leader.x;
+//				float y0 = sketch.leader.y;
+//				sketch.leader.x = Sketch.map(sketch.leader.x, -1 * radius, radius, x - (portalRadius + 10), x + portalRadius + 10);
+//				sketch.leader.y = Sketch.map(sketch.leader.y, -1 * radius, radius, y - (portalRadius + 10), y + portalRadius + 10);
+//				sketch.leader.x *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+//				sketch.leader.y *= Sketch.mag(sketch.leader.x, sketch.leader.y) / radius;
+//				sketch.camera.trans(x0 - sketch.leader.x, y0 - sketch.leader.y);
+//				sketch.world = parent;
+//			}
 		} else {
 			float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
 			if (distToLeader < portalRadius) {
