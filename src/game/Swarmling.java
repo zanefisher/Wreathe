@@ -180,6 +180,10 @@ public class Swarmling extends GameObject {
 					if(distance <= 0) {
 						Key collectable = (Key)other;
 						collectable.collected();
+						if(sketch.world.chasingEnemy == null){
+							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
+							sketch.world.chasingEnemy.initInWorld(sketch.world);
+						}
 					}
 				}
 				//find closest food
