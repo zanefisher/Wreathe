@@ -74,6 +74,19 @@ public class Swarmling extends GameObject {
 		sketch.audio.swarmSound(5,this);
 	}
 	
+	public void carry(Carryable carrything){
+		if (carrything.carryCap > carrything.carriedBy.size()) {
+			//collect the food
+			sketch.audio.swarmSound(3,this);
+			carrything.carriedBy.add(this);
+			carrying = carrything;
+			carryX = x - carrything.x;
+			carryY = y - carrything.y;
+
+			unfollow();
+		}
+	}
+	
 	public void uncarry(){
 		if (carrying != null) {
 		for (int i = 0; i < carrying.carriedBy.size(); ++i) {
@@ -169,17 +182,8 @@ public class Swarmling extends GameObject {
 				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
-					Carryable carrything = (Carryable) other;
-					if (carrything.carryCap > carrything.carriedBy.size()) {
-						//collect the food
-						sketch.audio.swarmSound(3,this);
-						carrything.carriedBy.add(this);
-						carrying = carrything;
-						carryX = x - carrything.x;
-						carryY = y - carrything.y;
+					carry((Carryable) other);
 
-						unfollow();
-					}
 				}
 				
 				// attack behavoiur with obstacles
@@ -264,8 +268,8 @@ public class Swarmling extends GameObject {
 		// Add food vector if we found a food
 		if(targetFood != null && targetFood.carriedBy.size()<targetFood.carryCap){
 			unfollow();
-			ddx += 2*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
-			ddy += 2*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddx += 1.5f*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddy += 1.5f*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
 
 		}
 		
