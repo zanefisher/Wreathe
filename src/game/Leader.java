@@ -55,6 +55,17 @@ public class Leader extends Swarmling {
 		x += dx * sketch.distortion;
 		y += dy * sketch.distortion;
 		
+		//flap over when go out of the first world
+		float centerDist = Sketch.dist(0, 0, x, y);
+		if(centerDist > sketch.world.radius + radius / 3){
+			
+			sketch.camera.x -= 1.9 * x;
+			sketch.camera.y -= 1.9 * y;
+			
+			x = - x * 0.9f;
+			y = - x * 0.9f;
+		}
+		
 		return true;
 	}
 	
