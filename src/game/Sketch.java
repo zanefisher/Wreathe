@@ -33,7 +33,7 @@ public class Sketch extends PApplet {
 	float nextKeyY;
 	
 	public void setup() {
-		frameRate(30);
+		frameRate(40);
 		colorMode(HSB, 360, 100, 100, 100);
 		size(1080, 700);
 		screenHeight = height;
