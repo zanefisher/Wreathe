@@ -8,7 +8,7 @@ public class World extends GameObject {
 	
 	boolean explored;
 	static float transitionRadius = 200;
-	float portalRadius; //radius of the world while you're outside it.
+	static float portalRadius = 50; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=10;
 	public int count=0;
@@ -25,11 +25,15 @@ public class World extends GameObject {
 	int cloudColor;
 	public int wanderingEnemyNumber=0;
 	Nest nest;
+
 	//for moving obstacles and wandering enemies
 	static int easiestObstacleSpawnPeriod=300;
 	static int easiestObstacleMax=10;
 	static int easiestWanderingEnemySpawnPeriod=200;
 	static int easiestWanderingEnemyMax=1;
+	
+	ChasingEnemy chasingEnemy;
+
 	
 	static int hardestObstacleSpawnPeriod=100;
 	static int hardestObstacleMax=30;
@@ -100,10 +104,11 @@ public class World extends GameObject {
 	Key key = null;
 	
 	//TO DO: rewrite this
-	World(Sketch s, World p) {
+	World(Sketch s, World p, float ix, float iy) {
 		sketch = s;
 		parent = p;
-		
+		x = ix;
+		y = iy;
 		level = (p == null ? 1 : p.level + 1);
 		
 		//generate random difficulty
@@ -123,11 +128,14 @@ public class World extends GameObject {
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
-		portalRadius = 50;
 		radius = sketch.random(600, 1000);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();
+		
+		if (p != null) {
+			parent.contents.add(new Puffer(sketch, x, y, portalRadius * 15, cloudColor));
+		}
 		
 		//add blotches
 		blotches = new ArrayList<Blotch>();
@@ -173,36 +181,10 @@ public class World extends GameObject {
 		}
 		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
-		for(int i=0; i<swarmlingsGenerated;){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
+		for(int i = 0; i < swarmlingsGenerated;){
+			float rx = nest.x + sketch.random(nest.radius) - (nest.radius / 2);
+			float ry = nest.y + sketch.random(nest.radius) - (nest.radius / 2);
 			//check if the swarmlins are generated in with in the stationary ostacles
-			for(int j = 0; j < contents.size() - i; j++){
-				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
-					break;
-				}
-				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry);
-					contents.add(rs);
-					 i++;
-				}
-			}
-
-		}
-
-		//generate key
-		generateKey();
-//		if(level == 1)
-//			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.1),(int)(stationaryObstacleMaxNumber*0.1));
-//
-//		if(level >= 3)
-//			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
-//
-//		//swarmling generation, they should try not to be spawned on the stationary obstacles
-//		for(int i=0; i<swarmlingsGenerated;){
-//			float rx = sketch.random(radius) - (radius / 2);
-//			float ry = sketch.random(radius) - (radius / 2);
-//			//check if the swarmlins are generated in with in the stationary ostacles
 //			for(int j = 0; j < contents.size() - i; j++){
 //				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
 //					break;
@@ -213,11 +195,13 @@ public class World extends GameObject {
 //					 i++;
 //				}
 //			}
-//
-//		}
-		
-		
-		//would like to add some untouchable stuffs in the backgroud to potential empty space
+			Swarmling rs= new Swarmling(sketch, rx, ry);
+			contents.add(rs);
+			i++;
+		}
+
+		//generate key
+		generateKey();
 		
 	}
 		
@@ -263,7 +247,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(tmp<difficulty && level >=3)
+		if(tmp<difficulty && level >= 3)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(radius));
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
@@ -399,50 +383,6 @@ public class World extends GameObject {
 				if (obstaclesCount > stationaryObstaclesNumber) break;
 			}
 		}
-		
-		
-		//add obstacles covering the entrances
-		for(int i=0; i< children.size(); i++){
-			float theta = sketch.random(Sketch.TWO_PI);
-			//if still need stationary obstacles to cover the entrance
-			while(obstaclesAroundEntrance>0){
-				StationaryObstacle sob= new StationaryObstacle(sketch);
-				//set the entrance and set the obstacle's position around the world
-				sob.entrance=children.get(i);
-				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-				
-				//recalculate theta
-				theta += Sketch.PI / 3;
-				
-				contents.add(sob);
-				obstaclesAroundEntrance--;
-			}
-			obstaclesAroundEntrance=6;
-		}
-
-		//swarmling generation, they should try not to be spawned on the stationary obstacles
-		for(int i=0; i<swarmlingsGenerated;){
-			float rx = sketch.random(radius) - (radius / 2);
-			float ry = sketch.random(radius) - (radius / 2);
-			//check if the swarmlins are generated in with in the stationary ostacles
-			for(int j = 0; j < contents.size() - i; j++){
-				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
-					break;
-				}
-				if(j >= contents.size() - i - 1){
-					Swarmling rs= new Swarmling(sketch, rx, ry) ;
-					contents.add(rs);
-					 i++;
-				}
-			}
-
-		}
-		
-		
-		//would like to add some untouchable stuffs in the backgroud to potential empty space
-		
-		generateKey();
 	}
 	
 	public void generateMovingObstacles(){
@@ -472,10 +412,10 @@ public class World extends GameObject {
 	public boolean update() {
 		count+=1;
 		if (sketch.world == this) {
-			if (level >=1)
+			if (level >= 2)
 				generateMovingObstacles();
 
-			if (level >=3)
+			if (level >= 3)
 				generateWanderingEnemy();
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){

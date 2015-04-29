@@ -41,8 +41,7 @@ public class Sketch extends PApplet {
 		screenSize = width * height;
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
-		world = new World(this, null);
-
+		world = new World(this, null, 0, 0);
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
@@ -133,7 +132,7 @@ public class Sketch extends PApplet {
 				World w = world.children.get(i);
 				float dist = dist(leader.x, leader.y, w.x, w.y);
 				distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
-						1, (w.radius + w.portalRadius) / (2 * w.radius)));
+						1, World.portalRadius / w.radius));
 			}
 		}
 		
@@ -221,6 +220,10 @@ public class Sketch extends PApplet {
 	
 	public void keyReleased(){
 		wholeView = false;
+		if (key == 'w') {
+			world.children.add(new World(this, world, 
+					random(world.radius) - (world.radius / 2), random(world.radius) - (world.radius / 2)));
+		}
 	}
 	
 	public static void main(String args[]) {

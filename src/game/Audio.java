@@ -63,7 +63,8 @@ public class Audio extends PApplet {
 	public void localSound(int input, float ix, float iy){
 		if(useAudio){
 			//TO DO: change it to match the view of current window
-			float maxDist = 1.5f*World.worldRadius;
+			float maxDist = sketch.width/2;
+			
 			
 			float distance = Sketch.sqrt((ix-sketch.camera.x)*(ix-sketch.camera.x)+(iy-sketch.camera.y)*(iy-sketch.camera.y));
 			if (distance<=maxDist)
