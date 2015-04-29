@@ -23,7 +23,7 @@ public class Echo extends GameObject{
 			float dist = Sketch.dist(other.x, other.y, x, y);
 			if(other != this && other instanceof Food &&  dist <= radius + 1 && dist >= radius - 1){
 				//trigger a echo at that point
-				Burst rb = new Burst(sketch, other.x, other.y, other.color, foodRadius);
+				Burst rb = new Burst(sketch, other.x, other.y, other.color);
 				
 				sketch.world.contents.add(rb);
 			}

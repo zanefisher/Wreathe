@@ -9,7 +9,7 @@ public class Burst extends GameObject {
 		x=ix;
 		y=iy;
 		ttl=burstLength;
-		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * burstParameter);
 		color = icolor;
 	}
 	
@@ -19,12 +19,12 @@ public class Burst extends GameObject {
 		y=iy;
 		ttl=burstLength;
 		burstParameter = r;
-		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * burstParameter);
 		color = icolor;
 	}
 	
 	public boolean update(){
-		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * Swarmling.swarmlingRadius);
+		radius = Sketch.map(ttl, burstLength, 0, burstParameter, 10 * burstParameter);
 		return --ttl > 0;
 	}
 	

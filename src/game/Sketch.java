@@ -12,8 +12,7 @@ public class Sketch extends PApplet {
 
 	static int obstacleMax=10;
 	
-	static int wanderingEnemySpawnPeriod=200;
-	static int wanderingEnemyMax=5;
+
 	boolean wholeView; 
 	
 	Leader leader;
@@ -143,15 +142,8 @@ public class Sketch extends PApplet {
 		//lle the current world
 		world.update();
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-
-//		if(world.count%wanderingEnemySpawnPeriod == 0){
-//			world.wanderingEnemyNumber+=1;
-//			if(world.wanderingEnemyNumber<=wanderingEnemyMax){
-//				WanderingEnemy wanderingEnemy= new WanderingEnemy(this);			
-//				wanderingEnemy.initInWorld(world);
-//			}
-//			
-//		}		
+		
+		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
 		for (int i = 0; i < contents.size(); ++i) {
@@ -181,6 +173,11 @@ public class Sketch extends PApplet {
 		}
 		
 		//above all stuff, render the Vault on the right buttom corner
+		drawVault();
+		
+	}
+
+	void drawVault(){
 		noFill();
 		stroke(0, 0, 255);
 		strokeWeight(2);
@@ -192,11 +189,9 @@ public class Sketch extends PApplet {
 			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
 			
 		}
-		
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
-	
 	float montecarlo(float max){
 		return montecarlo(max, 0);
 	}
@@ -216,6 +211,7 @@ public class Sketch extends PApplet {
 		}
 	}
 	
+	//development use only
 	public void keyPressed(){
 		//stop everything and show the whole level in one view
 		if(key == 'b'){
