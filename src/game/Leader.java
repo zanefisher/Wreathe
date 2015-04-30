@@ -50,6 +50,10 @@ public class Leader extends Swarmling {
 			speed = maxSpeed + sketch.controller.getJrz()*maxSpeed;
 		else 
 			speed = leading ? maxSpeed : 2 * maxSpeed;
+		
+		if (speed > maxSpeed) {
+			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(color, 50), radius * sketch.distortion, 0, 5));
+		}
 			
 		dx *= speed;
 		dy *= speed;
