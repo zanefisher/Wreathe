@@ -27,18 +27,18 @@ public class World extends GameObject {
 	Nest nest;
 
 	//for moving obstacles and wandering enemies
-	static int easiestObstacleSpawnPeriod=300;
-	static int easiestObstacleMax=10;
-	static int easiestWanderingEnemySpawnPeriod=200;
+	static int easiestObstacleSpawnPeriod=150;
+	static int easiestObstacleMax=15;
+	static int easiestWanderingEnemySpawnPeriod=300;
 	static int easiestWanderingEnemyMax=1;
 	
 	ChasingEnemy chasingEnemy;
 
 	
-	static int hardestObstacleSpawnPeriod=100;
-	static int hardestObstacleMax=30;
+	static int hardestObstacleSpawnPeriod=80;
+	static int hardestObstacleMax=20;
 	static int hardestWanderingEnemySpawnPeriod=200;
-	static int hardestWanderingEnemyMax=15;
+	static int hardestWanderingEnemyMax=5;
 	
 	int obstacleSpawnPeriod=300;
 	int obstacleMax=10;
@@ -208,7 +208,7 @@ public class World extends GameObject {
 	
 	public void explore() {
 		if (!explored) {
-			int childCount = (int) sketch.random(4) + 1;
+//			int childCount = (int) sketch.random(4) + 1;
 			//comment out the generation of children
 //			for (int i = 0; i < childCount; ++i) {
 //				World nw = new World(sketch);
@@ -330,8 +330,8 @@ public class World extends GameObject {
 						for(int i = 0; i < sketch.random(1, 5); i++){
 							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/3);
 							StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
-							sob.x = x + offsetX + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
-							sob.y = y + offsetY + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
+							sob.x =  offsetX + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
+							sob.y =  offsetY + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
 							
 							//avoid nest and outside
 							if(Sketch.dist(sob.x, sob.y, x, y) > radius || Sketch.dist(sob.x, sob.y, nestX, nestY) < nestR){
@@ -364,8 +364,8 @@ public class World extends GameObject {
 						for(int i = 0; i < sketch.random(1, 5); i++){
 							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/3);
 							StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
-							sob.x = x + Sketch.lerp(startX, endX, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
-							sob.y = y + Sketch.lerp(startY, endY, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
+							sob.x =  Sketch.lerp(startX, endX, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
+							sob.y =  Sketch.lerp(startY, endY, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
 							
 						
 							if(Sketch.dist(sob.x, sob.y, x, y) > radius || Sketch.dist(sob.x, sob.y, nestX, nestY) < nestR){
@@ -401,8 +401,8 @@ public class World extends GameObject {
 		int period = (level == 3 ? wanderingEnemySpawnPeriod / 2 : wanderingEnemySpawnPeriod);
 		
 		if(count % period == 10){
-			wanderingEnemyNumber+=1;
 			if(wanderingEnemyNumber <= wanderingEnemyMax){
+				wanderingEnemyNumber+=1;
 				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
 				wanderingEnemy.initInWorld(this);
 			}	

@@ -3,7 +3,7 @@ package game;
 public class WanderingEnemy extends GameObject {
 	
 
-	static float maxSpeed = 3.8f;
+	static float maxSpeed = 2.8f;
 	static float minSpeed = 0.6f;
 	public static float predateRadius = 200f;
 	boolean isAttacking = false;
@@ -26,26 +26,58 @@ public class WanderingEnemy extends GameObject {
 	
 	public void initInWorld(World world){
 		radius = 40f;
-		float speed = sketch.random(minSpeed, maxSpeed);
+		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
-		dx = Sketch.sin(radians) * speed * -1;
-		dy = Sketch.cos(radians) * speed * -1;
-		world.contents.add(this);
+		
+		int count = 0;
+		boolean hitNest = true;
+		while(hitNest && world.nest !=null && count<500){
+			dx = Sketch.sin(radians) * speed * -1;
+			dy = Sketch.cos(radians) * speed * -1;
+
+			float k = dy/dx;
+			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+			if(distance >= (world.nest.radius+radius))hitNest = false;
+			count++;
+		}
+		if(count<500) world.contents.add(this);
+		else Sketch.println("a warndering enemy doesn't init");
 	}
 	
 	public boolean update(){
 		
-//		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
+//		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
 //			sketch.world.wanderingEnemyNumber-=1;
 //			return false;
 //		}
 		
+		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){
+			float radians = sketch.random(2) * Sketch.PI;
+			float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
+			int count = 0;
+			boolean hitNest = true;
+			while(hitNest && sketch.world.nest !=null && count<500){
+				dx = Sketch.sin(radians) * speed * -1;
+				dy = Sketch.cos(radians) * speed * -1;
+
+				float k = dy/dx;
+				float distance = Sketch.abs(k*sketch.world.nest.x-sketch.world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+				if(distance >= (sketch.world.nest.radius+radius))hitNest = false;
+				count++;
+			}
+			if(count > 500) {
+				Sketch.println("a warndering enemy doesn't go back");
+				sketch.world.wanderingEnemyNumber-=1;
+				return false;
+			}
+	}
+		
 		int predateeCount = 0;
-		float sumX = 0;
-		float sumY = 0;
-		int scount = 1;
+//		float sumX = 0;
+//		float sumY = 0;
+//		int scount = 1;
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
 			GameObject other = sketch.world.contents.get(i);
 			//float centerDist = Sketch.dist(other.x, other.y, sketch.world.nest.x, sketch.world.nest.y);
@@ -53,16 +85,11 @@ public class WanderingEnemy extends GameObject {
 				if(distTo(other)<predateRadius){
 					predateeCount++;
 				}
-				if(other.distTo(sketch.world.nest) > 0){
-					sumX += other.x;
-					sumY += other.y;
-					scount++;
-				}
 			}
 		}
-		
-		averageSwarmlingsX = sumX / scount;
-		averageSwarmlingsY = sumY / scount;
+//		
+//		averageSwarmlingsX = sumX / scount;
+//		averageSwarmlingsY = sumY / scount;
 		
 		//update isAttacking
 		attackCooldown = Sketch.max(0, attackCooldown-1);
@@ -73,12 +100,12 @@ public class WanderingEnemy extends GameObject {
 		else isAttacking = false;
 		
 		//update the direction
-		if(sketch.world.count % 300 ==0){
-			
-			dx =  (averageSwarmlingsX - x) / 20;
-			dy =  (averageSwarmlingsY - y) / 20;			
-
-		}
+//		if(sketch.world.count % 300 ==0){
+//			
+//			dx =  (averageSwarmlingsX - x) / 20;
+//			dy =  (averageSwarmlingsY - y) / 20;			
+//
+//		}
 		//reset attackCooldown, attackPeriod
 		if(attackCooldown <= 0 && attackPeriod <=0){
 			attackCooldown = attackCooldownCount;
@@ -94,17 +121,12 @@ public class WanderingEnemy extends GameObject {
 		//check the place and change to the behavior of obiting in the world
 		
 		//set movement
+//		
+//		float centerDist = Sketch.dist(x, y, sketch.world.nest.x, sketch.world.nest.y);
+//		dx +=  (-(sketch.world.nest.x - x) / centerDist) * (1 - (centerDist / 400));
+//		dy +=  (-(sketch.world.nest.y - y) / centerDist) * (1 - (centerDist / 400));
 		
-		float centerDist = Sketch.dist(x, y, sketch.world.nest.x, sketch.world.nest.y);
-		dx +=  (-(sketch.world.nest.x - x) / centerDist) * (1 - (centerDist / 400));
-		dy +=  (-(sketch.world.nest.y - y) / centerDist) * (1 - (centerDist / 400));
-		
-		// Clamp and apply velocity.
-		float speed = Sketch.mag(dx, dy);
-		if (speed > maxSpeed) {
-			dx *= maxSpeed / speed;
-			dy *= maxSpeed / speed;
-		}
+
 		//Sketch.println("towards: " + dx + " " + dy);
 		x += dx;
 		y += dy;
