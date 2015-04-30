@@ -103,13 +103,7 @@ public class Swarmling extends GameObject {
 	}
 	
 	public boolean update() {
-		if (sketch.usingController) 
-			attractRadius = sketch.controller.getJz()*maxAttractRadius;
-		else 
-			attractRadius = maxAttractRadius;
 
-
-		
 		float ddx = 0, ddy = 0; //acceleration
 		float avoidFactor = 1f;
 		
@@ -314,7 +308,7 @@ public class Swarmling extends GameObject {
 			y = carrying.y + carryY;
 		}
 		
-		if (sketch.leader.leading && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+		if (sketch.leader.leading && (attractRadius > 0) && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
 			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
 		}
 

@@ -164,7 +164,7 @@ public class Sketch extends PApplet {
 		world.draw(camera);
 		leader.draw(camera);
 		
-		if(leader.leading){
+		if ((leader.leading) && (Swarmling.attractRadius > 0)) {
 		      noFill();
 		      stroke(0, 0, 255);
 		      strokeWeight(2);
