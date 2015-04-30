@@ -22,6 +22,7 @@ public class Leader extends Swarmling {
 		
 		if (sketch.usingController) {
 			leading = sketch.controller.isPressed();
+			Swarmling.attractRadius = sketch.controller.getJz()*maxAttractRadius;
 			minOffset = 0.15f;
 			
 			dx = sketch.controller.getJx();
@@ -29,6 +30,7 @@ public class Leader extends Swarmling {
 			
 		} else {
 			leading = sketch.mousePressed;
+			Swarmling.attractRadius = maxAttractRadius;
 			minOffset = 0.25f;
 
 			dx = sketch.mouseX - sketch.camera.screenX(x);
@@ -48,6 +50,10 @@ public class Leader extends Swarmling {
 			speed = maxSpeed + sketch.controller.getJrz()*maxSpeed;
 		else 
 			speed = leading ? maxSpeed : 2 * maxSpeed;
+		
+		if (speed > maxSpeed) {
+			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(color, 50), radius * sketch.distortion, 0, 5));
+		}
 			
 		dx *= speed;
 		dy *= speed;
