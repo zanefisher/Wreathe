@@ -82,6 +82,7 @@ public class Audio extends PApplet {
 		}
 	}
 	public void exit(){
+		Sketch.println("stop");
 		if(useAudio){
 			for(int i=0;i<localSound.length;i++)localSound[i].free();
 			for(int i=0;i<globalSound.length;i++)globalSound[i].free();

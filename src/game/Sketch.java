@@ -3,8 +3,6 @@ import processing.core.*;
 
 import java.util.ArrayList;
 
-
-
 public class Sketch extends PApplet {
 	static int screenSize;
 	static int screenWidth, screenHeight;
@@ -35,7 +33,7 @@ public class Sketch extends PApplet {
 	public void setup() {
 		frameRate(40);
 		colorMode(HSB, 360, 100, 100, 100);
-		size(1080, 700);
+		size(displayWidth, displayHeight);
 		screenHeight = height;
 		screenWidth = width;
 		screenSize = width * height;
@@ -52,6 +50,8 @@ public class Sketch extends PApplet {
 		vault = new ArrayList<Key>();
 		nextKeyX = width - 40;
 		nextKeyY = height - 40;
+		
+		
 	}
 	
 	private void updateCamera() {
@@ -173,7 +173,6 @@ public class Sketch extends PApplet {
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
-		
 	}
 
 	void drawVault(){
@@ -216,6 +215,11 @@ public class Sketch extends PApplet {
 		if(key == 'b'){
 			wholeView = true;
 		}
+		if (key==ESC) {
+			key=0;
+		    //println("we do have a escape plan");
+		    audio.exit();
+		  }
 	}
 	
 	public void keyReleased(){
@@ -228,9 +232,13 @@ public class Sketch extends PApplet {
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
+
 	}
 	
 	public void stop() {
+		super.stop();
 		audio.exit();
 	} 
+	
+
 }
