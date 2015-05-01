@@ -30,10 +30,16 @@ public class Sketch extends PApplet {
 	float nextKeyX;
 	float nextKeyY;
 	
+	int tutorialStage = 4;
+	int tutorialAnimationStart = 0;
+	int tutorialRightTriggerCount = 0;
+	
 	public void setup() {
 		frameRate(40);
 		colorMode(HSB, 360, 100, 100, 100);
-		size(displayWidth, displayHeight);
+		size(1080, 700);
+		textSize(32);
+		textAlign(CENTER);
 		screenHeight = height;
 		screenWidth = width;
 		screenSize = width * height;
@@ -163,13 +169,15 @@ public class Sketch extends PApplet {
 		world.draw(camera);
 		leader.draw(camera);
 		
-		if(leader.leading){
+		if ((leader.leading) && (Swarmling.attractRadius > 0)) {
 		      noFill();
 		      stroke(0, 0, 255);
 		      strokeWeight(2);
 		      ellipse(camera.screenX(Swarmling.lastInLine.x), camera.screenY(Swarmling.lastInLine.y),
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
+		
+		updateAndDrawTutorial();
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
@@ -228,6 +236,50 @@ public class Sketch extends PApplet {
 			world.children.add(new World(this, world, 
 					random(world.radius) - (world.radius / 2), random(world.radius) - (world.radius / 2)));
 		}
+	}
+	
+	void updateAndDrawTutorial() {
+		String text = "";
+		switch(tutorialStage) {
+		case 0:
+			return;
+		case 4:
+			text = "Move with the left stick.";
+			if (leader.distTo(world.nest) > 0) {
+				tutorialStage -= 1;
+			}
+			break;
+		case 3:
+			text = "Hold left trigger to build the chain.";
+			int count = 0;
+			Swarmling s = Swarmling.lastInLine;
+			while (s != leader) {
+				s = s.following;
+				if (++count >= 8) {
+					tutorialStage -= 1;
+					break;
+				}
+			}
+			break;
+		case 2:
+			text = "Hold right trigger to break the chain and move fast.";
+			if (controller.getJrz() > 0) {
+				if (tutorialRightTriggerCount++ > 60) {
+					tutorialStage -= 1;
+				}
+			} else {
+				tutorialRightTriggerCount = 0;
+			}
+			break;
+		case 1:
+			text = "Collect the Yellows using your followers.";
+			if (world.nest.growth > 0.5) {
+				tutorialStage -= 1;
+			}
+			break;
+		}
+		fill(0,0,99);
+		text(text, width / 2, height / 2);
 	}
 	
 	public static void main(String args[]) {

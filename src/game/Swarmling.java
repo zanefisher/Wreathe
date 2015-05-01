@@ -103,13 +103,7 @@ public class Swarmling extends GameObject {
 	}
 	
 	public boolean update() {
-		if (sketch.usingController) 
-			attractRadius = sketch.controller.getJz()*maxAttractRadius;
-		else 
-			attractRadius = maxAttractRadius;
 
-
-		
 		float ddx = 0, ddy = 0; //acceleration
 		float avoidFactor = 1f;
 		
