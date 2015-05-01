@@ -67,9 +67,12 @@ public class MovingObstacle extends Obstacle {
 	}
 	
 	public boolean update(){
+		
+		radius = Sketch.max(obstacleLife,0);
+		
 		x += dx;
 		y += dy;
-		
+
 		for(int i = 0 ; i< foodContained.size(); i++){
 			foodContained.get(i).x += dx;
 			foodContained.get(i).y += dy;

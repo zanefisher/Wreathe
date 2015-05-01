@@ -51,6 +51,8 @@ public class StationaryObstacle extends Obstacle {
 	}
 	
 	public boolean update(){
+		radius = Sketch.max(obstacleLife,0);
+		
 		if(obstacleLife <= 0f) {
 			if(entrance!=null){
 				entrance.obstaclesRemainingAroundEntrance-=1;
