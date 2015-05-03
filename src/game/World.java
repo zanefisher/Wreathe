@@ -172,9 +172,9 @@ public class World extends GameObject {
 		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
 		
-		// wandering enemy for test
-		WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,nest);			
-		wanderingEnemy.initInWorld(this);
+//		// wandering enemy for test
+//		WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,nest);			
+//		wanderingEnemy.initInWorld(this);
 		
 		//sprinkle food
 		if(level == 1){

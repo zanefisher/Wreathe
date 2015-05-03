@@ -20,6 +20,8 @@ public class WanderingEnemy extends GameObject {
 	boolean isOrbiting = false;
 	GameObject center = null;
 	float centerX,centerY;
+	float distP = 6f; //the wandering enemy would return at distP * center.radius //May change depending on difficulty
+	
 	float initialGM;
 	
 	WanderingEnemy(Sketch s){
@@ -58,11 +60,10 @@ public class WanderingEnemy extends GameObject {
 //			y = centerY+sketch.random(radius*3, radius*6);
 //			dx = Sketch.sin(radians) * speed * -1;
 //			dy = Sketch.cos(radians) * speed * -1;
-			x = centerX;
-			y = centerY + radius*6;
-			dx = speed;
+			x = Sketch.sin(radians) * (distP*center.radius);		
+			y = Sketch.cos(radians) * (distP*center.radius);
+			dx = 0;
 			dy = 0;
-			initialGM = 9f*Sketch.sq(speed)*Sketch.dist(centerX, centerY, x, y);
 			world.contents.add(this);
 			return;
 		}
@@ -188,21 +189,6 @@ public class WanderingEnemy extends GameObject {
 		
 		dx += ddx;
 		dy += ddy;
-		
-
-		float speed = Sketch.mag(dx, dy);
-		
-
-		
-		//clamp it so that it won't move too far
-		float orbitMaxSpeed = Sketch.sqrt(2*initialGM/r);
-		if (speed > orbitMaxSpeed) {
-			dx *= orbitMaxSpeed / speed;
-			dy *= orbitMaxSpeed / speed;
-
-		}
-
-		Sketch.println(speed);
 		
 		x += dx;
 		y += dy;

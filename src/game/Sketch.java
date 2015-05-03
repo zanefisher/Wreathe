@@ -201,7 +201,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		updateAndDrawTutorial();
+		//updateAndDrawTutorial();
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
@@ -283,13 +283,13 @@ public class Sketch extends PApplet {
 			break;
 		case 2:
 			text = "Hold right trigger to break the chain and move fast.";
-//			if (controller.getJrz() > 0) {
-//				if (tutorialRightTriggerCount++ > 60) {
-//					tutorialStage -= 1;
-//				}
-//			} else {
-//				tutorialRightTriggerCount = 0;
-//			}
+			if (controller.getJrz() > 0) {
+				if (tutorialRightTriggerCount++ > 60) {
+					tutorialStage -= 1;
+				}
+			} else {
+				tutorialRightTriggerCount = 0;
+			}
 			break;
 		case 1:
 			text = "Collect the Yellows using your followers.";
