@@ -17,11 +17,23 @@ public class WanderingEnemy extends GameObject {
 	float averageSwarmlingsX =0;
 	float averageSwarmlingsY =0;
 	
+	boolean isOrbiting = false;
+	GameObject center = null;
+	
 	WanderingEnemy(Sketch s){
 		sketch = s;
 		color=sketch.color(0,99,99);
 		avoidRadius = predateRadius;
 	}
+	
+	
+	WanderingEnemy(Sketch s, GameObject c){
+		sketch = s;
+		center = c;
+		color=sketch.color(0,99,99);
+		avoidRadius = predateRadius;
+	}
+
 	
 	
 	public void initInWorld(World world){
