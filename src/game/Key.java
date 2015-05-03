@@ -87,6 +87,27 @@ public class Key extends GameObject {
 		radius = 30;
 		sparklings = new ArrayList<Sparkling>();
 		
+		//add obstacles covering the entrances
+//		for(int i=0; i< children.size(); i++){
+//			float theta = sketch.random(Sketch.TWO_PI);
+//			//if still need stationary obstacles to cover the entrance
+//			while(obstaclesAroundEntrance>0){
+//				StationaryObstacle sob= new StationaryObstacle(sketch, this);
+//				
+//				//set the entrance and set the obstacle's position around the world
+//				sob.entrance=children.get(i);
+//				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
+//				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
+//				
+//				//recalculate theta
+//				theta += Sketch.TWO_PI*(1/3);
+//				
+//				contents.add(sob);
+//				obstaclesAroundEntrance--;
+//			}
+//			obstaclesAroundEntrance=3;
+//		}
+		
 		//generate the sparklings
 		for (int i = 0; i < sparklingNumber; i++){
 			float rx = x + sketch.random(radius) - (radius / 2);
