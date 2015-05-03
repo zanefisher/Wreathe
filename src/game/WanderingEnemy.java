@@ -19,6 +19,10 @@ public class WanderingEnemy extends GameObject {
 	
 	boolean isOrbiting = false;
 	GameObject center = null;
+	float centerX,centerY;
+	float distP = 6f; //the wandering enemy would return at distP * center.radius //May change depending on difficulty
+	
+	float initialGM;
 	
 	WanderingEnemy(Sketch s){
 		sketch = s;
@@ -29,19 +33,41 @@ public class WanderingEnemy extends GameObject {
 	
 	WanderingEnemy(Sketch s, GameObject c){
 		sketch = s;
-		center = c;
+		centerX = c.x;
+		centerY = c.y;
 		color=sketch.color(0,99,99);
 		avoidRadius = predateRadius;
+		isOrbiting = true;
+		center = c;
 	}
 
 	
 	
 	public void initInWorld(World world){
+		
+		centerX = center.x;
+		centerY = center.y;
+		
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
+		
+		if(isOrbiting){
+			speed = (maxSpeed-minSpeed)/2;
+//			x = centerX+sketch.random(radius*3, radius*6);
+//			y = centerY+sketch.random(radius*3, radius*6);
+//			dx = Sketch.sin(radians) * speed * -1;
+//			dy = Sketch.cos(radians) * speed * -1;
+			x = Sketch.sin(radians) * (distP*center.radius);		
+			y = Sketch.cos(radians) * (distP*center.radius);
+			dx = 0;
+			dy = 0;
+			world.contents.add(this);
+			return;
+		}
+		
 		
 		int count = 0;
 		boolean hitNest = true;
@@ -64,6 +90,11 @@ public class WanderingEnemy extends GameObject {
 //			sketch.world.wanderingEnemyNumber-=1;
 //			return false;
 //		}
+		if(isOrbiting)
+		{
+			orbit();
+			return true;
+		}
 		
 		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){
 			float radians = sketch.random(2) * Sketch.PI;
@@ -147,6 +178,22 @@ public class WanderingEnemy extends GameObject {
 		
 		return true;
 	}
+	
+	public void orbit(){
+		float ddx = 0, ddy = 0; //acceleration
+		float r = Sketch.dist(centerX,centerY, x, y);
+		float acc;
+		acc = initialGM/Sketch.sq(r);
+		ddx = acc * (centerX - x) / r;
+		ddy = acc * (centerX - y) / r;
+		
+		dx += ddx;
+		dy += ddy;
+		
+		x += dx;
+		y += dy;
+	}
+	
 
 	public void draw(WorldView view){
 		super.draw(view);  

@@ -114,7 +114,7 @@ public class Music extends PApplet {
 					for(int i = 0; i < 12; i++){
 						
 						for(int s = 0; s < section.length; s++){
-							
+
 							for(int n = 0; n < score[2][section[s]][0].length; n++){
 								
 								if(score[2][section[s]][0][n] != 0){

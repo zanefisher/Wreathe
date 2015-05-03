@@ -10,7 +10,7 @@ public class Controller extends PApplet {
 	ControlIO control;
 	ControlDevice device = null;
 	
-	float jx,jy;
+	float jx,jy,jrx,jry;
 	boolean leading;
 	
 	public Controller() {
@@ -52,6 +52,14 @@ public class Controller extends PApplet {
 		return (device.getSlider("RZ").getValue()+1)/2f; //from 0~1
 	}
 	
+	public float getJrx(){
+		jrx = device.getSlider("RX").getValue();
+		return jrx;
+	}
 	
+	public float getJry(){
+		jry = device.getSlider("RY").getValue();
+		return jry;
+	}
 	
 }

@@ -112,6 +112,30 @@ public class Sketch extends PApplet {
 		
 		camera.x = lerp(camera.x, midX, 0.05f);
 		camera.y = lerp(camera.y, midY, 0.05f);
+		
+		float localMinZoom = minZoom * 0.5f;
+		float localMaxZoom = maxZoom;
+//		
+//		if(controller.getJry()>0.1)
+//			zoomTarget = (zoomTarget+controller.getJry()*(localMaxZoom-zoomTarget))/distortion;
+//		if(controller.getJry()<-0.1){
+//			camera.x = lerp(camera.x, leader.x, 0.1f);
+//			camera.y = lerp(camera.y, leader.y, 0.1f);
+//			zoomTarget = (zoomTarget+controller.getJry()*(zoomTarget-localMinZoom))/distortion;
+//		}
+		
+
+		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
+		
+
+//		if(controller.getJry()>0)
+//			zoomTarget = camera.scale+controller.getJry()*(localMaxZoom-camera.scale);
+//		if(controller.getJry()<0){
+//			camera.x = lerp(camera.x, leader.x, 0.1f);
+//			camera.y = lerp(camera.y, leader.y, 0.1f);
+//			zoomTarget = camera.scale+controller.getJry()*(camera.scale-localMinZoom);
+//			
+//		}
 		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
 	}
 	
