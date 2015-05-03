@@ -16,26 +16,23 @@ public class Food extends Carryable {
 	}
 	
 	public boolean update() {
-		for (int i = 0; i < sketch.world.contents.size(); ++i) {
-			GameObject other = sketch.world.contents.get(i);
-			if ((other instanceof Nest) && (distTo(other) <= 0)) {
-				Nest nest = (Nest) other;
-				int spawnCount = (int) (1 + sketch.random(3));
-				while (spawnCount-- > 0) {
-					float spawnX = sketch.random(nest.x - (nest.radius / 2), nest.x + (nest.radius / 2));
-					float spawnY = sketch.random(nest.y - (nest.radius / 2), nest.y + (nest.radius / 2));
-					sketch.world.contents.add(new Burst(sketch, spawnX, spawnY, color));
-					sketch.world.contents.add(new Swarmling(sketch, spawnX, spawnY));
-				}
-				nest.feed();
-				for (int j = carriedBy.size() - 1; j >= 0; --j) {
-					Swarmling carrier = carriedBy.get(i);
-					carrier.uncarry();
-				}
+		Nest nest = sketch.world.nest;
+		if ((distTo(nest) <= 0)) {
+			int spawnCount = (int) (1 + sketch.random(3));
+			while (spawnCount-- > 0) {
+				float spawnX = sketch.random(nest.x - (nest.radius / 2), nest.x + (nest.radius / 2));
+				float spawnY = sketch.random(nest.y - (nest.radius / 2), nest.y + (nest.radius / 2));
+				sketch.world.contents.add(new Burst(sketch, spawnX, spawnY, color));
+				sketch.world.contents.add(new Swarmling(sketch, spawnX, spawnY));
+			}
+			nest.feed();
+			for (int j = carriedBy.size() - 1; j >= 0; --j) {
+				Swarmling carrier = carriedBy.get(j);
+				carrier.uncarry();
+			}
 				
 				return false;
 			}
-		}
 		x += dx;
 		y += dy;
 		dx = 0;

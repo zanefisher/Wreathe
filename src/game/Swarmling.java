@@ -144,10 +144,12 @@ public class Swarmling extends GameObject {
 		//attackCooldown is set to 0 now	
 //		attackCooldown = Sketch.max(0, attackCooldown-1);
 		
-		//closest food
-		Food targetFood = null;
+		//closest carryable
+		Carryable targetCarryable = null;
 		float foodDist = Food.distanceCarry;
 		float nestDist = 0; 
+		float keyDist = Key.distanceCarry;
+		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
@@ -174,19 +176,17 @@ public class Swarmling extends GameObject {
 					return false;
 				}	
 				
-				if (other instanceof Key){
-					if(distance <= 0) {
-						Key collectable = (Key)other;
-						collectable.collected();
+				if ((carrying == null) && (other instanceof Key) && (distance > 0) && (distance <= keyDist)){
+					targetCarryable = (Carryable)other;
+					
 //						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
 //							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
 //							sketch.world.chasingEnemy.initInWorld(sketch.world);
 //						}
-					}
 				}
 				//find closest food
 				if ((carrying == null) && (other instanceof Food) && (distance>0) && (distance <= foodDist)) {
-					targetFood = (Food)other;
+					targetCarryable = (Carryable)other;
 				}
 				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
@@ -276,13 +276,14 @@ public class Swarmling extends GameObject {
 			ddy *= maxAccel / accel;
 		}
 		
-		// Add food vector if we found a food
-		if(targetFood != null && targetFood.carriedBy.size()<targetFood.carryCap){
+		// Add carry vector if we found a carryable
+		if(targetCarryable != null && targetCarryable.carriedBy.size()<targetCarryable.carryCap){
 			unfollow();
-			ddx += 2f*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
-			ddy += 2f*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddx += 2f*maxAccel*(targetCarryable.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
+			ddy += 2f*maxAccel*(targetCarryable.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 
 		}
+		
 		
 		dx += ddx;
 		dy += ddy;

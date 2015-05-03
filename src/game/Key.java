@@ -4,7 +4,7 @@ import java.util.ArrayList;
 class Sparkling extends GameObject {
 	int ttl = 0;
 	static int sparkleLength = 150;
-	float sparkleOuterRadius = 60;
+	float sparkleOuterRadius = 100;
 	float sparkleInnerRadius = 8;
 	int startTime = 0;
 	float startAngle = 0;
@@ -58,22 +58,35 @@ class Sparkling extends GameObject {
 		 // float startAngle = sketch.random(Sketch.PI);
 		  sketch.beginShape();
 		  for (float a = 0 + startAngle; a < Sketch.TWO_PI + startAngle; a += angle) {
-		    float sx = x + Sketch.cos(a) * radius2;
-		    float sy = y + Sketch.sin(a) * radius2;
-		    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
-		    sx = x + Sketch.cos(a+halfAngle) * radius1;
-		    sy = y + Sketch.sin(a+halfAngle) * radius1;
-		    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
+		    if(camera == sketch.camera){
+			    float sx = x + Sketch.cos(a) * radius2;
+			    float sy = y + Sketch.sin(a) * radius2;
+			    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
+			    sx = x + Sketch.cos(a+halfAngle) * radius1;
+			    sy = y + Sketch.sin(a+halfAngle) * radius1;
+			    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
+		    }
+		    else{
+			    float sx = x + Sketch.cos(a) * radius2 / (camera.scale / 1.5f);
+			    float sy = y + Sketch.sin(a) * radius2 / (camera.scale / 1.5f);
+			    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
+			    sx = x + Sketch.cos(a+halfAngle) * radius1;
+			    sy = y + Sketch.sin(a+halfAngle) * radius1;
+			    sketch.vertex(camera.screenX(sx), camera.screenY(sy));
+		    }
 		  }
 		  sketch.endShape(Sketch.CLOSE);
 		  
 		}
 }
 
-public class Key extends GameObject {
+public class Key extends Carryable {
+	
 	boolean isInVault = false;
 	int amtCount = 1;
 	static int sparklingNumber = 3;
+	int obstaclesAroundKey;
+	int obstaclesRemaining;
 	float startX = -5000;
 	float startY = -5000;
 	ArrayList<Sparkling> sparklings;
@@ -87,27 +100,13 @@ public class Key extends GameObject {
 		radius = 30;
 		sparklings = new ArrayList<Sparkling>();
 		
-		//add obstacles covering the entrances
-//		for(int i=0; i< children.size(); i++){
-//			float theta = sketch.random(Sketch.TWO_PI);
-//			//if still need stationary obstacles to cover the entrance
-//			while(obstaclesAroundEntrance>0){
-//				StationaryObstacle sob= new StationaryObstacle(sketch, this);
-//				
-//				//set the entrance and set the obstacle's position around the world
-//				sob.entrance=children.get(i);
-//				sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-//				sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-//				
-//				//recalculate theta
-//				theta += Sketch.TWO_PI*(1/3);
-//				
-//				contents.add(sob);
-//				obstaclesAroundEntrance--;
-//			}
-//			obstaclesAroundEntrance=3;
-//		}
+		carryCap = 10;
+		weight = 20;
+		distanceCarry = this.radius * 2f;
 		
+		obstaclesAroundKey = (int)sketch.random(3, 6);
+		obstaclesRemaining = obstaclesAroundKey;
+				
 		//generate the sparklings
 		for (int i = 0; i < sparklingNumber; i++){
 			float rx = x + sketch.random(radius) - (radius / 2);
@@ -119,21 +118,30 @@ public class Key extends GameObject {
 		
 	}
 	
-	public void collected(){
-		isCollected = true;
-	}
-	
 	public boolean update() {
 		
 		//maintain the sparkling list before it is collected;
 		//draw the sparklings first
-		if(!isCollected){
-			return true;
+//		if(!isCollected && distTo(sketch.world.nest) <= 0){
+//			return true;
+//		}
+//		else{
+//			return !isInVault;
+//		}
+		Nest nest = sketch.world.nest;
+		if ((distTo(nest) <= 0)) {
+			for (int j = carriedBy.size() - 1; j >= 0; --j) {
+				Swarmling carrier = carriedBy.get(j);
+				carrier.uncarry();
+			}
+			isCollected = true;	
+			return  !isInVault;
 		}
-		else{
-			return !isInVault;
-		}
-		
+		x += dx;
+		y += dy;
+		dx = 0;
+		dy = 0;
+		return true;	
 	}
 	
 	public void draw(WorldView camera){

@@ -10,7 +10,7 @@ enum StationaryPattern{
 
 public class StationaryObstacle extends Obstacle {
 	//indicates if this obstacle contains the entrance to next world
-	World entrance = null;
+	Key key = null;
 	
 	//the world that this obstacle is in
 	//World world = null;
@@ -52,8 +52,8 @@ public class StationaryObstacle extends Obstacle {
 	
 	public boolean update(){
 		if(obstacleLife <= 0f) {
-			if(entrance!=null){
-				entrance.obstaclesRemainingAroundEntrance-=1;
+			if(key!=null){
+				key.obstaclesRemaining-=1;
 			}
 			Burst ob = new Burst(sketch, x, y, color);
 			sketch.world.contents.add(ob);

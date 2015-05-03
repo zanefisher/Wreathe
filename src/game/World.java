@@ -219,26 +219,7 @@ public class World extends GameObject {
 			explored = true;
 			generateContents();
 			
-			//add obstacles covering the entrances
-//			for(int i=0; i< children.size(); i++){
-//				float theta = sketch.random(Sketch.TWO_PI);
-//				//if still need stationary obstacles to cover the entrance
-//				while(obstaclesAroundEntrance>0){
-//					StationaryObstacle sob= new StationaryObstacle(sketch, this);
-//					
-//					//set the entrance and set the obstacle's position around the world
-//					sob.entrance=children.get(i);
-//					sob.x = children.get(i).x - Sketch.cos(theta) * sob.radius;
-//					sob.y = children.get(i).y - Sketch.sin(theta) * sob.radius;
-//					
-//					//recalculate theta
-//					theta += Sketch.TWO_PI*(1/3);
-//					
-//					contents.add(sob);
-//					obstaclesAroundEntrance--;
-//				}
-//				obstaclesAroundEntrance=3;
-//			}
+
 		}
 
 
@@ -247,11 +228,32 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(tmp<difficulty && level >= 3)
+		if(/*tmp<difficulty &&*/ level >= 1)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(radius));
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
 			key = new Key(sketch,ix,iy);
+			//key.initStationary();
+			//add obstacles covering the entrances
+			float theta = sketch.random(Sketch.TWO_PI);
+			//if still need stationary obstacles to cover the entrance
+			while(key.obstaclesAroundKey > 0){
+				float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
+						(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
+					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.5f);
+					//Sketch.println(theta);
+					//set the entrance and set the obstacle's position around the world
+					sob.key = key;
+					sob.x = x - Sketch.cos(theta) * sob.radius;
+					sob.y = y - Sketch.sin(theta) * sob.radius;
+					
+					//recalculate theta
+					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
+					contents.add(sob);
+					key.obstaclesAroundKey--;
+					
+
+				}
 			this.contents.add(key);
 		}
 	}
