@@ -190,7 +190,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		updateAndDrawTutorial();
+		//updateAndDrawTutorial();
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
