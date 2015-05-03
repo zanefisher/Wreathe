@@ -33,6 +33,8 @@ public class Swarmling extends GameObject {
 	float carryX, carryY; // swarmling's position relative to what it's carrying
 	
 	Nest nest = null;
+	
+	World enteringWorld = null;
 
 	Obstacle lastFrameTarget = null; // find if the swarmling start to attack, for use of audio
 	
@@ -47,14 +49,14 @@ public class Swarmling extends GameObject {
 		color = sketch.color(40, 65, 40);
 		puffPhase = (int) sketch.random(puffPeriod);
 		//TO DO DEAL WITH FIRST TIME SWARMSOUND 
-		sketch.audio.swarmSound(0,this);
+		sketch.audio.localSound(6,this);
 	}
 	
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
 		queueCooldown = 15;
-		sketch.audio.swarmSound(1,this);
+		sketch.audio.localSound(2,this);
 
 	}
 	
@@ -74,13 +76,13 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		sketch.audio.swarmSound(5,this);
+		sketch.audio.globalSound(0);
 	}
 	
 	public void carry(Carryable carrything){
 		if (carrything.carryCap > carrything.carriedBy.size()) {
 			//collect the food
-			sketch.audio.swarmSound(3,this);
+			sketch.audio.localSound(1,this);
 			carrything.carriedBy.add(this);
 			carrying = carrything;
 			carryX = x - carrything.x;
@@ -103,6 +105,17 @@ public class Swarmling extends GameObject {
 	}
 	
 	public boolean update() {
+		
+		if (enteringWorld != null) {
+			x = Sketch.lerp(x, enteringWorld.x, 0.05f);
+			y = Sketch.lerp(y, enteringWorld.y, 0.05f);
+			float dist = Sketch.dist(x, y, enteringWorld.x, enteringWorld.y);
+			float portalR = enteringWorld.portalRadius;
+//			Sketch.println(distTo(enteringWorld) + ", " + Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			radius = swarmlingRadius * Sketch.min(1, Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			//Sketch.println(x + ", " + y + ", " + radius);
+			return dist > enteringWorld.portalRadius;
+		}
 
 		float ddx = 0, ddy = 0; //acceleration
 		float avoidFactor = 1f;
@@ -166,10 +179,11 @@ public class Swarmling extends GameObject {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
-						((Obstacle) other).obstacleLife -= attackPower * 10;
+						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					sketch.audio.swarmSound(6,this);
+					sketch.audio.localSound(4,this);
+					if(lastFrameTarget != null) sketch.audio.beamSound(false);
 					return false;
 				}	
 				
@@ -177,10 +191,10 @@ public class Swarmling extends GameObject {
 					if(distance <= 0) {
 						Key collectable = (Key)other;
 						collectable.collected();
-						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
-							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
-							sketch.world.chasingEnemy.initInWorld(sketch.world);
-						}
+//						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
+//							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
+//							sketch.world.chasingEnemy.initInWorld(sketch.world);
+//						}
 					}
 				}
 				//find closest food
@@ -251,12 +265,14 @@ public class Swarmling extends GameObject {
 		}
 		
 		if (lastFrameTarget == null && target != null){
-			sketch.audio.swarmSound(2,this);
+			sketch.audio.localSound(0,this);
+			sketch.audio.beamSound(true);
 			//play audio
 		}
 		
 		if (lastFrameTarget != null && target == null){
 			//TO DO: free audio
+			sketch.audio.beamSound(false);
 			
 		}
 		
@@ -307,15 +323,22 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
-		
-		if (sketch.leader.leading && (attractRadius > 0) && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+		if(sketch.usingController){
+			if (sketch.controller.getJz()>0.1f && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+			}
 		}
-
+		else
+		{
+			if ((following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+			}
+		}
 		return true;
 	}
 	
 	public void draw(WorldView view) {
+		
 		super.draw(view);
 		
 		if (target != null) {

@@ -9,52 +9,84 @@ import java.util.ArrayList;
 
 public class Audio extends PApplet {
 
-	Synth[] swarmling = new Synth[7];
+	Synth[] localSound = new Synth[8];
+	Synth[] globalSound = new Synth[2];
+	Synth beam = new Synth("beam");//attacking
+	
+
 	Sketch sketch;
-	boolean useAudio = false;
+	boolean useAudio = true;
+	
+	static int beaming = 0;
 	
 	Audio(Sketch s){
 		sketch = s;
 		if(useAudio){
-			swarmling[0] = new Synth("spawn");
-			swarmling[1] = new Synth("connect");
-			swarmling[2] = new Synth("attack");
-			swarmling[3] = new Synth("collect");
-			swarmling[4] = new Synth("feed");
-			swarmling[5] = new Synth("detach");
-			swarmling[6] = new Synth("dispose");	
+			localSound[0] = new Synth("attack");//begin of the attack
+			localSound[1] = new Synth("collect");//crystal
+			localSound[2] = new Synth("connect");
+			localSound[3] = new Synth("destroy");//obstacle destructed
+			localSound[4] = new Synth("dispose");//swarmling die
+			localSound[5] = new Synth("feed");
+			localSound[6] = new Synth("spawn");//swarmling spawned
+			localSound[7] = new Synth("world");//spawn new world
+			
+			globalSound[0] = new Synth("detach");
+			globalSound[1] = new Synth("slide");//world transition
+			beam.create();
 		}
-	}	
-	public void swarmSound(int input){
-
-		swarmling[input].create();
 		
 	}
-
-	public void swarmSound(int input, GameObject other){
-		swarmSound(input,other.x,other.y);
+	
+	
+	
+	public void globalSound(int input){
+		//for sound doesn't need left and right
+		globalSound[input].create();
 	}
-	public void swarmSound(int input, float ix, float iy){
+	
+	public void beamSound(boolean attacking){
+		beaming += attacking ? 1 : -1;
+		beaming = Sketch.max(0,beaming);
+		if(beaming < 12)
+			beam.set("amp", Sketch.sqrt(beaming / 48f));
+	}
+	
+	public void beamSetZero(){
+		beaming = 0;
+		beam.set("amp", beaming);
+	}
+	
+	public void localSound(int input, GameObject other){
+		localSound(input,other.x,other.y);
+	}
+	public void localSound(int input, float ix, float iy){
 		if(useAudio){
 			//TO DO: change it to match the view of current window
-			float maxDist = 1.5f*World.worldRadius;
+			float maxDist = sketch.width/2;
+			
 			
 			float distance = Sketch.sqrt((ix-sketch.camera.x)*(ix-sketch.camera.x)+(iy-sketch.camera.y)*(iy-sketch.camera.y));
 			if (distance<=maxDist)
 			{
 				float scale = ((ix-sketch.camera.x)+maxDist)/(2*maxDist); // from 0~1
+
 				float overallAmp = 1-distance/maxDist;
 				float left = Sketch.sqrt(overallAmp*(1-scale)/2f);
 				float right = Sketch.sqrt(overallAmp*scale/2f);
-				swarmling[input].set("left",left);
-				swarmling[input].set("right",right);
-				swarmling[input].create();
+				
+				localSound[input].set("left",left);
+				localSound[input].set("right",right);
+				localSound[input].create();
 			}
 		}
 	}
 	public void exit(){
+		Sketch.println("stop");
 		if(useAudio){
-			for(int i=0;i<swarmling.length;i++)swarmling[i].free();
+			for(int i=0;i<localSound.length;i++)localSound[i].free();
+			for(int i=0;i<globalSound.length;i++)globalSound[i].free();
+			beam.free();
 			super.exit();
 		}
 	}	

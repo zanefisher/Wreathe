@@ -49,7 +49,7 @@ public class Controller extends PApplet {
 	}
 	
 	public float getJrz(){
-		return (device.getSlider("RZ").getValue()+1)/2f;
+		return (device.getSlider("RZ").getValue()+1)/2f; //from 0~1
 	}
 	
 	

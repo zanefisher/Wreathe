@@ -3,8 +3,6 @@ import processing.core.*;
 
 import java.util.ArrayList;
 
-
-
 public class Sketch extends PApplet {
 	static int screenSize;
 	static int screenWidth, screenHeight;
@@ -37,8 +35,9 @@ public class Sketch extends PApplet {
 	int tutorialRightTriggerCount = 0;
 	
 	public void setup() {
-		frameRate(30);
+		frameRate(40);
 		colorMode(HSB, 360, 100, 100, 100);
+		size(displayWidth, displayHeight);
 		size(1080, 700);
 		textSize(32);
 		textAlign(CENTER);
@@ -48,6 +47,7 @@ public class Sketch extends PApplet {
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
 		world = new World(this, null, 0, 0);
+		world.open = true;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
@@ -136,9 +136,11 @@ public class Sketch extends PApplet {
 		if (distortion == 1) {
 			for (int i = 0; i < world.children.size(); ++i) {
 				World w = world.children.get(i);
-				float dist = dist(leader.x, leader.y, w.x, w.y);
-				distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
-						1, World.portalRadius / w.radius));
+				if (w.open) {
+					float dist = dist(leader.x, leader.y, w.x, w.y);
+					distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
+							1, w.portalRadius / w.radius));
+				}
 			}
 		}
 		
@@ -148,7 +150,6 @@ public class Sketch extends PApplet {
 		//lle the current world
 		world.update();
         Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
-		
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
@@ -182,7 +183,6 @@ public class Sketch extends PApplet {
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
-		
 	}
 
 	void drawVault(){
@@ -225,6 +225,11 @@ public class Sketch extends PApplet {
 		if(key == 'b'){
 			wholeView = true;
 		}
+		if (key==ESC) {
+			key=0;
+		    //println("we do have a escape plan");
+		    audio.exit();
+		  }
 	}
 	
 	public void keyReleased(){
@@ -244,6 +249,7 @@ public class Sketch extends PApplet {
 			text = "Move with the left stick.";
 			if (leader.distTo(world.nest) > 0) {
 				tutorialStage -= 1;
+				tutorialAnimationStart = frameCount;
 			}
 			break;
 		case 3:
@@ -254,6 +260,7 @@ public class Sketch extends PApplet {
 				s = s.following;
 				if (++count >= 8) {
 					tutorialStage -= 1;
+					tutorialAnimationStart = frameCount;
 					break;
 				}
 			}
@@ -261,8 +268,9 @@ public class Sketch extends PApplet {
 		case 2:
 			text = "Hold right trigger to break the chain and move fast.";
 			if (controller.getJrz() > 0) {
-				if (tutorialRightTriggerCount++ > 60) {
+				if (tutorialRightTriggerCount++ > 30) {
 					tutorialStage -= 1;
+					tutorialAnimationStart = frameCount;
 				}
 			} else {
 				tutorialRightTriggerCount = 0;
@@ -272,15 +280,24 @@ public class Sketch extends PApplet {
 			text = "Collect the Yellows using your followers.";
 			if (world.nest.growth > 0.5) {
 				tutorialStage -= 1;
+				tutorialAnimationStart = frameCount;
 			}
 			break;
 		}
-		fill(0,0,99);
+		float alpha = min(1, ((float) frameCount - (float) tutorialAnimationStart) / 40f);
+		fill(0,0,99, alpha * 100);
 		text(text, width / 2, height / 2);
 	}
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
+
 	}
 	
+	public void stop() {
+		super.stop();
+		audio.exit();
+	} 
+	
+
 }

@@ -111,7 +111,7 @@ public class Nest extends GameObject {
 	}
 	
 	public void feed() {
-		sketch.audio.swarmSound(4,this);
+		sketch.audio.localSound(5,this);
 		if (growth < 1) {
 			float amt = 1 / (growth * 50);
 			growth += amt;
@@ -124,7 +124,7 @@ public class Nest extends GameObject {
 						wx = b.x2;
 						wy = b.y2;
 					}
-				} while (Sketch.mag(wx, wy) > sketch.world.radius - World.portalRadius);
+				} while (Sketch.mag(wx, wy) > sketch.world.radius - World.transitionRadius);
 				World w = new World(sketch, sketch.world, wx, wy);
 				sketch.world.children.add(w);
 				animationDelay += 1 - growth;

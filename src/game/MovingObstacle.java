@@ -75,7 +75,7 @@ public class MovingObstacle extends Obstacle {
 			foodContained.get(i).y += dy;
 		}
 		
-		if(Sketch.dist(sketch.world.x, sketch.world.y, x, y) > sketch.world.radius + radius * 2){
+		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
 			sketch.world.obstacleNumber-=1;
 			return false;
 		}
