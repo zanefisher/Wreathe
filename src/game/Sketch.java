@@ -10,6 +10,7 @@ public class Sketch extends PApplet {
 
 	static int obstacleMax=10;
 	
+	static int targetFrameRate = 40;
 
 	boolean wholeView; 
 	
@@ -35,7 +36,7 @@ public class Sketch extends PApplet {
 	int tutorialRightTriggerCount = 0;
 	
 	public void setup() {
-		frameRate(40);
+		frameRate(targetFrameRate);
 		colorMode(HSB, 360, 100, 100, 100);
 		//size(displayWidth, displayHeight);
 		size(1080, 700);
@@ -215,6 +216,10 @@ public class Sketch extends PApplet {
 		}
 		
 		//updateAndDrawTutorial();
+		
+		//display frame rate
+		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
+		text(frameRate, width / 2, 40);
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
