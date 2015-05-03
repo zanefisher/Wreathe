@@ -19,6 +19,8 @@ public class WanderingEnemy extends GameObject {
 	
 	boolean isOrbiting = false;
 	GameObject center = null;
+	float centerX,centerY;
+	float initialGM;
 	
 	WanderingEnemy(Sketch s){
 		sketch = s;
@@ -29,16 +31,21 @@ public class WanderingEnemy extends GameObject {
 	
 	WanderingEnemy(Sketch s, GameObject c){
 		sketch = s;
-		center = c;
+		centerX = c.x;
+		centerY = c.y;
 		color=sketch.color(0,99,99);
 		avoidRadius = predateRadius;
 		isOrbiting = true;
+		center = c;
 	}
 
 	
 	
 	public void initInWorld(World world){
-
+		
+		centerX = center.x;
+		centerY = center.y;
+		
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
@@ -47,10 +54,15 @@ public class WanderingEnemy extends GameObject {
 		
 		if(isOrbiting){
 			speed = (maxSpeed-minSpeed)/2;
-			x = center.x+sketch.random(radius*3, radius*6);
-			y = center.y+sketch.random(radius*3, radius*6);
-			dx = Sketch.sin(radians) * speed * -1;
-			dy = Sketch.cos(radians) * speed * -1;
+//			x = centerX+sketch.random(radius*3, radius*6);
+//			y = centerY+sketch.random(radius*3, radius*6);
+//			dx = Sketch.sin(radians) * speed * -1;
+//			dy = Sketch.cos(radians) * speed * -1;
+			x = centerX;
+			y = centerY + radius*6;
+			dx = speed;
+			dy = 0;
+			initialGM = 9f*Sketch.sq(speed)*Sketch.dist(centerX, centerY, x, y);
 			world.contents.add(this);
 			return;
 		}
@@ -168,23 +180,30 @@ public class WanderingEnemy extends GameObject {
 	
 	public void orbit(){
 		float ddx = 0, ddy = 0; //acceleration
-		float r = Sketch.dist(center.x,center.y, x, y);
+		float r = Sketch.dist(centerX,centerY, x, y);
 		float acc;
-		acc = 600/Sketch.sq(r);
-		ddx = acc * (center.x - x) / r;
-		ddy = acc * (center.y - y) / r;
-		
+		acc = initialGM/Sketch.sq(r);
+		ddx = acc * (centerX - x) / r;
+		ddy = acc * (centerX - y) / r;
 		
 		dx += ddx;
 		dy += ddy;
 		
-//		float speed = Sketch.mag(dx, dy);
-//		if (speed > maxSpeed) {
-//			dx *= maxSpeed / speed;
-//			dy *= maxSpeed / speed;
-//		}
 
+		float speed = Sketch.mag(dx, dy);
+		
 
+		
+		//clamp it so that it won't move too far
+		float orbitMaxSpeed = Sketch.sqrt(2*initialGM/r);
+		if (speed > orbitMaxSpeed) {
+			dx *= orbitMaxSpeed / speed;
+			dy *= orbitMaxSpeed / speed;
+
+		}
+
+		Sketch.println(speed);
+		
 		x += dx;
 		y += dy;
 	}
