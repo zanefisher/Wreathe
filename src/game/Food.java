@@ -9,7 +9,7 @@ public class Food extends Carryable {
 		dx = 0;
 		dy = 0;
 		carryCap = 2;
-		weight = 2f;
+		weight = 3f;
 		color = sketch.color(60, 99, 99);
 		radius = 12;
 		distanceCarry = this.radius * 2f;

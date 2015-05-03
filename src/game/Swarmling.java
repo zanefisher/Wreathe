@@ -302,7 +302,7 @@ public class Swarmling extends GameObject {
 		else {
 			carrying.dx += dx * (1 / carrying.weight);
 			carrying.dy += dy * (1 / carrying.weight);
-			float carrySpeed = Sketch.mag(dx, dy);
+			float carrySpeed = Sketch.mag(carrying.dx, carrying.dy);
 			float maxCarrySpeed = maxSpeed / carrying.weight;
 			if (carrySpeed > maxCarrySpeed) {
 				carrying.dx *= maxCarrySpeed / carrySpeed;

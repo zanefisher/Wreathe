@@ -228,7 +228,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(tmp<difficulty && level >= 3)
+		if(/*tmp<difficulty &&*/ level >= 1)
 		{
 			float ix = sketch.random(0,Sketch.sqrt(radius));
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
