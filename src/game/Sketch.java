@@ -37,6 +37,7 @@ public class Sketch extends PApplet {
 	public void setup() {
 		frameRate(40);
 		colorMode(HSB, 360, 100, 100, 100);
+		//size(displayWidth, displayHeight);
 		size(1080, 700);
 		textSize(32);
 		textAlign(CENTER);
@@ -46,6 +47,7 @@ public class Sketch extends PApplet {
 		camera = new WorldView(0, 0, 1);
 		audio = new Audio(this);
 		world = new World(this, null, 0, 0);
+		world.open = true;
 		leader = new Leader(this);
 		Swarmling.lastInLine = leader;
 		leader.x = world.contents.get(0).x;
@@ -56,8 +58,6 @@ public class Sketch extends PApplet {
 		vault = new ArrayList<Key>();
 		nextKeyX = width - 40;
 		nextKeyY = height - 40;
-		
-		
 	}
 	
 	private void updateCamera() {
@@ -67,18 +67,32 @@ public class Sketch extends PApplet {
 		float maxX = minX;
 		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
-//		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
-		for (int i = 0; i < world.contents.size(); ++i) {
-			if (world.contents.get(i) instanceof Swarmling) {
-				Swarmling s = (Swarmling) world.contents.get(i);
-				if (s.following != null) {
-					minX = min(minX, s.x);
-					maxX = max(maxX, s.x);
-					minY = min(minY, s.y);
-					maxY = max(maxY, s.y);
-				}
+		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
+			if (s.following != null) {
+				minX = min(minX, s.x);
+				maxX = max(maxX, s.x);
+				minY = min(minY, s.y);
+				maxY = max(maxY, s.y);
 			}
 		}
+		
+		float midX = lerp(minX, maxX, 0.5f);
+		float midY = lerp(minY, maxY, 0.5f);
+		
+//		for (int i = 0; i < world.contents.size(); ++i) {
+//			GameObject obj = world.contents.get(i);
+//			if ((obj instanceof WanderingEnemy) || (obj instanceof ChasingEnemy)) {
+//				if (dist(midX, midY, obj.x, obj.y) < camera.scale * sqrt(sq(width) + sq(height))) {
+//					minX = min(minX, obj.x);
+//					maxX = max(maxX, obj.x);
+//					minY = min(minY, obj.y);
+//					maxY = max(maxY, obj.y);
+//				}
+//			}
+//		}
+//		
+//		midX = lerp(minX, maxX, 0.5f);
+//		midY = lerp(minY, maxY, 0.5f);
 		
 //		float modMinZoom = minZoom;
 //		for (int i = 0; i < world.children.size(); ++i) {
@@ -88,9 +102,6 @@ public class Sketch extends PApplet {
 //					minZoom * w.portalRadius / w.radius, minZoom));
 //		}
 //		float modMaxZoom = max(maxZoom, modMinZoom);
-		
-		float midX = lerp(minX, maxX, 0.5f);
-		float midY = lerp(minY, maxY, 0.5f);
 		
 		midX = lerp(leader.x, midX, distortion);
 		midY = lerp(leader.y, midY, distortion);
@@ -136,9 +147,11 @@ public class Sketch extends PApplet {
 		if (distortion == 1) {
 			for (int i = 0; i < world.children.size(); ++i) {
 				World w = world.children.get(i);
-				float dist = dist(leader.x, leader.y, w.x, w.y);
-				distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
-						1, World.portalRadius / w.radius));
+				if (w.open) {
+					float dist = dist(leader.x, leader.y, w.x, w.y);
+					distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
+							1, w.portalRadius / w.radius));
+				}
 			}
 		}
 		
@@ -177,7 +190,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		updateAndDrawTutorial();
+		//updateAndDrawTutorial();
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
@@ -247,6 +260,7 @@ public class Sketch extends PApplet {
 			text = "Move with the left stick.";
 			if (leader.distTo(world.nest) > 0) {
 				tutorialStage -= 1;
+				tutorialAnimationStart = frameCount;
 			}
 			break;
 		case 3:
@@ -257,6 +271,7 @@ public class Sketch extends PApplet {
 				s = s.following;
 				if (++count >= 8) {
 					tutorialStage -= 1;
+					tutorialAnimationStart = frameCount;
 					break;
 				}
 			}
@@ -264,8 +279,9 @@ public class Sketch extends PApplet {
 		case 2:
 			text = "Hold right trigger to break the chain and move fast.";
 			if (controller.getJrz() > 0) {
-				if (tutorialRightTriggerCount++ > 60) {
+				if (tutorialRightTriggerCount++ > 30) {
 					tutorialStage -= 1;
+					tutorialAnimationStart = frameCount;
 				}
 			} else {
 				tutorialRightTriggerCount = 0;
@@ -275,10 +291,12 @@ public class Sketch extends PApplet {
 			text = "Collect the Yellows using your followers.";
 			if (world.nest.growth > 0.5) {
 				tutorialStage -= 1;
+				tutorialAnimationStart = frameCount;
 			}
 			break;
 		}
-		fill(0,0,99);
+		float alpha = min(1, ((float) frameCount - (float) tutorialAnimationStart) / 40f);
+		fill(0,0,99, alpha * 100);
 		text(text, width / 2, height / 2);
 	}
 	

@@ -10,7 +10,7 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
-	static final float attackPower = 0.2f;
+	static final float attackPower = 0.1f;
 	static final float swarmlingAvoidRadius = 10f;
 	static final int puffPeriod = 10;
 	int puffPhase;
@@ -33,6 +33,8 @@ public class Swarmling extends GameObject {
 	float carryX, carryY; // swarmling's position relative to what it's carrying
 	
 	Nest nest = null;
+	
+	World enteringWorld = null;
 
 	Obstacle lastFrameTarget = null; // find if the swarmling start to attack, for use of audio
 	
@@ -103,6 +105,17 @@ public class Swarmling extends GameObject {
 	}
 	
 	public boolean update() {
+		
+		if (enteringWorld != null) {
+			x = Sketch.lerp(x, enteringWorld.x, 0.05f);
+			y = Sketch.lerp(y, enteringWorld.y, 0.05f);
+			float dist = Sketch.dist(x, y, enteringWorld.x, enteringWorld.y);
+			float portalR = enteringWorld.portalRadius;
+//			Sketch.println(distTo(enteringWorld) + ", " + Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			radius = swarmlingRadius * Sketch.min(1, Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			//Sketch.println(x + ", " + y + ", " + radius);
+			return dist > enteringWorld.portalRadius;
+		}
 
 		float ddx = 0, ddy = 0; //acceleration
 		float avoidFactor = 1f;
@@ -326,6 +339,7 @@ public class Swarmling extends GameObject {
 	}
 	
 	public void draw(WorldView view) {
+		
 		super.draw(view);
 		
 		if (target != null) {

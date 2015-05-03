@@ -6,9 +6,11 @@ public class World extends GameObject {
 	
 	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
 	
-	boolean explored;
+	boolean open = false;
+	float ringRadius = 350;
+	float ringWidth = 50;
 	static float transitionRadius = 200;
-	static float portalRadius = 50; //radius of the world while you're outside it.
+	float portalRadius = 50; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=10;
 	public int count=0;
@@ -17,7 +19,7 @@ public class World extends GameObject {
 	public int obstaclesRemainingAroundEntrance=6;
 	static int stationaryObstacleMaxNumber = 250;
 	static int stationaryObstacleMinNumber = 150;
-	static float worldRadius = 1000;
+	static float worldRadius;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 
@@ -27,9 +29,9 @@ public class World extends GameObject {
 	Nest nest;
 
 	//for moving obstacles and wandering enemies
-	static int easiestObstacleSpawnPeriod=150;
-	static int easiestObstacleMax=15;
-	static int easiestWanderingEnemySpawnPeriod=300;
+	static int easiestObstacleSpawnPeriod=300;
+	static int easiestObstacleMax=8;
+	static int easiestWanderingEnemySpawnPeriod=600;
 	static int easiestWanderingEnemyMax=1;
 	
 	ChasingEnemy chasingEnemy;
@@ -109,7 +111,7 @@ public class World extends GameObject {
 		parent = p;
 		x = ix;
 		y = iy;
-		level = (p == null ? 1 : p.level + 1);
+		level = (p == null ? 3 : p.level + 1);
 		
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
@@ -123,12 +125,11 @@ public class World extends GameObject {
 		wanderingEnemySpawnPeriod = easiestWanderingEnemySpawnPeriod + (int)(difficulty * (hardestWanderingEnemySpawnPeriod - easiestWanderingEnemySpawnPeriod));;
 		wanderingEnemyMax = easiestWanderingEnemyMax + (int)(difficulty * (hardestWanderingEnemyMax - easiestWanderingEnemyMax));
 		
-		explored = false;
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
-		radius = sketch.random(600, 1000);
+		radius = sketch.random(700, 1400);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();
@@ -205,25 +206,6 @@ public class World extends GameObject {
 		
 	}
 		
-	
-	public void explore() {
-		if (!explored) {
-//			int childCount = (int) sketch.random(4) + 1;
-			//comment out the generation of children
-//			for (int i = 0; i < childCount; ++i) {
-//				World nw = new World(sketch);
-//				nw.x = sketch.random(radius) - (radius / 2);
-//				nw.y = sketch.random(radius) - (radius / 2);
-//				children.add(nw);
-//			}
-			explored = true;
-			generateContents();
-			
-
-		}
-
-
-	}
 	
 	public void generateKey(){
 
@@ -436,25 +418,49 @@ public class World extends GameObject {
 //			}
 
 		} else {
-			float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
-			if (distToLeader < portalRadius) {
-				// if the leader goes in to the inner world, change the inner world as the current world
-				while(Swarmling.lastInLine != sketch.leader){
-					Swarmling.lastInLine.unfollow();
+			if (open) {
+				float distToLeader = Sketch.dist(x, y, sketch.leader.x, sketch.leader.y);
+				if (distToLeader < portalRadius) {
+					// if the leader goes in to the inner world, change the inner world as the current world
+					while(Swarmling.lastInLine != sketch.leader){
+						Swarmling.lastInLine.unfollow();
+					}
+					float r = radius / portalRadius;
+					sketch.camera.scale *= 1 / r;
+					float x0 = sketch.leader.x;
+					float y0 = sketch.leader.y;
+					sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
+					sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
+					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+					sketch.world = this;
+					sketch.audio.beamSetZero();
+					
+		
 				}
-				float r = radius / portalRadius;
-				sketch.camera.scale *= 1 / r;
-				float x0 = sketch.leader.x;
-				float y0 = sketch.leader.y;
-				sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
-				sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-				sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-				sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-				sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
-				sketch.world = this;
-				sketch.audio.beamSetZero();
-				
-	
+			} else {
+				ArrayList<Swarmling> inBand = new ArrayList<Swarmling>();
+				for (int i = 0; i < parent.contents.size(); ++i) {
+					if (parent.contents.get(i) instanceof Swarmling) {
+						Swarmling s = (Swarmling) parent.contents.get(i);
+						if (s.following != null) {
+							float dist = Sketch.dist(x, y, s.x, s.y);
+							if ((dist  <= ringRadius) && (dist >= ringRadius - ringWidth)) {
+								inBand.add(s);
+							}
+						}
+					}
+				}
+				if (inBand.size() >= ringRadius / 16) {
+					open = true;
+					while (Swarmling.lastInLine != sketch.leader) {
+						Swarmling.lastInLine.unfollow();
+					}
+					for (int i = 0; i < inBand.size(); ++i) {
+						inBand.get(i).enteringWorld = this;
+					}
+				}
 			}
 		}
 		
@@ -477,6 +483,22 @@ public class World extends GameObject {
 	public void draw(WorldView view) {
 		//base case do not draw worlds that are too small
 		if(view.scale < 0.01) return;
+		
+		if (!open) {
+			sketch.noStroke();
+			sketch.fill(cloudColor);
+			sketch.ellipse(view.screenX(0), view.screenY(0),
+					view.scale * radius * 2, view.scale * radius * 2);
+			
+			sketch.noFill();
+			sketch.stroke(0, 0, 99);
+			sketch.strokeWeight(5 * view.scale * (radius / portalRadius));
+			float r = view.scale * (radius / portalRadius) * ringRadius * 2;
+			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
+			r = view.scale * (radius / portalRadius) * (ringRadius - ringWidth)  * 2;
+			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
+			return;
+		}
 		
 		sketch.noStroke();
 		sketch.fill(color);
