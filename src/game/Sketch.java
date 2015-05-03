@@ -104,14 +104,14 @@ public class Sketch extends PApplet {
 		
 		float localMinZoom = minZoom * 0.5f;
 		float localMaxZoom = maxZoom;
-		
-		if(controller.getJry()>0.1)
-			zoomTarget = (zoomTarget+controller.getJry()*(localMaxZoom-zoomTarget))/distortion;
-		if(controller.getJry()<-0.1){
-			camera.x = lerp(camera.x, leader.x, 0.1f);
-			camera.y = lerp(camera.y, leader.y, 0.1f);
-			zoomTarget = (zoomTarget+controller.getJry()*(zoomTarget-localMinZoom))/distortion;
-		}
+//		
+//		if(controller.getJry()>0.1)
+//			zoomTarget = (zoomTarget+controller.getJry()*(localMaxZoom-zoomTarget))/distortion;
+//		if(controller.getJry()<-0.1){
+//			camera.x = lerp(camera.x, leader.x, 0.1f);
+//			camera.y = lerp(camera.y, leader.y, 0.1f);
+//			zoomTarget = (zoomTarget+controller.getJry()*(zoomTarget-localMinZoom))/distortion;
+//		}
 		
 
 		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
@@ -283,13 +283,13 @@ public class Sketch extends PApplet {
 			break;
 		case 2:
 			text = "Hold right trigger to break the chain and move fast.";
-			if (controller.getJrz() > 0) {
-				if (tutorialRightTriggerCount++ > 60) {
-					tutorialStage -= 1;
-				}
-			} else {
-				tutorialRightTriggerCount = 0;
-			}
+//			if (controller.getJrz() > 0) {
+//				if (tutorialRightTriggerCount++ > 60) {
+//					tutorialStage -= 1;
+//				}
+//			} else {
+//				tutorialRightTriggerCount = 0;
+//			}
 			break;
 		case 1:
 			text = "Collect the Yellows using your followers.";

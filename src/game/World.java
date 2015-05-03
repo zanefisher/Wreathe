@@ -153,6 +153,8 @@ public class World extends GameObject {
 	
 	public void generateContents() {
 		
+
+		
 		
 		
 		// contents generation in the setup of the world
@@ -169,6 +171,10 @@ public class World extends GameObject {
 
 		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+		
+		// wandering enemy for test
+		WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,nest);			
+		wanderingEnemy.initInWorld(this);
 		
 		//sprinkle food
 		if(level == 1){

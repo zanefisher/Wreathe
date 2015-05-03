@@ -32,16 +32,29 @@ public class WanderingEnemy extends GameObject {
 		center = c;
 		color=sketch.color(0,99,99);
 		avoidRadius = predateRadius;
+		isOrbiting = true;
 	}
 
 	
 	
 	public void initInWorld(World world){
+
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
+		
+		if(isOrbiting){
+			speed = (maxSpeed-minSpeed)/2;
+			x = center.x+sketch.random(radius*3, radius*6);
+			y = center.y+sketch.random(radius*3, radius*6);
+			dx = Sketch.sin(radians) * speed * -1;
+			dy = Sketch.cos(radians) * speed * -1;
+			world.contents.add(this);
+			return;
+		}
+		
 		
 		int count = 0;
 		boolean hitNest = true;
@@ -64,6 +77,11 @@ public class WanderingEnemy extends GameObject {
 //			sketch.world.wanderingEnemyNumber-=1;
 //			return false;
 //		}
+		if(isOrbiting)
+		{
+			orbit();
+			return true;
+		}
 		
 		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){
 			float radians = sketch.random(2) * Sketch.PI;
@@ -147,6 +165,30 @@ public class WanderingEnemy extends GameObject {
 		
 		return true;
 	}
+	
+	public void orbit(){
+		float ddx = 0, ddy = 0; //acceleration
+		float r = Sketch.dist(center.x,center.y, x, y);
+		float acc;
+		acc = 600/Sketch.sq(r);
+		ddx = acc * (center.x - x) / r;
+		ddy = acc * (center.y - y) / r;
+		
+		
+		dx += ddx;
+		dy += ddy;
+		
+//		float speed = Sketch.mag(dx, dy);
+//		if (speed > maxSpeed) {
+//			dx *= maxSpeed / speed;
+//			dy *= maxSpeed / speed;
+//		}
+
+
+		x += dx;
+		y += dy;
+	}
+	
 
 	public void draw(WorldView view){
 		super.draw(view);  
