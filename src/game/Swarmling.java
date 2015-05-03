@@ -323,6 +323,7 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
+
 		if(sketch.usingController){
 			if (sketch.controller.getJz()>0.1f && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
 				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
