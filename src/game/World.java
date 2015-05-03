@@ -19,7 +19,7 @@ public class World extends GameObject {
 	public int obstaclesRemainingAroundEntrance=6;
 	static int stationaryObstacleMaxNumber = 250;
 	static int stationaryObstacleMinNumber = 150;
-	static float worldRadius = 1000;
+	static float worldRadius;
 	int stationaryObstaclesNumber;
 	int bgColor; //background color
 
@@ -29,9 +29,9 @@ public class World extends GameObject {
 	Nest nest;
 
 	//for moving obstacles and wandering enemies
-	static int easiestObstacleSpawnPeriod=150;
-	static int easiestObstacleMax=15;
-	static int easiestWanderingEnemySpawnPeriod=300;
+	static int easiestObstacleSpawnPeriod=300;
+	static int easiestObstacleMax=8;
+	static int easiestWanderingEnemySpawnPeriod=600;
 	static int easiestWanderingEnemyMax=1;
 	
 	ChasingEnemy chasingEnemy;
@@ -111,7 +111,7 @@ public class World extends GameObject {
 		parent = p;
 		x = ix;
 		y = iy;
-		level = (p == null ? 1 : p.level + 1);
+		level = (p == null ? 3 : p.level + 1);
 		
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
@@ -129,7 +129,7 @@ public class World extends GameObject {
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
-		radius = sketch.random(600, 1000);
+		radius = sketch.random(700, 1400);
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();

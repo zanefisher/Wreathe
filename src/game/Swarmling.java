@@ -10,7 +10,7 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
-	static final float attackPower = 0.2f;
+	static final float attackPower = 0.1f;
 	static final float swarmlingAvoidRadius = 10f;
 	static final int puffPeriod = 10;
 	int puffPhase;

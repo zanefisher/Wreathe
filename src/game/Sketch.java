@@ -67,18 +67,32 @@ public class Sketch extends PApplet {
 		float maxX = minX;
 		float minY = leader.y + (40 * leader.dy);
 		float maxY = minY;
-//		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
-		for (int i = 0; i < world.contents.size(); ++i) {
-			if (world.contents.get(i) instanceof Swarmling) {
-				Swarmling s = (Swarmling) world.contents.get(i);
-				if (s.following != null) {
-					minX = min(minX, s.x);
-					maxX = max(maxX, s.x);
-					minY = min(minY, s.y);
-					maxY = max(maxY, s.y);
-				}
+		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
+			if (s.following != null) {
+				minX = min(minX, s.x);
+				maxX = max(maxX, s.x);
+				minY = min(minY, s.y);
+				maxY = max(maxY, s.y);
 			}
 		}
+		
+		float midX = lerp(minX, maxX, 0.5f);
+		float midY = lerp(minY, maxY, 0.5f);
+		
+//		for (int i = 0; i < world.contents.size(); ++i) {
+//			GameObject obj = world.contents.get(i);
+//			if ((obj instanceof WanderingEnemy) || (obj instanceof ChasingEnemy)) {
+//				if (dist(midX, midY, obj.x, obj.y) < camera.scale * sqrt(sq(width) + sq(height))) {
+//					minX = min(minX, obj.x);
+//					maxX = max(maxX, obj.x);
+//					minY = min(minY, obj.y);
+//					maxY = max(maxY, obj.y);
+//				}
+//			}
+//		}
+//		
+//		midX = lerp(minX, maxX, 0.5f);
+//		midY = lerp(minY, maxY, 0.5f);
 		
 //		float modMinZoom = minZoom;
 //		for (int i = 0; i < world.children.size(); ++i) {
@@ -88,9 +102,6 @@ public class Sketch extends PApplet {
 //					minZoom * w.portalRadius / w.radius, minZoom));
 //		}
 //		float modMaxZoom = max(maxZoom, modMinZoom);
-		
-		float midX = lerp(minX, maxX, 0.5f);
-		float midY = lerp(minY, maxY, 0.5f);
 		
 		midX = lerp(leader.x, midX, distortion);
 		midY = lerp(leader.y, midY, distortion);
