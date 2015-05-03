@@ -103,7 +103,7 @@ public class Music extends PApplet {
 	  
 	}
 	
-	public class Bass implements Runnable {
+	class Bass implements Runnable {
 		
 		public void run(){
 			
@@ -146,7 +146,7 @@ public class Music extends PApplet {
 		
 	}
 	
-	public class Tenor implements Runnable {
+	class Tenor implements Runnable {
 		
 		public void run(){
 			
@@ -158,7 +158,7 @@ public class Music extends PApplet {
 						
 						for(int s = 0; i < section.length; s++){
 							
-							for(int n = 0; n < score[2][section[s]][0].length; n++){
+							for(int n = 0; n < score[1][section[s]][0].length; n++){
 								
 								if(score[1][section[s]][0][n] != 0){
 									
@@ -189,7 +189,7 @@ public class Music extends PApplet {
 		
 	}
 	
-	public class Treble implements Runnable {
+	class Treble implements Runnable {
 		
 		public void run(){
 			
@@ -201,7 +201,7 @@ public class Music extends PApplet {
 						
 						for(int s = 0; i < section.length; s++){
 							
-							for(int n = 0; n < score[2][section[s]][0].length; n++){
+							for(int n = 0; n < score[0][section[s]][0].length; n++){
 								
 								if(score[0][section[s]][0][n] != 0){
 									
