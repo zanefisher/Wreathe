@@ -113,7 +113,7 @@ public class Music extends PApplet {
 					
 					for(int i = 0; i < 12; i++){
 						
-						for(int s = 0; i < section.length; s++){
+						for(int s = 0; s < section.length; s++){
 							
 							for(int n = 0; n < score[2][section[s]][0].length; n++){
 								
@@ -126,7 +126,7 @@ public class Music extends PApplet {
 									
 								}
 								
-								Thread.sleep((long)(score[2][section[s]][1][n] * 6000/23));
+								Thread.sleep((long)(score[2][section[s]][1][n] * 60000/23));
 								
 							}
 							
@@ -156,7 +156,7 @@ public class Music extends PApplet {
 					
 					for(int i = 0; i < 12; i++){
 						
-						for(int s = 0; i < section.length; s++){
+						for(int s = 0; s < section.length; s++){
 							
 							for(int n = 0; n < score[1][section[s]][0].length; n++){
 								
@@ -169,7 +169,7 @@ public class Music extends PApplet {
 									
 								}
 								
-								Thread.sleep((long)(score[1][section[s]][1][n] * 6000/23));
+								Thread.sleep((long)(score[1][section[s]][1][n] * 60000/23));
 								
 							}
 							
@@ -199,7 +199,7 @@ public class Music extends PApplet {
 					
 					for(int i = 0; i < 12; i++){
 						
-						for(int s = 0; i < section.length; s++){
+						for(int s = 0; s < section.length; s++){
 							
 							for(int n = 0; n < score[0][section[s]][0].length; n++){
 								
@@ -212,7 +212,7 @@ public class Music extends PApplet {
 									
 								}
 								
-								Thread.sleep((long)(score[0][section[s]][1][n] * 6000/23));
+								Thread.sleep((long)(score[0][section[s]][1][n] * 60000/23));
 								
 							}
 							
