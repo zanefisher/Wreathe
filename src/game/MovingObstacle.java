@@ -7,7 +7,7 @@ public class MovingObstacle extends Obstacle {
 	static float maxRadius = 200;
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 2.4f;
-	static int maxSwarmlingsGeneratedForDeadObstacle = 12;
+	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
 	
 	ArrayList<Food> foodContained;
 	MovingObstacle(Sketch s){
