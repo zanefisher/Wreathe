@@ -9,29 +9,26 @@ public class Controller extends PApplet {
 	//for controller
 	ControlIO control;
 	ControlDevice device = null;
+	Sketch sketch = null;
 	
-	float jx,jy,jrx,jry;
+	float jx,jy,jz,jrx,jry,jrz;
 	boolean leading;
 	
-	public Controller() {
+	public Controller(Sketch s) {
+		sketch = s;
 		// Initialise the ControlIO
 		control = ControlIO.getInstance(this);
 		// Find a device that matches the configuration file
 		device = control.getMatchedDevice("joystick");
 	}
-	
-	public void update(){
-		jx = device.getSlider("X").getValue();
-		jy = device.getSlider("Y").getValue();
-	}
-	
+		
 	public float getJx(){
-		jx = device.getSlider("X").getValue();
+		jx = (!sketch.usingController)?0:device.getSlider("X").getValue();
 		return jx;
 	}
 	
 	public float getJy(){
-		jy = device.getSlider("Y").getValue();
+		jy = (!sketch.usingController)?0:device.getSlider("Y").getValue();
 		return jy;
 	}
 	
@@ -45,11 +42,13 @@ public class Controller extends PApplet {
 	}
 	
 	public float getJz(){
-		return (device.getSlider("Z").getValue()+1)/2f; //from 0~1
+		jz = (!sketch.usingController)?((sketch.mousePressed)?1:0):(device.getSlider("Z").getValue()+1)/2f;
+		return jz; //from 0~1
 	}
 	
 	public float getJrz(){
-		return (device.getSlider("RZ").getValue()+1)/2f; //from 0~1
+		jrz = (!sketch.usingController)?((sketch.mousePressed)?0:1):(device.getSlider("RZ").getValue()+1)/2f;
+		return jrz; //from 0~1
 	}
 	
 	public float getJrx(){
