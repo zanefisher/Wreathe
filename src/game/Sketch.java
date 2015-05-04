@@ -64,17 +64,15 @@ public class Sketch extends PApplet {
 	private void updateCamera() {
 		
 		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (40 * leader.dx);
+		float minX = leader.x + (60 * leader.dx);
 		float maxX = minX;
-		float minY = leader.y + (40 * leader.dy);
+		float minY = leader.y + (60 * leader.dy);
 		float maxY = minY;
-		for (Swarmling s = Swarmling.lastInLine; s.following != null; s = s.following) {
-			if (s.following != null) {
-				minX = min(minX, s.x);
-				maxX = max(maxX, s.x);
-				minY = min(minY, s.y);
-				maxY = max(maxY, s.y);
-			}
+		for (Swarmling s = Swarmling.lastInLine; s != null; s = s.following) {
+			minX = min(minX, s.x);
+			maxX = max(maxX, s.x);
+			minY = min(minY, s.y);
+			maxY = max(maxY, s.y);
 		}
 		
 		float midX = lerp(minX, maxX, 0.5f);
@@ -107,9 +105,9 @@ public class Sketch extends PApplet {
 		midX = lerp(leader.x, midX, distortion);
 		midY = lerp(leader.y, midY, distortion);
 		
-		float xZoomTarget = (width - (2 * focusMargin)) / (maxX - minX);
-		float yZoomTarget = (height - (2 * focusMargin)) / (maxY - minY);
-		float zoomTarget = constrain(min(xZoomTarget, yZoomTarget), minZoom, maxZoom) / distortion;
+		float zoomTarget = (min(width, height) - (2 * focusMargin)) / max(maxX - minX, maxY - minY);
+//		float yZoomTarget = (height - (2 * focusMargin)) / (maxY - minY);
+		zoomTarget = constrain(zoomTarget/*min(xZoomTarget, yZoomTarget)*/, minZoom, maxZoom) / distortion;
 		
 		camera.x = lerp(camera.x, midX, 0.05f);
 		camera.y = lerp(camera.y, midY, 0.05f);

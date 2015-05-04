@@ -28,7 +28,7 @@ public class MovingObstacle extends Obstacle {
 		radius = sketch.montecarlo((maxRadius - minRadius) / 2, (maxRadius + minRadius) / 2);
 		float speed = sketch.random(minSpeed, maxSpeed) * minRadius / radius;
 		float radians = sketch.random(2) * Sketch.PI;
-		obstacleLife = radius;
+		obstacleLife = radius * radius;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
 
@@ -45,9 +45,9 @@ public class MovingObstacle extends Obstacle {
 		avoidRadius = Sketch.min(radius/2f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 		
 		for(int i=0; i<(int)world.swarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
-			float rx = x + sketch.random(radius) - (radius/2);
-			float ry = y + sketch.random(radius) - (radius/2);
-			foodContained.add(new Food(sketch, rx, ry));
+			float angle = sketch.random(2 * Sketch.PI);
+			float dist = sketch.random(radius);
+			foodContained.add(new Food(sketch, x + (dist * Sketch.cos(angle)), y + (dist * Sketch.sin(angle))));
 		}
 		
 		int count = 0;
@@ -68,7 +68,7 @@ public class MovingObstacle extends Obstacle {
 	
 	public boolean update(){
 		
-		radius = Sketch.max(obstacleLife,0);
+		radius = Sketch.max(Sketch.sqrt(obstacleLife), 0);
 		
 		x += dx;
 		y += dy;
@@ -76,6 +76,16 @@ public class MovingObstacle extends Obstacle {
 		for(int i = 0 ; i< foodContained.size(); i++){
 			foodContained.get(i).x += dx;
 			foodContained.get(i).y += dy;
+			
+			if(Sketch.dist(foodContained.get(i).x, foodContained.get(i).y, x, y)>radius-foodContained.get(i).radius)
+			{
+				//food pop out
+				sketch.world.contents.add(foodContained.get(i));
+				float dist = Sketch.dist(x, y,foodContained.get(i).x,foodContained.get(i).y );
+				foodContained.get(i).dx = maxSpeed*(foodContained.get(i).x - x)/dist;
+				foodContained.get(i).dy = maxSpeed*(foodContained.get(i).y - y)/dist;
+				foodContained.remove(i--);
+			}
 		}
 		
 		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
@@ -84,7 +94,7 @@ public class MovingObstacle extends Obstacle {
 		}
 		
 		//check if it has died
-		if(obstacleLife <= 0f) {
+		if(obstacleLife <= 1f) {
 			//Generate New Swarmlings
 			for(int i=0; i< foodContained.size(); i++){
 				sketch.world.contents.add(foodContained.get(i));

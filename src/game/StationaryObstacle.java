@@ -31,7 +31,7 @@ public class StationaryObstacle extends Obstacle {
 		radius = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 				(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
 
-		obstacleLife = radius / 2;
+		obstacleLife = radius * radius;
 
 		avoidRadius = Sketch.min(radius*3f/4f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 	}
@@ -41,7 +41,7 @@ public class StationaryObstacle extends Obstacle {
 		color = sketch.color(0,0,50);
 
 		radius = r;
-		obstacleLife = radius / 1.2f;
+		obstacleLife = radius * radius;
 
 		avoidRadius = Sketch.min(radius*3f/4f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 	}
@@ -51,9 +51,9 @@ public class StationaryObstacle extends Obstacle {
 	}
 	
 	public boolean update(){
-		radius = Sketch.max(obstacleLife,0);
+		radius = Sketch.max(Sketch.sqrt(obstacleLife),0);
 		
-		if(obstacleLife <= 0f) {
+		if(obstacleLife <= 1f) {
 			if(key!=null){
 				key.obstaclesRemaining-=1;
 			}

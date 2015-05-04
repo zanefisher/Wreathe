@@ -2,6 +2,8 @@ package game;
 
 public class Food extends Carryable {
 
+	float ddx,ddy;
+	
 	Food(Sketch s, float ix, float iy) {
 		sketch = s;
 		x = ix;
@@ -30,13 +32,26 @@ public class Food extends Carryable {
 				Swarmling carrier = carriedBy.get(j);
 				carrier.uncarry();
 			}
-				
-				return false;
-			}
+			
+			return false;
+		}
+		ddx = 0;
+		ddy = 0;
+		
+		// Add friction drag.
+		ddx -= dx / 10;
+		ddy -= dy / 10;
+		
+		dx += ddx;
+		dy += ddy;
+		
 		x += dx;
 		y += dy;
-		dx = 0;
-		dy = 0;
-		return true;
+		
+		if(carriedBy.size() !=0){
+			dx = 0;
+			dy = 0;
+		}
+		return Sketch.mag(x, y) < sketch.world.radius;
 	}
 }

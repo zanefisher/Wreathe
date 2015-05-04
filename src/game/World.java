@@ -125,7 +125,6 @@ public class World extends GameObject {
 		y = iy;
 		level = (p == null ? 3 : p.level + 1);
 		radius = sketch.random(minWorldRadius, maxWorldRadius);
-		
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
 		ran =  Sketch.max(-1,ran);
@@ -192,9 +191,7 @@ public class World extends GameObject {
 		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
 		
-//		// wandering enemy for test
-//		WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,nest);			
-//		wanderingEnemy.initInWorld(this);
+
 		
 		//sprinkle food
 		if(level == 1){
@@ -262,6 +259,10 @@ public class World extends GameObject {
 
 				}
 			this.contents.add(key);
+			
+			// wandering enemy for test
+			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,key);			
+			wanderingEnemy.initInWorld(this);
 		}
 	}
 	
@@ -428,8 +429,9 @@ public class World extends GameObject {
 			if (level >= 2)
 				generateMovingObstacles();
 
-			if (level >= 3)
-				generateWanderingEnemy();
+//			if (level >= 3)
+//				generateWanderingEnemy();
+				
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){
 //					Swarmling.lastInLine.unfollow();
@@ -481,7 +483,7 @@ public class World extends GameObject {
 						}
 					}
 				}
-				if (inBand.size() >= ringRadius / 16) {
+				if (inBand.size() >= ringRadius / 14) {
 					open = true;
 					while (Swarmling.lastInLine != sketch.leader) {
 						Swarmling.lastInLine.unfollow();
