@@ -147,7 +147,7 @@ public class Sketch extends PApplet {
 		screenHeight = height;
 		screenWidth = width;
 		screenSize = width * height;
-		focusMargin = min(width, height) / 10;
+		focusMargin = min(width, height) / 5;
 		
 		// Draw the current world.
 		//world= new World(this);

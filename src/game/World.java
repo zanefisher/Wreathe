@@ -7,7 +7,7 @@ public class World extends GameObject {
 	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
 	
 	boolean open = false;
-	float ringRadius = 350;
+	float ringRadius = 250;
 	float ringWidth = 50;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
