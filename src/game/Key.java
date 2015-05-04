@@ -20,6 +20,7 @@ class Sparkling extends GameObject {
 		startTime = (int)sketch.random(1, 40);
 		startAngle = sketch.random(Sketch.PI);
 		rotateAngle = sketch.random(Sketch.PI / 200);
+
 	}
 	
 	public boolean update() {

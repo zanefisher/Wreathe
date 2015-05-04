@@ -176,8 +176,11 @@ public class Swarmling extends GameObject {
 					nestDist = distTo(nest);
 				}
 				
+				WanderingEnemy tmpEnemy = null;
+				if (other instanceof WanderingEnemy)
+					tmpEnemy = (WanderingEnemy)other;
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy) /*&& nestDist > 0*/) {
+				if (distance <= 0 && (other instanceof Obstacle || (tmpEnemy!=null &&tmpEnemy.isAttacking == true) )/*&& nestDist > 0*/) {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
@@ -210,7 +213,7 @@ public class Swarmling extends GameObject {
 				
 				// attack behavoiur with obstacles
 				if (other instanceof Obstacle) {
-
+					if(!(target!= null && target.obstacleLife>=0 && distTo(target)<attackRadius))
 					// check if it can be our new target.
 					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
@@ -219,7 +222,6 @@ public class Swarmling extends GameObject {
 				}
 				
 				if (other instanceof WanderingEnemy){
-					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
 					if(distance < WanderingEnemy.predateRadius && tmpEnemy.isAttacking==true /*&& nestDist > 0*/){
 						ddx += (tmpEnemy.x - x) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
 						ddy += (tmpEnemy.y - y) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
@@ -257,6 +259,10 @@ public class Swarmling extends GameObject {
 			ddx -= distOutsideWorld * x / sketch.world.radius;
 			ddy -= distOutsideWorld * y / sketch.world.radius;
 		}
+		
+
+		if(lastFrameTarget!= null && lastFrameTarget.obstacleLife>=0 && distTo(lastFrameTarget)<attackRadius)
+		target = lastFrameTarget;
 		
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;

@@ -18,11 +18,13 @@ public class WanderingEnemy extends GameObject {
 	float averageSwarmlingsY =0;
 	
 	boolean isOrbiting = false;
-	GameObject center = null;
+	//GameObject center = null;
 	float centerX,centerY;
-	float distP = 6f; //the wandering enemy would return at distP * center.radius //May change depending on difficulty
-	
-	float initialGM;
+	float centerR;
+	float distP = 5f; //the wandering enemy would orbit at distP * center.radius //May change depending on difficulty
+
+	float angle = 0;
+	float wSpeed = 0.04f;
 	
 	WanderingEnemy(Sketch s){
 		sketch = s;
@@ -35,18 +37,15 @@ public class WanderingEnemy extends GameObject {
 		sketch = s;
 		centerX = c.x;
 		centerY = c.y;
+		centerR = c.radius + this.radius;
 		color=sketch.color(0,99,99);
 		avoidRadius = predateRadius;
 		isOrbiting = true;
-		center = c;
+//		center = c;
 	}
 
 	
-	
 	public void initInWorld(World world){
-		
-//		centerX = center.x;
-//		centerY = center.y;
 		
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
@@ -55,15 +54,8 @@ public class WanderingEnemy extends GameObject {
 		y = Sketch.cos(radians) * (radius + world.radius);
 		
 		if(isOrbiting){
-			speed = (maxSpeed-minSpeed)/2;
-//			x = centerX+sketch.random(radius*3, radius*6);
-//			y = centerY+sketch.random(radius*3, radius*6);
-//			dx = Sketch.sin(radians) * speed * -1;
-//			dy = Sketch.cos(radians) * speed * -1;
-			x = Sketch.sin(radians) * (distP*center.radius);		
-			y = Sketch.cos(radians) * (distP*center.radius);
-			dx = 0;
-			dy = 0;
+			x = Sketch.sin(radians) * (distP*centerR);		
+			y = Sketch.cos(radians) * (distP*centerR);
 			world.contents.add(this);
 			return;
 		}
@@ -90,32 +82,28 @@ public class WanderingEnemy extends GameObject {
 //			sketch.world.wanderingEnemyNumber-=1;
 //			return false;
 //		}
-		if(isOrbiting)
-		{
-			orbit();
-			return true;
-		}
-		
-		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){
-			float radians = sketch.random(2) * Sketch.PI;
-			float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
-			int count = 0;
-			boolean hitNest = true;
-			while(hitNest && sketch.world.nest !=null && count<500){
-				dx = Sketch.sin(radians) * speed * -1;
-				dy = Sketch.cos(radians) * speed * -1;
 
-				float k = dy/dx;
-				float distance = Sketch.abs(k*sketch.world.nest.x-sketch.world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-				if(distance >= (sketch.world.nest.radius+radius))hitNest = false;
-				count++;
-			}
-			if(count > 500) {
-				Sketch.println("a warndering enemy doesn't go back");
-				sketch.world.wanderingEnemyNumber-=1;
-				return false;
-			}
-	}
+//		hit nest test not use anymore
+//		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){
+//			float radians = sketch.random(2) * Sketch.PI;
+//			float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
+//			int count = 0;
+//			boolean hitNest = true;
+//			while(hitNest && sketch.world.nest !=null && count<500){
+//				dx = Sketch.sin(radians) * speed * -1;
+//				dy = Sketch.cos(radians) * speed * -1;
+//
+//				float k = dy/dx;
+//				float distance = Sketch.abs(k*sketch.world.nest.x-sketch.world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+//				if(distance >= (sketch.world.nest.radius+radius))hitNest = false;
+//				count++;
+//			}
+//			if(count > 500) {
+//				Sketch.println("a warndering enemy doesn't go back");
+//				sketch.world.wanderingEnemyNumber-=1;
+//				return false;
+//			}
+//		}
 		
 		int predateeCount = 0;
 //		float sumX = 0;
@@ -174,26 +162,24 @@ public class WanderingEnemy extends GameObject {
 		x += dx;
 		y += dy;
 		
-		
+		if(isOrbiting)
+		{
+			orbit();
+
+		}
 		
 		return true;
 	}
-	
+
+
 	public void orbit(){
-		float ddx = 0, ddy = 0; //acceleration
-		float r = Sketch.dist(centerX,centerY, x, y);
-		float acc;
-		acc = initialGM/Sketch.sq(r);
-		ddx = acc * (centerX - x) / r;
-		ddy = acc * (centerX - y) / r;
 		
-		dx += ddx;
-		dy += ddy;
-		
-		x += dx;
-		y += dy;
+		float dist = Sketch.dist(x, y, centerX, centerY);		
+		x = centerX + Sketch.sin(angle) * dist;
+		y = centerY + Sketch.cos(angle) * dist;
+		angle = angle + wSpeed;
+
 	}
-	
 
 	public void draw(WorldView view){
 		super.draw(view);  

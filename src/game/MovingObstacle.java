@@ -76,6 +76,16 @@ public class MovingObstacle extends Obstacle {
 		for(int i = 0 ; i< foodContained.size(); i++){
 			foodContained.get(i).x += dx;
 			foodContained.get(i).y += dy;
+			
+			if(Sketch.dist(foodContained.get(i).x, foodContained.get(i).y, x, y)>radius-foodContained.get(i).radius)
+			{
+				//food pop out
+				sketch.world.contents.add(foodContained.get(i));
+				float dist = Sketch.dist(x, y,foodContained.get(i).x,foodContained.get(i).y );
+				foodContained.get(i).dx = maxSpeed*(foodContained.get(i).x - x)/dist;
+				foodContained.get(i).dy = maxSpeed*(foodContained.get(i).y - y)/dist;
+				foodContained.remove(i--);
+			}
 		}
 		
 		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
