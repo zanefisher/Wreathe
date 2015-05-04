@@ -131,7 +131,7 @@ public class World extends GameObject {
 		ran =  Sketch.min(1,ran);
 		difficulty = (level >= maxLevel ? 1 : Sketch.sq(level+ran)/Sketch.sq(maxLevel));
 		radiusFactor = Sketch.sqrt(radius / ((maxWorldRadius + minWorldRadius) / 2));
-		Sketch.println(difficulty + " factor: " + radiusFactor);
+		//Sketch.println(difficulty + " factor: " + radiusFactor);
 		
 		purnishingTime = easiestPurnishingTime + (int)(difficulty * (hardistPurnishingTime - easiestPurnishingTime));
 		//Sketch.println(difficulty + " time: " + purnishingTime);
@@ -141,7 +141,7 @@ public class World extends GameObject {
 		obstacleMax= (int)(easiestObstacleMax * radiusFactor) + (int)(difficulty * (hardestObstacleMax * radiusFactor - easiestObstacleMax * radiusFactor));
 		wanderingEnemySpawnPeriod = (int)(easiestWanderingEnemySpawnPeriod / radiusFactor) + (int)(difficulty * (hardestWanderingEnemySpawnPeriod / radiusFactor - easiestWanderingEnemySpawnPeriod / radiusFactor));
 		wanderingEnemyMax = (int)(easiestWanderingEnemyMax * radiusFactor) + (int)(difficulty * (hardestWanderingEnemyMax * radiusFactor - easiestWanderingEnemyMax * radiusFactor));
-		Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
+		//Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
 		
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
@@ -189,7 +189,7 @@ public class World extends GameObject {
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5*radiusFactor),(int)(stationaryObstacleMaxNumber*0.5*radiusFactor));
 
 		if(level >= 3)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*radiusFactor),(int)(stationaryObstacleMaxNumber*radiusFactor));
 		
 
 		
@@ -232,28 +232,35 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(tmp<difficulty && level >= 3)
+		if(/*tmp<difficulty &&*/ level >= 3)
 		{
-			float ix = sketch.random(0,Sketch.sqrt(radius));
-			float iy = sketch.random(0,Sketch.sqrt(radius));		
-			key = new Key(sketch,ix,iy);
+			while(key == null){
+				float ix = sketch.random(-radius * 0.7f, radius * 0.7f);
+				float iy = sketch.random(-radius * 0.7f, radius * 0.7f);
+				float dist = Sketch.dist(ix, iy, nest.x, nest.y);
+				//Sketch.println(dist);
+				if(dist > 400){
+					key = new Key(sketch,ix,iy);
+				}
+			}
 			//key.initStationary();
 			//add obstacles covering the entrances
 			float theta = sketch.random(Sketch.TWO_PI);
 			//if still need stationary obstacles to cover the entrance
 			while(key.obstaclesAroundKey > 0){
+
 				float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 						(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.5f);
-					//Sketch.println(theta);
+					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.2f);
+					//Sketch.println(obDiameter);
 					//set the entrance and set the obstacle's position around the world
 					sob.key = key;
-					sob.x = x - Sketch.cos(theta) * sob.radius;
-					sob.y = y - Sketch.sin(theta) * sob.radius;
+					sob.x = x + Sketch.cos(theta) * sob.radius * 0.8f;
+					sob.y = y + Sketch.sin(theta) * sob.radius * 0.8f;
 					
 					//recalculate theta
 					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
-					contents.add(sob);
+					this.contents.add(sob);
 					key.obstaclesAroundKey--;
 					
 

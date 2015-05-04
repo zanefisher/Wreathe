@@ -51,6 +51,11 @@ public class Leader extends Swarmling {
 		else 
 			speed = leading ? maxSpeed : 2 * maxSpeed;
 		
+		//slow the leader when someone in the line dies
+		if(firstInLine != null && Sketch.dist(x, y, firstInLine.x, firstInLine.y) > 100){
+			speed *= 0.8f;
+		}
+		
 		if (speed > maxSpeed) {
 			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(color, 50), radius * sketch.distortion, 0, 5));
 		}
@@ -77,8 +82,7 @@ public class Leader extends Swarmling {
 			y = - y * 0.9f;
 		}
 		
-		
-		
+
 		return true;
 	}
 	

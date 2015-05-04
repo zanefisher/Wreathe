@@ -46,10 +46,6 @@ public class StationaryObstacle extends Obstacle {
 		avoidRadius = Sketch.min(radius*3f/4f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 	}
 	
-	public void initInWorld(){
-
-	}
-	
 	public boolean update(){
 		radius = Sketch.max(obstacleLife,0);
 		
@@ -65,4 +61,10 @@ public class StationaryObstacle extends Obstacle {
 		return true;
 	}
 
+//	public void draw(WorldView view){
+//		super.draw(view);
+//		if(key!=null){
+//		Sketch.println(key.x);
+//		}
+//	}
 }

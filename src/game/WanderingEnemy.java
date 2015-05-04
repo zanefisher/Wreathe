@@ -5,7 +5,7 @@ public class WanderingEnemy extends GameObject {
 
 	static float maxSpeed = 2.8f;
 	static float minSpeed = 0.6f;
-	public static float predateRadius = 200f;
+	public static float predateRadius = 150f;
 	boolean isAttacking = false;
 	int attackCooldownCount = 200;	
 	int attackCooldown = (int)Math.random()*attackCooldownCount;
@@ -24,7 +24,7 @@ public class WanderingEnemy extends GameObject {
 	float distP = 5f; //the wandering enemy would orbit at distP * center.radius //May change depending on difficulty
 
 	float angle = 0;
-	float wSpeed = 0.04f;
+	float wSpeed = 0.01f;
 	
 	WanderingEnemy(Sketch s){
 		sketch = s;
@@ -47,15 +47,15 @@ public class WanderingEnemy extends GameObject {
 	
 	public void initInWorld(World world){
 		
-		radius = 40f;
+		radius = 30f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
 		
 		if(isOrbiting){
-			x = Sketch.sin(radians) * (distP*centerR);		
-			y = Sketch.cos(radians) * (distP*centerR);
+			x = centerX + Sketch.sin(radians) * (distP*centerR);		
+			y = centerY + Sketch.cos(radians) * (distP*centerR);
 			world.contents.add(this);
 			return;
 		}
@@ -69,7 +69,7 @@ public class WanderingEnemy extends GameObject {
 
 			float k = dy/dx;
 			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-			if(distance >= (world.nest.radius+radius))hitNest = false;
+			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
 			count++;
 		}
 		if(count<500) world.contents.add(this);
