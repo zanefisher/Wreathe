@@ -110,7 +110,7 @@ public class World extends GameObject {
 		x = ix;
 		y = iy;
 		level = (p == null ? 1 : p.level + 1);
-		
+		level = 10;
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
 
@@ -172,9 +172,7 @@ public class World extends GameObject {
 		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
 		
-//		// wandering enemy for test
-//		WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,nest);			
-//		wanderingEnemy.initInWorld(this);
+
 		
 		//sprinkle food
 		if(level == 1){
@@ -259,6 +257,10 @@ public class World extends GameObject {
 			float iy = sketch.random(0,Sketch.sqrt(radius));		
 			key = new Key(sketch,ix,iy);
 			this.contents.add(key);
+			
+			// wandering enemy for test
+			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,key);			
+			wanderingEnemy.initInWorld(this);
 		}
 	}
 	
