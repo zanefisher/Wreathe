@@ -76,6 +76,11 @@ public class MovingObstacle extends Obstacle {
 		for(int i = 0 ; i< foodContained.size(); i++){
 			foodContained.get(i).x += dx;
 			foodContained.get(i).y += dy;
+			if(Sketch.dist(foodContained.get(i).x, foodContained.get(i).y, x, y)>radius-foodContained.get(i).radius)
+			{
+				sketch.world.contents.add(foodContained.get(i));
+				foodContained.remove(i);
+			}
 		}
 		
 		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
