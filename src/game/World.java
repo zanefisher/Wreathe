@@ -14,38 +14,50 @@ public class World extends GameObject {
 	int br, bg, bb; //background color
 	static int swarmlingsGenerated=10;
 	public int count=0;
-	public int obstacleNumber=0;
-	public int obstaclesAroundEntrance=6;
-	public int obstaclesRemainingAroundEntrance=6;
-	static int stationaryObstacleMaxNumber = 250;
-	static int stationaryObstacleMinNumber = 150;
+	
 	static float worldRadius;
-	int stationaryObstaclesNumber;
+	float radiusFactor;
 	int bgColor; //background color
 
 	int blotchColor;
 	int cloudColor;
-	public int wanderingEnemyNumber=0;
+	
 	Nest nest;
 
+	//for radius
+	static int maxWorldRadius = 1400;
+	static int minWorldRadius = 700;
+	
+	//for purnishing time
+	static int easiestPurnishingTime = 3000; 
+	static int hardistPurnishingTime = 1000; 
+	
+	public int purnishingTime = 0;
+	
+	//for stationary obstacles
+	static int stationaryObstacleMaxNumber = 250;
+	static int stationaryObstacleMinNumber = 150;
+	
+	public int stationaryObstaclesNumber = 0;
+	
 	//for moving obstacles and wandering enemies
-	static int easiestObstacleSpawnPeriod=300;
+	static int easiestObstacleSpawnPeriod=80;
 	static int easiestObstacleMax=8;
-	static int easiestWanderingEnemySpawnPeriod=600;
+	static int easiestWanderingEnemySpawnPeriod=1200;
 	static int easiestWanderingEnemyMax=1;
 	
-	ChasingEnemy chasingEnemy;
-
-	
-	static int hardestObstacleSpawnPeriod=80;
+	static int hardestObstacleSpawnPeriod=240;
 	static int hardestObstacleMax=20;
-	static int hardestWanderingEnemySpawnPeriod=200;
+	static int hardestWanderingEnemySpawnPeriod=400;
 	static int hardestWanderingEnemyMax=5;
 	
 	int obstacleSpawnPeriod=300;
 	int obstacleMax=10;
 	int wanderingEnemySpawnPeriod=200;
 	int wanderingEnemyMax=1;
+	public int obstacleNumber=0;
+	public int wanderingEnemyNumber=0;
+	public float swarmlingsGeneratedForDeadObstacle = 4;
 	
 	World parent;
 	ArrayList<World> children;
@@ -112,24 +124,31 @@ public class World extends GameObject {
 		x = ix;
 		y = iy;
 		level = (p == null ? 3 : p.level + 1);
+		radius = sketch.random(minWorldRadius, maxWorldRadius);
 		
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
-
 		ran =  Sketch.max(-1,ran);
 		ran =  Sketch.min(1,ran);
 		difficulty = (level >= maxLevel ? 1 : Sketch.sq(level+ran)/Sketch.sq(maxLevel));
+		radiusFactor = Sketch.sqrt(radius / ((maxWorldRadius + minWorldRadius) / 2));
+		Sketch.println(difficulty + " factor: " + radiusFactor);
 		
-		obstacleSpawnPeriod= easiestObstacleSpawnPeriod + (int)(difficulty * (hardestObstacleSpawnPeriod - easiestObstacleSpawnPeriod ));
-		obstacleMax= easiestObstacleMax + (int)(difficulty * (hardestObstacleMax - easiestObstacleMax));
-		wanderingEnemySpawnPeriod = easiestWanderingEnemySpawnPeriod + (int)(difficulty * (hardestWanderingEnemySpawnPeriod - easiestWanderingEnemySpawnPeriod));;
-		wanderingEnemyMax = easiestWanderingEnemyMax + (int)(difficulty * (hardestWanderingEnemyMax - easiestWanderingEnemyMax));
+		purnishingTime = easiestPurnishingTime + (int)(difficulty * (hardistPurnishingTime - easiestPurnishingTime));
+		//Sketch.println(difficulty + " time: " + purnishingTime);
+		
+		//period should be longer if the world is smaller
+		obstacleSpawnPeriod= (int)(easiestObstacleSpawnPeriod / radiusFactor) + (int)(difficulty * (hardestObstacleSpawnPeriod / radiusFactor - easiestObstacleSpawnPeriod / radiusFactor ));
+		obstacleMax= (int)(easiestObstacleMax * radiusFactor) + (int)(difficulty * (hardestObstacleMax * radiusFactor - easiestObstacleMax * radiusFactor));
+		wanderingEnemySpawnPeriod = (int)(easiestWanderingEnemySpawnPeriod / radiusFactor) + (int)(difficulty * (hardestWanderingEnemySpawnPeriod / radiusFactor - easiestWanderingEnemySpawnPeriod / radiusFactor));
+		wanderingEnemyMax = (int)(easiestWanderingEnemyMax * radiusFactor) + (int)(difficulty * (hardestWanderingEnemyMax * radiusFactor - easiestWanderingEnemyMax * radiusFactor));
+		Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
 		
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
 		cloudColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri + (20 + sketch.random(20)));
-		radius = sketch.random(700, 1400);
+		
 		children = new ArrayList<World>();
 		contents = new ArrayList<GameObject>();
 		clouds = new ArrayList<Cloud>();
@@ -165,10 +184,10 @@ public class World extends GameObject {
 		contents.add(nest);
 
 		if(level == 1)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2),(int)(stationaryObstacleMaxNumber*0.2));
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
 		
 		if(level == 2)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5),(int)(stationaryObstacleMaxNumber*0.5));
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5*radiusFactor),(int)(stationaryObstacleMaxNumber*0.5*radiusFactor));
 
 		if(level >= 3)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
@@ -401,6 +420,10 @@ public class World extends GameObject {
 	
 	public boolean update() {
 		count+=1;
+		if(count >= purnishingTime){
+			count = 0;
+			swarmlingsGeneratedForDeadObstacle -= difficulty;
+		}
 		if (sketch.world == this) {
 			if (level >= 2)
 				generateMovingObstacles();

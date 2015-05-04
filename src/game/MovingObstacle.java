@@ -7,7 +7,7 @@ public class MovingObstacle extends Obstacle {
 	static float maxRadius = 200;
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 2.4f;
-	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
+	
 	
 	ArrayList<Food> foodContained;
 	MovingObstacle(Sketch s){
@@ -33,7 +33,7 @@ public class MovingObstacle extends Obstacle {
 		y = Sketch.cos(radians) * (radius + world.radius);
 
 		//find the nest
-		Nest nest = (Nest)world.contents.get(0);
+		Nest nest = world.nest;
 //		for (int i = 0; i < world.contents.size(); ++i) {
 //			GameObject other = world.contents.get(i);
 //			if (other instanceof Nest) {
@@ -44,7 +44,7 @@ public class MovingObstacle extends Obstacle {
 		
 		avoidRadius = Sketch.min(radius/2f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
 		
-		for(int i=0; i<(int)maxSwarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
+		for(int i=0; i<(int)world.swarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
 			float rx = x + sketch.random(radius) - (radius/2);
 			float ry = y + sketch.random(radius) - (radius/2);
 			foodContained.add(new Food(sketch, rx, ry));

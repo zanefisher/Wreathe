@@ -45,8 +45,8 @@ public class WanderingEnemy extends GameObject {
 	
 	public void initInWorld(World world){
 		
-		centerX = center.x;
-		centerY = center.y;
+//		centerX = center.x;
+//		centerY = center.y;
 		
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);

@@ -157,6 +157,8 @@ public class Key extends Carryable {
 			super.draw(camera);
 		}
 		else{
+			
+			//may be disable the animation
 			float amt = 0.015f * amtCount;
 			if(startX < -3000 && startY < -3000){
 				startX = camera.screenX(x);
