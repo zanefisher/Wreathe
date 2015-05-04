@@ -14,7 +14,7 @@ public class Leader extends Swarmling {
 		color = sketch.color(0, 0, 255);
 		avoidRadius = 10f;
 		leading = false;
-		
+		radius = swarmlingRadius + 1.5f;
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {

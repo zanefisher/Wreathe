@@ -11,7 +11,7 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
-	static final float attackPower = 0.15f;
+	static final float attackPower = 20f;
 	static final float swarmlingAvoidRadius = 10f;
 	static final int puffPeriod = 10;
 	int puffPhase;
@@ -338,21 +338,36 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
-		if(sketch.usingController){
-			if (sketch.controller.getJz()>0.1f && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
-		else
-		{
-			if ((following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
+//		if(sketch.usingController){
+//			if (sketch.controller.getJz()>0.1f && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
+//		else
+//		{
+//			if ((following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
 		return true;
 	}
 	
 	public void draw(WorldView view) {
+		
+		float outlineWidth = 0f;
+				
+		if (following != null) {
+			outlineWidth = 1.5f;
+		} else if ((sketch.controller.getJz() > 0) && (carrying == null)) {
+			outlineWidth = Sketch.abs(Sketch.sin((float) sketch.frameCount / 10f)) * 5 * sketch.controller.getJz();
+		}
+		
+		if (outlineWidth > 0) {
+			sketch.noStroke();
+			sketch.fill(0, 0, 99);
+			float d = (radius + outlineWidth) * view.scale * 2;
+			sketch.ellipse(view.screenX(x), view.screenY(y), d, d);
+		}
 		
 		super.draw(view);
 		

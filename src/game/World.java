@@ -7,7 +7,7 @@ public class World extends GameObject {
 	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
 	
 	boolean open = false;
-	float ringRadius = 350;
+	float ringRadius = 250;
 	float ringWidth = 50;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
@@ -232,7 +232,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(/*tmp<difficulty &&*/ level >= 3)
+		if(tmp<difficulty && level >= 3)
 		{
 			while(key == null){
 				float ix = sketch.random(-radius * 0.7f, radius * 0.7f);
@@ -436,8 +436,9 @@ public class World extends GameObject {
 			if (level >= 2)
 				generateMovingObstacles();
 
-			if (level >= 3)
-				generateWanderingEnemy();
+//			if (level >= 3)
+//				generateWanderingEnemy();
+				
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){
 //					Swarmling.lastInLine.unfollow();
@@ -489,7 +490,7 @@ public class World extends GameObject {
 						}
 					}
 				}
-				if (inBand.size() >= ringRadius / 16) {
+				if (inBand.size() >= ringRadius / 14) {
 					open = true;
 					while (Swarmling.lastInLine != sketch.leader) {
 						Swarmling.lastInLine.unfollow();

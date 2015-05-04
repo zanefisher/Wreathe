@@ -32,10 +32,8 @@ public class Food extends Carryable {
 				Swarmling carrier = carriedBy.get(j);
 				carrier.uncarry();
 			}
-				
 				return false;
-			}
-		//}
+		}
 		ddx = 0;
 		ddy = 0;
 		
@@ -53,6 +51,6 @@ public class Food extends Carryable {
 			dx = 0;
 			dy = 0;
 		}
-		return true;
+		return Sketch.mag(x, y) < sketch.world.radius;
 	}
 }
