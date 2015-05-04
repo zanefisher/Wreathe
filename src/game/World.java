@@ -255,8 +255,9 @@ public class World extends GameObject {
 					//Sketch.println(obDiameter);
 					//set the entrance and set the obstacle's position around the world
 					sob.key = key;
-					sob.x = x + Sketch.cos(theta) * sob.radius;
-					sob.y = y + Sketch.sin(theta) * sob.radius;
+					sob.x = key.x + Sketch.cos(theta) * sob.radius * 0.8f;
+					sob.y = key.y + Sketch.sin(theta) * sob.radius * 0.8f;
+					//Sketch.println(key.radius);
 					
 					//recalculate theta
 					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
