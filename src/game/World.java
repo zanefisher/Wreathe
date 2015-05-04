@@ -28,11 +28,11 @@ public class World extends GameObject {
 	static int maxWorldRadius = 1400;
 	static int minWorldRadius = 700;
 	
-	//for purnishing time
-	static int easiestPurnishingTime = 3000; 
-	static int hardistPurnishingTime = 1000; 
+	//for punishing time
+	static int easiestpunishingTime = 3000; 
+	static int hardestpunishingTime = 1000; 
 	
-	public int purnishingTime = 0;
+	public int punishingTime = 0;
 	
 	//for stationary obstacles
 	static int stationaryObstacleMaxNumber = 250;
@@ -133,8 +133,8 @@ public class World extends GameObject {
 		radiusFactor = Sketch.sqrt(radius / ((maxWorldRadius + minWorldRadius) / 2));
 		//Sketch.println(difficulty + " factor: " + radiusFactor);
 		
-		purnishingTime = easiestPurnishingTime + (int)(difficulty * (hardistPurnishingTime - easiestPurnishingTime));
-		//Sketch.println(difficulty + " time: " + purnishingTime);
+		punishingTime = easiestpunishingTime + (int)(difficulty * (hardestpunishingTime - easiestpunishingTime));
+		//Sketch.println(difficulty + " time: " + punishingTime);
 		
 		//period should be longer if the world is smaller
 		obstacleSpawnPeriod= (int)(easiestObstacleSpawnPeriod / radiusFactor) + (int)(difficulty * (hardestObstacleSpawnPeriod / radiusFactor - easiestObstacleSpawnPeriod / radiusFactor ));
@@ -194,8 +194,8 @@ public class World extends GameObject {
 
 		
 		//sprinkle food
-		if(level == 1){
-			for(int i=0; i<20; i++){
+		if(level <= 7){
+			for(int i=0; i<5; i++){
 				float rx = sketch.random(radius) - (radius / 2);
 				float ry = sketch.random(radius) - (radius / 2);
 				Food f= new Food(sketch, rx, ry);
@@ -255,8 +255,8 @@ public class World extends GameObject {
 					//Sketch.println(obDiameter);
 					//set the entrance and set the obstacle's position around the world
 					sob.key = key;
-					sob.x = x + Sketch.cos(theta) * sob.radius * 0.8f;
-					sob.y = y + Sketch.sin(theta) * sob.radius * 0.8f;
+					sob.x = x + Sketch.cos(theta) * sob.radius;
+					sob.y = y + Sketch.sin(theta) * sob.radius;
 					
 					//recalculate theta
 					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
@@ -416,9 +416,10 @@ public class World extends GameObject {
 	
 	public void generateWanderingEnemy(){
 		int period = (level == 3 ? wanderingEnemySpawnPeriod / 2 : wanderingEnemySpawnPeriod);
-		
+		//Sketch.println("wandr");
 		if(count % period == 10){
 			if(wanderingEnemyNumber <= wanderingEnemyMax){
+				//Sketch.println("wandr");
 				wanderingEnemyNumber+=1;
 				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
 				wanderingEnemy.initInWorld(this);
@@ -427,17 +428,19 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
+		if(this == sketch.world){
 		count+=1;
-		if(count >= purnishingTime){
+		if(count >= punishingTime){
 			count = 0;
 			swarmlingsGeneratedForDeadObstacle -= difficulty;
+		}
 		}
 		if (sketch.world == this) {
 			if (level >= 2)
 				generateMovingObstacles();
 
-//			if (level >= 3)
-//				generateWanderingEnemy();
+			if (level >= 3)
+				generateWanderingEnemy();
 				
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){

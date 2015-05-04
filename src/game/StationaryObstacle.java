@@ -64,7 +64,7 @@ public class StationaryObstacle extends Obstacle {
 //	public void draw(WorldView view){
 //		super.draw(view);
 //		if(key!=null){
-//		Sketch.println(key.x);
+//		Sketch.println(sketch.frameCount);
 //		}
 //	}
 }

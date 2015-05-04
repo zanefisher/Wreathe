@@ -63,7 +63,7 @@ public class WanderingEnemy extends GameObject {
 		
 		int count = 0;
 		boolean hitNest = true;
-		while(hitNest && world.nest !=null && count<500){
+		while(hitNest && world.nest !=null && count<5000){
 			dx = Sketch.sin(radians) * speed * -1;
 			dy = Sketch.cos(radians) * speed * -1;
 
@@ -72,16 +72,16 @@ public class WanderingEnemy extends GameObject {
 			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
 			count++;
 		}
-		if(count<500) world.contents.add(this);
+		if(count<5000) world.contents.add(this);
 		else Sketch.println("a warndering enemy doesn't init");
 	}
 	
 	public boolean update(){
 		
-//		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
-//			sketch.world.wanderingEnemyNumber-=1;
-//			return false;
-//		}
+		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 5){
+			sketch.world.wanderingEnemyNumber-=1;
+			return false;
+		}
 
 //		hit nest test not use anymore
 //		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){

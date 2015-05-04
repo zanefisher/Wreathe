@@ -188,7 +188,7 @@ public class Swarmling extends GameObject {
 				if (other instanceof WanderingEnemy)
 					tmpEnemy = (WanderingEnemy)other;
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || (tmpEnemy!=null &&tmpEnemy.isAttacking == true) )/*&& nestDist > 0*/) {
+				if (distance <= 0 && (other instanceof Obstacle || tmpEnemy!=null )/*&& nestDist > 0*/) {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
