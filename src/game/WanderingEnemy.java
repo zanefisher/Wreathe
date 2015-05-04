@@ -3,8 +3,8 @@ package game;
 public class WanderingEnemy extends GameObject {
 	
 
-	static float maxSpeed = 22.8f;
-	static float minSpeed = 20.6f;
+	static float maxSpeed = 2.8f;
+	static float minSpeed = 0.6f;
 	public static float predateRadius = 200f;
 	boolean isAttacking = false;
 	int attackCooldownCount = 200;	
@@ -32,18 +32,18 @@ public class WanderingEnemy extends GameObject {
 		avoidRadius = predateRadius;
 	}
 	
-	
-	WanderingEnemy(Sketch s, GameObject c){
-		sketch = s;
-		centerX = c.x;
-		centerY = c.y;
-		//centerR = c.radius + this.radius+100;
-		color=sketch.color(0,99,99);
-		avoidRadius = predateRadius;
-		isOrbiting = true;
-//		center = c;
-	}
-
+//	
+//	WanderingEnemy(Sketch s, GameObject c){
+//		sketch = s;
+//		centerX = c.x;
+//		centerY = c.y;
+//		//centerR = c.radius + this.radius+100;
+//		color=sketch.color(0,99,99);
+//		avoidRadius = predateRadius;
+//		isOrbiting = true;
+////		center = c;
+//	}
+//
 	
 	public void initInWorld(World world){
 		
