@@ -7,7 +7,7 @@ public class MovingObstacle extends Obstacle {
 	static float maxRadius = 200;
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 2.4f;
-	static int maxSwarmlingsGeneratedForDeadObstacle = 2;
+	static int maxSwarmlingsGeneratedForDeadObstacle = 12;
 	
 	ArrayList<Food> foodContained;
 	MovingObstacle(Sketch s){
@@ -76,10 +76,15 @@ public class MovingObstacle extends Obstacle {
 		for(int i = 0 ; i< foodContained.size(); i++){
 			foodContained.get(i).x += dx;
 			foodContained.get(i).y += dy;
+			
 			if(Sketch.dist(foodContained.get(i).x, foodContained.get(i).y, x, y)>radius-foodContained.get(i).radius)
 			{
+				//food pop out
 				sketch.world.contents.add(foodContained.get(i));
-				foodContained.remove(i);
+				float dist = Sketch.dist(x, y,foodContained.get(i).x,foodContained.get(i).y );
+				foodContained.get(i).dx = maxSpeed*(foodContained.get(i).x - x)/dist;
+				foodContained.get(i).dy = maxSpeed*(foodContained.get(i).y - y)/dist;
+				foodContained.remove(i--);
 			}
 		}
 		
