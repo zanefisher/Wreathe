@@ -52,12 +52,12 @@ public class Controller extends PApplet {
 	}
 	
 	public float getJrx(){
-		jrx = device.getSlider("RX").getValue();
+		jrx = (!sketch.usingController)?0:device.getSlider("RX").getValue();
 		return jrx;
 	}
 	
 	public float getJry(){
-		jry = device.getSlider("RY").getValue();
+		jry =  (!sketch.usingController)?0:device.getSlider("RY").getValue();
 		return jry;
 	}
 	
