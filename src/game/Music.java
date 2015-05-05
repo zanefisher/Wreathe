@@ -98,19 +98,25 @@ public class Music extends PApplet {
 		minim = new Minim(sketch);
 		out = minim.getLineOut(Minim.STEREO, 1024);
 		
-		new Thread(new Treble()).start();
-		new Thread(new Tenor()).start();
-		new Thread(new Bass()).start();
+		Treble treble = new Treble();
+		Tenor tenor = new Tenor();
+		Bass bass = new Bass();
+		
+		new Thread(treble).start();
+		new Thread(tenor).start();
+		new Thread(bass).start();
 		
 	}
 	
-	class Bass implements Runnable {
+	class Bass extends Thread {
 		
 		public void run(){
 			
 			try{
 				
 				while(true){
+					
+					long time = 0;
 					
 					for(int i = 0; i < 12; i++){
 						
@@ -120,18 +126,20 @@ public class Music extends PApplet {
 								
 								if(score[2][section[s]][0][n] != 0){
 									
-									out.playNote(0, score[0][section[s]][1][n] * 60/23,
-											new Synth(cpsmidi(score[0][section[s]][0][n] - i), i));
+									out.playNote(time, score[2][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[2][section[s]][0][n] - i), i));
 									
 								}
 								
-								Thread.sleep((long)(score[2][section[s]][1][n] * 60000/23));
+								time += score[2][section[s]][1][n] * 60/23;
 								
 							}
 							
 						}
 						
-					}	
+					}
+					
+					sleep(time);
 					
 				}
 				
@@ -145,13 +153,15 @@ public class Music extends PApplet {
 		
 	}
 	
-	class Tenor implements Runnable {
+	class Tenor extends Thread {
 		
 		public void run(){
 			
 			try{
 				
 				while(true){
+					
+					long time = 0;
 					
 					for(int i = 0; i < 12; i++){
 						
@@ -161,18 +171,20 @@ public class Music extends PApplet {
 								
 								if(score[1][section[s]][0][n] != 0){
 									
-									out.playNote(0, score[1][section[s]][1][n] * 60/23,
+									out.playNote(time, score[1][section[s]][1][n] * 60/23,
 											new Synth(cpsmidi(score[1][section[s]][0][n] - i), i));
 									
 								}
 								
-								Thread.sleep((long)(score[1][section[s]][1][n] * 60000/23));
+								time += score[1][section[s]][1][n] * 60/23;
 								
 							}
 							
 						}
 						
 					}	
+					
+					sleep(time);
 					
 				}
 				
@@ -186,13 +198,15 @@ public class Music extends PApplet {
 		
 	}
 	
-	class Treble implements Runnable {
+	class Treble extends Thread {
 		
 		public void run(){
 			
 			try{
 				
 				while(true){
+					
+					long time = 0;
 					
 					for(int i = 0; i < 12; i++){
 						
@@ -202,18 +216,20 @@ public class Music extends PApplet {
 								
 								if(score[0][section[s]][0][n] != 0){
 									
-									out.playNote(0, score[2][section[s]][1][n] * 60/23,
-											new Synth(cpsmidi(score[2][section[s]][0][n] - i), i));
+									out.playNote(0, score[0][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[0][section[s]][0][n] - i), i));
 									
 								}
 								
-								Thread.sleep((long)(score[0][section[s]][1][n] * 60000/23));
+								sleep((long)(score[0][section[s]][1][n] * 60000/23));
 								
 							}
 							
 						}
 						
-					}	
+					}
+					
+					sleep(time);
 					
 				}
 				
