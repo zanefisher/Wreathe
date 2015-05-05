@@ -39,7 +39,7 @@ public class Sketch extends PApplet {
 		frameRate(targetFrameRate);
 		colorMode(HSB, 360, 100, 100, 100);
 		//size(displayWidth, displayHeight);
-		size(1080, 700);
+		size(displayWidth, displayHeight);
 		textSize(32);
 		textAlign(CENTER);
 		screenHeight = height;

@@ -8,6 +8,8 @@ public class World extends GameObject {
 	
 	boolean open = false;
 	float ringRadius = 250;
+	int swarmlingsInRing = 0;
+	int openingRequirement = (int) (ringRadius / 14f);
 	float ringWidth = 50;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
@@ -123,7 +125,7 @@ public class World extends GameObject {
 		parent = p;
 		x = ix;
 		y = iy;
-		level = (p == null ? 3 : p.level + 1);
+		level = (p == null ? 1 : p.level + 1);
 		radius = sketch.random(minWorldRadius, maxWorldRadius);
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
@@ -471,25 +473,26 @@ public class World extends GameObject {
 		
 				}
 			} else {
-				ArrayList<Swarmling> inBand = new ArrayList<Swarmling>();
+				ArrayList<Swarmling> inRing = new ArrayList<Swarmling>();
 				for (int i = 0; i < parent.contents.size(); ++i) {
 					if (parent.contents.get(i) instanceof Swarmling) {
 						Swarmling s = (Swarmling) parent.contents.get(i);
 						if (s.following != null) {
 							float dist = Sketch.dist(x, y, s.x, s.y);
 							if ((dist  <= ringRadius) && (dist >= ringRadius - ringWidth)) {
-								inBand.add(s);
+								inRing.add(s);
 							}
 						}
 					}
 				}
-				if (inBand.size() >= ringRadius / 14) {
+				swarmlingsInRing = inRing.size();
+				if (inRing.size() >= openingRequirement) {
 					open = true;
 					while (Swarmling.lastInLine != sketch.leader) {
 						Swarmling.lastInLine.unfollow();
 					}
-					for (int i = 0; i < inBand.size(); ++i) {
-						inBand.get(i).enteringWorld = this;
+					for (int i = 0; i < inRing.size(); ++i) {
+						inRing.get(i).enteringWorld = this;
 					}
 				}
 			}
@@ -515,6 +518,7 @@ public class World extends GameObject {
 		//base case do not draw worlds that are too small
 		if(view.scale < 0.01) return;
 		
+		// Draw the ring.
 		if (!open) {
 			sketch.noStroke();
 			sketch.fill(cloudColor);
@@ -522,9 +526,14 @@ public class World extends GameObject {
 					view.scale * radius * 2, view.scale * radius * 2);
 			
 			sketch.noFill();
+			sketch.stroke(0, 0, 99, (float) swarmlingsInRing * 100 / (float) openingRequirement);
+			sketch.strokeWeight(ringWidth * view.scale * (radius / portalRadius));
+			float r = view.scale * (radius / portalRadius) * (ringRadius - (.5f * ringWidth)) * 2;
+			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
+			Sketch.println(swarmlingsInRing + ", " + openingRequirement + ", " + (float) swarmlingsInRing / (float) openingRequirement);
 			sketch.stroke(0, 0, 99);
 			sketch.strokeWeight(5 * view.scale * (radius / portalRadius));
-			float r = view.scale * (radius / portalRadius) * ringRadius * 2;
+			r = view.scale * (radius / portalRadius) * ringRadius * 2;
 			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
 			r = view.scale * (radius / portalRadius) * (ringRadius - ringWidth)  * 2;
 			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);

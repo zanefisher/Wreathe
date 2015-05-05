@@ -15,6 +15,7 @@ public class Nest extends GameObject {
 	float animationDelay = 0f;
 	
 	ArrayList<Branch> branches;
+	ArrayList<Branch> trunk;
 	
 	class Branch {
 		float x1, y1, x2, y2, angle, width;

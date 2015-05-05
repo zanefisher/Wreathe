@@ -350,7 +350,7 @@ public class Swarmling extends GameObject {
 				
 		if (following != null) {
 			outlineWidth = 1.5f;
-		} else if ((sketch.controller.getJz() > 0) && (carrying == null)) {
+		} else if ((sketch.controller.getJz() > 0) && (sketch.controller.getJrz() == 0) && (carrying == null)) {
 			outlineWidth = Sketch.abs(Sketch.sin((float) sketch.frameCount / 10f)) * 5 * sketch.controller.getJz();
 		}
 		
