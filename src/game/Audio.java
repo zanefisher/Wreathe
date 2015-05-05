@@ -12,8 +12,7 @@ public class Audio extends PApplet {
 	Synth[] localSound = new Synth[8];
 	Synth[] globalSound = new Synth[2];
 	Synth beam = new Synth("beam");//attacking
-	Music music = new Music();
-
+	
 	Sketch sketch;
 	boolean useAudio = true;
 	
@@ -22,8 +21,9 @@ public class Audio extends PApplet {
 	Audio(Sketch s){
 		sketch = s;
 		if(useAudio){
-			
-			music.makeSome(sketch);
+			Music music = new Music();
+
+			//music.makeSome(sketch);
 			
 			localSound[0] = new Synth("attack");//begin of the attack
 			localSound[1] = new Synth("collect");//crystal

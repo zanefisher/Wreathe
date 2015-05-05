@@ -252,37 +252,29 @@ public class World extends GameObject {
 		if(/*tmp<difficulty &&*/ level >= 3)
 		{
 			while(key == null){
-				float ix = sketch.random(-radius * 0.7f, radius * 0.7f);
-				float iy = sketch.random(-radius * 0.7f, radius * 0.7f);
+				float ix = sketch.random(-radius * 0.6f, radius * 0.6f);
+				float iy = sketch.random(-radius * 0.6f, radius * 0.6f);
 				float dist = Sketch.dist(ix, iy, nest.x, nest.y);
 				//Sketch.println(dist);
 				if(dist > 400){
 					key = new Key(sketch,ix,iy);
 				}
 			}
-			//key.initStationary();
-			//add obstacles covering the entrances
-			float theta = sketch.random(Sketch.TWO_PI);
-			//if still need stationary obstacles to cover the entrance
-			while(key.obstaclesAroundKey > 0){
-
-				float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
+			
+			float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 						(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter / 2.5f);
-					//Sketch.println(obDiameter);
-					//set the entrance and set the obstacle's position around the world
-					sob.key = key;
-					sob.x = key.x + Sketch.cos(theta) * sob.radius * 4f;
-					sob.y = key.y + Sketch.sin(theta) * sob.radius * 4f;
-					//Sketch.println(key.radius);
-					
-					//recalculate theta
-					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
-					this.contents.add(sob);
-					key.obstaclesAroundKey--;
-					
-
+			float lineRadius = key.radius + obDiameter * 1.5f;
+			for(int i = 0; i <= key.obstaclesAroundKey; i++){
+				float angle = i * Sketch.TWO_PI / key.obstaclesAroundKey;
+				for(int j = 0; j < sketch.random(1, 5); j++){
+					float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/3f);
+					StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
+					sob.x =  key.x + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/2f);
+					sob.y =  key.y + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/2f);
+						
+					contents.add(sob);
 				}
+			}
 			this.contents.add(key);
 			
 			// wandering enemy for test
