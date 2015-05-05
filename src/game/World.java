@@ -40,6 +40,12 @@ public class World extends GameObject {
 	
 	public int stationaryObstaclesNumber = 0;
 	
+	//for sprinkle food in the earlier level
+	static int lowestSprinkleFoodNumber = 3;
+	static int highestSprinkleFoodNumber = 10;
+	
+	int sprinkleFoodNumber = 0;
+	
 	//for moving obstacles and wandering enemies
 	static int easiestObstacleSpawnPeriod=80;
 	static int easiestObstacleMax=8;
@@ -143,6 +149,8 @@ public class World extends GameObject {
 		wanderingEnemyMax = (int)(easiestWanderingEnemyMax * radiusFactor) + (int)(difficulty * (hardestWanderingEnemyMax * radiusFactor - easiestWanderingEnemyMax * radiusFactor));
 		//Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
 		
+		sprinkleFoodNumber = (int)(highestSprinkleFoodNumber /radiusFactor + (int)(difficulty * (lowestSprinkleFoodNumber * radiusFactor - highestSprinkleFoodNumber * radiusFactor)));
+		
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
 		blotchColor = sketch.color(hue + sketch.random(90) - 45, sat - (10 + sketch.random(10)), bri - (10 + sketch.random(10)));
@@ -194,13 +202,11 @@ public class World extends GameObject {
 
 		
 		//sprinkle food
-		if(level <= 7){
-			for(int i=0; i<5; i++){
-				float rx = sketch.random(radius) - (radius / 2);
-				float ry = sketch.random(radius) - (radius / 2);
-				Food f= new Food(sketch, rx, ry);
-				contents.add(f);
-			}
+		for(int i=0; i < sprinkleFoodNumber; i++){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			Food f= new Food(sketch, rx, ry);
+			contents.add(f);
 		}
 		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
