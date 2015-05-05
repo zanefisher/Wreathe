@@ -285,8 +285,8 @@ public class World extends GameObject {
 				}
 			this.contents.add(key);
 			
-			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,key);			
-			wanderingEnemy.initInWorld(this);
+//			WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,key);			
+//			wanderingEnemy.initInWorld(this);
 		}
 	}
 	

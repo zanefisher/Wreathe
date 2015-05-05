@@ -170,7 +170,6 @@ public class Swarmling extends GameObject {
 		float foodDist = Food.distanceCarry;
 		float nestDist = 0; 
 		float keyDist = Key.distanceCarry;
-		float avoidFactorForSwarmling = 1f; //will change if has targetfood
 		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
@@ -203,7 +202,6 @@ public class Swarmling extends GameObject {
 				
 				if ((carrying == null) && (other instanceof Key) && (distance > 0) && (distance <= keyDist)){
 					targetCarryable = (Carryable)other;
-					avoidFactorForSwarmling = 20f;
 //						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
 //							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
 //							sketch.world.chasingEnemy.initInWorld(sketch.world);
@@ -242,10 +240,7 @@ public class Swarmling extends GameObject {
 						float centerDist = Sketch.dist(x, y, other.x, other.y);
 						ddx -= ((other.x - x) / centerDist) / 10;
 						ddy -= ((other.y - y) / centerDist) / 10;
-						if(((Swarmling)other).carrying!=null){
-							ddx -= avoidFactorForSwarmling*((other.x - x) / centerDist) / 10;
-							ddy -= avoidFactorForSwarmling*((other.y - y) / centerDist) / 10;
-						}
+
 					}else /*if (nestDist > 0)*/{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
 					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
@@ -313,6 +308,18 @@ public class Swarmling extends GameObject {
 			ddx += 2f*maxAccel*(targetCarryable.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 			ddy += 2f*maxAccel*(targetCarryable.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 
+			if (true) {
+				float avoidFactorForSwarmling = 0.2f;
+			
+				for (int i = 0; i < targetCarryable.carriedBy.size(); ++i) {
+					Swarmling other = targetCarryable.carriedBy.get(i);
+					float centerDist = Sketch.dist(x, y, other.x, other.y);
+					if(centerDist<5*radius){
+						ddx -= avoidFactorForSwarmling*((other.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+						ddy -= avoidFactorForSwarmling*((other.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+					}
+				}
+			}
 		}
 		
 		
