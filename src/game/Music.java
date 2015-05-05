@@ -1,12 +1,13 @@
 package game;
 
 import processing.core.PApplet;
-import supercollider.*;
-import oscP5.*;
+import ddf.minim.*;
+import ddf.minim.ugens.*;
 
 public class Music extends PApplet {
-	
-	Sketch sketch;
+
+	Minim minim;
+	AudioOutput out;
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
 	
@@ -82,13 +83,7 @@ public class Music extends PApplet {
 	
 	Music(){
 
-		Treble treble = new Treble();
-		Tenor tenor = new Tenor();
-		Bass bass = new Bass();
-			
-		new Thread(treble).start();
-		new Thread(tenor).start();
-		new Thread(bass).start();
+		
 		
 	}
 	
@@ -96,6 +91,17 @@ public class Music extends PApplet {
 		
 	  return (log(freq / 440f) / log(2f)) * 12 + 69;
 	  
+	}
+	
+	public void makeSome(Sketch sketch){
+		
+		minim = new Minim(sketch);
+		out = minim.getLineOut(Minim.STEREO, 1024);
+		
+		new Thread(new Treble()).start();
+		new Thread(new Tenor()).start();
+		new Thread(new Bass()).start();
+		
 	}
 	
 	class Bass implements Runnable {
@@ -114,11 +120,8 @@ public class Music extends PApplet {
 								
 								if(score[2][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Bass");
-									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									synth.set("duration", score[2][section[s]][1][n] * 60/23);
-									synth.set("iteration", i);
-									synth.create();
+									out.playNote(0, score[0][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[0][section[s]][0][n] - i), i));
 									
 								}
 								
@@ -158,11 +161,8 @@ public class Music extends PApplet {
 								
 								if(score[1][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Tenor");
-									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									synth.set("duration", score[2][section[s]][1][n] * 60/23);
-									synth.set("iteration", i);
-									synth.create();
+									out.playNote(0, score[1][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[1][section[s]][0][n] - i), i));
 									
 								}
 								
@@ -202,11 +202,8 @@ public class Music extends PApplet {
 								
 								if(score[0][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Treble");
-									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									synth.set("duration", score[2][section[s]][1][n] * 60/23);
-									synth.set("iteration", i);
-									synth.create();
+									out.playNote(0, score[2][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[2][section[s]][0][n] - i), i));
 									
 								}
 								
@@ -225,6 +222,42 @@ public class Music extends PApplet {
 				System.err.println(e);
 				
 			}	
+			
+		}
+		
+	}
+	
+	class Synth implements Instrument {
+		
+		Oscil[] oscil = new Oscil[2];
+		ADSR[] adsr = new ADSR[2];
+		
+		Synth(float frequency, int iteration){
+			
+			oscil[0] = new Oscil(frequency, (12 - iteration) / 12, Waves.SINE);
+			oscil[1] = new Oscil(frequency * 2, iteration / 12, Waves.SINE);
+			adsr[0] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			adsr[1] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			oscil[0].patch(adsr[0]);
+			oscil[1].patch(adsr[1]);
+			
+		}
+		
+		public void noteOn(float duration){
+			
+			adsr[0].noteOn();
+			adsr[1].noteOn();
+			adsr[0].patch(out);
+			adsr[1].patch(out);
+			
+		}
+		
+		public void noteOff(){
+			
+			adsr[0].unpatchAfterRelease(out);
+			adsr[1].unpatchAfterRelease(out);
+			adsr[0].noteOff();
+			adsr[1].noteOff();
 			
 		}
 		
