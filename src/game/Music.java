@@ -6,7 +6,6 @@ import oscP5.*;
 
 public class Music extends PApplet {
 	
-	Synth[] instrument = new Synth[3];
 	Sketch sketch;
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
@@ -82,10 +81,6 @@ public class Music extends PApplet {
 	
 	
 	Music(){
-		
-		instrument[0] = new Synth("Treble");
-		instrument[1] = new Synth("Tenor");
-		instrument[2] = new Synth("Bass");
 
 		Treble treble = new Treble();
 		Tenor tenor = new Tenor();
@@ -119,10 +114,11 @@ public class Music extends PApplet {
 								
 								if(score[2][section[s]][0][n] != 0){
 									
-									instrument[2].set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									instrument[2].set("duration", score[2][section[s]][1][n] * 60/23);
-									instrument[2].set("iteration", i);
-									instrument[2].create();
+									Synth synth = new Synth("Bass");
+									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
+									synth.set("duration", score[2][section[s]][1][n] * 60/23);
+									synth.set("iteration", i);
+									synth.create();
 									
 								}
 								
@@ -162,10 +158,11 @@ public class Music extends PApplet {
 								
 								if(score[1][section[s]][0][n] != 0){
 									
-									instrument[1].set("frequency", cpsmidi(score[1][section[s]][0][n] - i));
-									instrument[1].set("duration", score[1][section[s]][1][n] * 60/23);
-									instrument[1].set("iteration", i);
-									instrument[1].create();
+									Synth synth = new Synth("Tenor");
+									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
+									synth.set("duration", score[2][section[s]][1][n] * 60/23);
+									synth.set("iteration", i);
+									synth.create();
 									
 								}
 								
@@ -205,10 +202,11 @@ public class Music extends PApplet {
 								
 								if(score[0][section[s]][0][n] != 0){
 									
-									instrument[0].set("frequency", cpsmidi(score[0][section[s]][0][n] - i));
-									instrument[0].set("duration", score[0][section[s]][1][n] * 60/23);
-									instrument[0].set("iteration", i);
-									instrument[0].create();
+									Synth synth = new Synth("Treble");
+									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
+									synth.set("duration", score[2][section[s]][1][n] * 60/23);
+									synth.set("iteration", i);
+									synth.create();
 									
 								}
 								
