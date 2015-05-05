@@ -43,7 +43,7 @@ public class Sketch extends PApplet {
 		frameRate(targetFrameRate);
 		colorMode(HSB, 360, 100, 100, 100);
 		//size(displayWidth, displayHeight);
-		size(1080, 700);
+		size(displayWidth, displayHeight);
 		textSize(32);
 		textAlign(CENTER);
 		screenHeight = height;
@@ -145,6 +145,12 @@ public class Sketch extends PApplet {
 	public void draw() {
 		
 		if (!focused) return;
+		if (!controller.getStart()) {
+			String text = "Game Paused :)";
+			fill(0,0,99, 50);
+			text(text, width / 2, height / 2);
+			return;
+		}
 		
 		screenHeight = height;
 		screenWidth = width;
@@ -225,7 +231,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		updateAndDrawTutorial();
+		//updateAndDrawTutorial();
 		
 		//display frame rate
 		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);

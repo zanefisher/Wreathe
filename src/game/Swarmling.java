@@ -192,7 +192,7 @@ public class Swarmling extends GameObject {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
-						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
+						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 3f;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
@@ -216,7 +216,6 @@ public class Swarmling extends GameObject {
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
 					carry((Carryable) other);
-
 				}
 				
 				// attack behavoiur with obstacles
@@ -338,17 +337,17 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
-		if(sketch.usingController){
-			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
-		else
-		{
-			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
+//		if(sketch.usingController){
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
+//		else
+//		{
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
 		return true;
 	}
 	
@@ -358,7 +357,7 @@ public class Swarmling extends GameObject {
 				
 		if (following != null) {
 			outlineWidth = 1.5f;
-		} else if ((sketch.controller.getJz() > 0) && (carrying == null)) {
+		} else if ((sketch.controller.getJz() > 0) && (sketch.controller.getJrz() == 0) && (carrying == null)) {
 			outlineWidth = Sketch.abs(Sketch.sin((float) sketch.frameCount / 10f)) * 5 * sketch.controller.getJz();
 		}
 		

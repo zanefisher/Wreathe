@@ -1,7 +1,9 @@
 Leader
 X	X position	3	SLIDER	x	0	1.0	0.0
 Y	Y position	3	SLIDER	y	0	1.0	0.0
-Z	Z1 position	3	SLIDER	z	0	1.0	0.0
+Z	Z position	3	SLIDER	z	0	1.0	0.0
 RX	RX position	3	SLIDER	rx	0	1.0	0.0
 RY	RY position	3	SLIDER	ry	0	1.0	0.0
 RZ	RZ position	3	SLIDER	rz	0	1.0	0.0
+START	START	1	BUTTON	8	0	0.0	0.0
+BACK	BACK	1	BUTTON	9	0	0.0	0.0
