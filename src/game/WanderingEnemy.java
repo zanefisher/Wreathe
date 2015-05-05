@@ -5,7 +5,7 @@ public class WanderingEnemy extends GameObject {
 
 	static float maxSpeed = 2.8f;
 	static float minSpeed = 0.6f;
-	public static float predateRadius = 200f;
+	public static float predateRadius = 150f;
 	boolean isAttacking = false;
 	int attackCooldownCount = 200;	
 	int attackCooldown = (int)Math.random()*attackCooldownCount;
@@ -24,7 +24,7 @@ public class WanderingEnemy extends GameObject {
 	float distP = 5f; //the wandering enemy would orbit at distP * center.radius //May change depending on difficulty
 
 	float angle = 0;
-	float wSpeed = 0.04f;
+	float wSpeed = 0.01f;
 	
 	static final int puffPeriod = 1;
 	int puffPhase;
@@ -57,8 +57,8 @@ public class WanderingEnemy extends GameObject {
 		y = Sketch.cos(radians) * (radius + world.radius);
 		
 		if(isOrbiting){
-			x = Sketch.sin(radians) * (distP*centerR);		
-			y = Sketch.cos(radians) * (distP*centerR);
+			x = centerX + Sketch.sin(radians) * (distP*centerR);		
+			y = centerY + Sketch.cos(radians) * (distP*centerR);
 			world.contents.add(this);
 			return;
 		}
@@ -66,25 +66,25 @@ public class WanderingEnemy extends GameObject {
 		
 		int count = 0;
 		boolean hitNest = true;
-		while(hitNest && world.nest !=null && count<500){
+		while(hitNest && world.nest !=null && count<5000){
 			dx = Sketch.sin(radians) * speed * -1;
 			dy = Sketch.cos(radians) * speed * -1;
 
 			float k = dy/dx;
 			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-			if(distance >= (world.nest.radius+radius))hitNest = false;
+			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
 			count++;
 		}
-		if(count<500) world.contents.add(this);
+		if(count<5000) world.contents.add(this);
 		else Sketch.println("a warndering enemy doesn't init");
 	}
 	
 	public boolean update(){
 		
-//		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 2){
-//			sketch.world.wanderingEnemyNumber-=1;
-//			return false;
-//		}
+		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius * 5){
+			sketch.world.wanderingEnemyNumber-=1;
+			return false;
+		}
 
 //		hit nest test not use anymore
 //		if(Sketch.dist(0, 0, x, y) > sketch.world.radius + radius){

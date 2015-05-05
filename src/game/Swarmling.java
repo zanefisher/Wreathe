@@ -2,7 +2,8 @@ package game;
 
 public class Swarmling extends GameObject {
 	static Swarmling lastInLine;
-
+	static Swarmling firstInLine;
+	
 	static final float maxSpeed = 3.4f, maxAccel = 0.3f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float maxAttractRadius=90;
@@ -55,6 +56,9 @@ public class Swarmling extends GameObject {
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
+		if(s == sketch.leader){
+			firstInLine = this;
+		}
 		queueCooldown = 15;
 		sketch.audio.localSound(2,this);
 
@@ -72,10 +76,14 @@ public class Swarmling extends GameObject {
 	        		s = s.following;
 	        	}
 	        	s.following = following;
+        		if(s.following == sketch.leader){
+        			firstInLine = s;
+        		}
 	        }
 	        following = null;
 	        followCooldown = 60;
 	    }
+		
 		sketch.audio.globalSound(0);
 	}
 	
@@ -180,7 +188,7 @@ public class Swarmling extends GameObject {
 				if (other instanceof WanderingEnemy)
 					tmpEnemy = (WanderingEnemy)other;
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || (tmpEnemy!=null &&tmpEnemy.isAttacking == true) )/*&& nestDist > 0*/) {
+				if (distance <= 0 && (other instanceof Obstacle || tmpEnemy!=null )/*&& nestDist > 0*/) {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
@@ -329,17 +337,17 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
-		if(sketch.usingController){
-			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
-		else
-		{
-			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
+//		if(sketch.usingController){
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
+//		else
+//		{
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
 		return true;
 	}
 	
@@ -349,7 +357,7 @@ public class Swarmling extends GameObject {
 				
 		if (following != null) {
 			outlineWidth = 1.5f;
-		} else if ((sketch.controller.getJz() > 0) && (carrying == null)) {
+		} else if ((sketch.controller.getJz() > 0) && (sketch.controller.getJrz() == 0) && (carrying == null)) {
 			outlineWidth = Sketch.abs(Sketch.sin((float) sketch.frameCount / 10f)) * 5 * sketch.controller.getJz();
 		}
 		

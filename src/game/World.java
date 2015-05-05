@@ -8,6 +8,8 @@ public class World extends GameObject {
 	
 	boolean open = false;
 	float ringRadius = 250;
+	int swarmlingsInRing = 0;
+	int openingRequirement = (int) (ringRadius / 14f);
 	float ringWidth = 50;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
@@ -28,17 +30,23 @@ public class World extends GameObject {
 	static int maxWorldRadius = 1400;
 	static int minWorldRadius = 700;
 	
-	//for purnishing time
-	static int easiestPurnishingTime = 3000; 
-	static int hardistPurnishingTime = 1000; 
+	//for punishing time
+	static int easiestpunishingTime = 3000; 
+	static int hardestpunishingTime = 1000; 
 	
-	public int purnishingTime = 0;
+	public int punishingTime = 0;
 	
 	//for stationary obstacles
 	static int stationaryObstacleMaxNumber = 250;
 	static int stationaryObstacleMinNumber = 150;
 	
 	public int stationaryObstaclesNumber = 0;
+	
+	//for sprinkle food in the earlier level
+	static int lowestSprinkleFoodNumber = 3;
+	static int highestSprinkleFoodNumber = 10;
+	
+	int sprinkleFoodNumber = 0;
 	
 	//for moving obstacles and wandering enemies
 	static int easiestObstacleSpawnPeriod=80;
@@ -123,7 +131,7 @@ public class World extends GameObject {
 		parent = p;
 		x = ix;
 		y = iy;
-		level = (p == null ? 3 : p.level + 1);
+		level = (p == null ? 1 : p.level + 1);
 		radius = sketch.random(minWorldRadius, maxWorldRadius);
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
@@ -131,17 +139,19 @@ public class World extends GameObject {
 		ran =  Sketch.min(1,ran);
 		difficulty = (level >= maxLevel ? 1 : Sketch.sq(level+ran)/Sketch.sq(maxLevel));
 		radiusFactor = Sketch.sqrt(radius / ((maxWorldRadius + minWorldRadius) / 2));
-		Sketch.println(difficulty + " factor: " + radiusFactor);
+		//Sketch.println(difficulty + " factor: " + radiusFactor);
 		
-		purnishingTime = easiestPurnishingTime + (int)(difficulty * (hardistPurnishingTime - easiestPurnishingTime));
-		//Sketch.println(difficulty + " time: " + purnishingTime);
+		punishingTime = easiestpunishingTime + (int)(difficulty * (hardestpunishingTime - easiestpunishingTime));
+		//Sketch.println(difficulty + " time: " + punishingTime);
 		
 		//period should be longer if the world is smaller
 		obstacleSpawnPeriod= (int)(easiestObstacleSpawnPeriod / radiusFactor) + (int)(difficulty * (hardestObstacleSpawnPeriod / radiusFactor - easiestObstacleSpawnPeriod / radiusFactor ));
 		obstacleMax= (int)(easiestObstacleMax * radiusFactor) + (int)(difficulty * (hardestObstacleMax * radiusFactor - easiestObstacleMax * radiusFactor));
 		wanderingEnemySpawnPeriod = (int)(easiestWanderingEnemySpawnPeriod / radiusFactor) + (int)(difficulty * (hardestWanderingEnemySpawnPeriod / radiusFactor - easiestWanderingEnemySpawnPeriod / radiusFactor));
 		wanderingEnemyMax = (int)(easiestWanderingEnemyMax * radiusFactor) + (int)(difficulty * (hardestWanderingEnemyMax * radiusFactor - easiestWanderingEnemyMax * radiusFactor));
-		Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
+		//Sketch.println(obstacleSpawnPeriod + " max: " + obstacleMax);
+		
+		sprinkleFoodNumber = (int)(highestSprinkleFoodNumber /radiusFactor + (int)(difficulty * (lowestSprinkleFoodNumber * radiusFactor - highestSprinkleFoodNumber * radiusFactor)));
 		
 		float hue = sketch.random(150, 300), sat = sketch.random(25, 75), bri = sketch.random(25, 75);
 		color = sketch.color(hue, sat, bri);
@@ -189,18 +199,16 @@ public class World extends GameObject {
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5*radiusFactor),(int)(stationaryObstacleMaxNumber*0.5*radiusFactor));
 
 		if(level >= 3)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber),(int)(stationaryObstacleMaxNumber));
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*radiusFactor),(int)(stationaryObstacleMaxNumber*radiusFactor));
 		
 
 		
 		//sprinkle food
-		if(level == 1){
-			for(int i=0; i<20; i++){
-				float rx = sketch.random(radius) - (radius / 2);
-				float ry = sketch.random(radius) - (radius / 2);
-				Food f= new Food(sketch, rx, ry);
-				contents.add(f);
-			}
+		for(int i=0; i < sprinkleFoodNumber; i++){
+			float rx = sketch.random(radius) - (radius / 2);
+			float ry = sketch.random(radius) - (radius / 2);
+			Food f= new Food(sketch, rx, ry);
+			contents.add(f);
 		}
 		
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
@@ -234,26 +242,34 @@ public class World extends GameObject {
 		float tmp = sketch.random(0, 1);
 		if(tmp<difficulty && level >= 3)
 		{
-			float ix = sketch.random(0,Sketch.sqrt(radius));
-			float iy = sketch.random(0,Sketch.sqrt(radius));		
-			key = new Key(sketch,ix,iy);
+			while(key == null){
+				float ix = sketch.random(-radius * 0.7f, radius * 0.7f);
+				float iy = sketch.random(-radius * 0.7f, radius * 0.7f);
+				float dist = Sketch.dist(ix, iy, nest.x, nest.y);
+				//Sketch.println(dist);
+				if(dist > 400){
+					key = new Key(sketch,ix,iy);
+				}
+			}
 			//key.initStationary();
 			//add obstacles covering the entrances
 			float theta = sketch.random(Sketch.TWO_PI);
 			//if still need stationary obstacles to cover the entrance
 			while(key.obstaclesAroundKey > 0){
+
 				float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 						(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.5f);
-					//Sketch.println(theta);
+					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.2f);
+					//Sketch.println(obDiameter);
 					//set the entrance and set the obstacle's position around the world
 					sob.key = key;
-					sob.x = x - Sketch.cos(theta) * sob.radius;
-					sob.y = y - Sketch.sin(theta) * sob.radius;
+					sob.x = key.x + Sketch.cos(theta) * sob.radius * 0.8f;
+					sob.y = key.y + Sketch.sin(theta) * sob.radius * 0.8f;
+					//Sketch.println(key.radius);
 					
 					//recalculate theta
 					theta = theta + 3.1415f * 2 / key.obstaclesRemaining;
-					contents.add(sob);
+					this.contents.add(sob);
 					key.obstaclesAroundKey--;
 					
 
@@ -409,9 +425,10 @@ public class World extends GameObject {
 	
 	public void generateWanderingEnemy(){
 		int period = (level == 3 ? wanderingEnemySpawnPeriod / 2 : wanderingEnemySpawnPeriod);
-		
+		//Sketch.println("wandr");
 		if(count % period == 10){
 			if(wanderingEnemyNumber <= wanderingEnemyMax){
+				//Sketch.println("wandr");
 				wanderingEnemyNumber+=1;
 				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch);			
 				wanderingEnemy.initInWorld(this);
@@ -420,17 +437,19 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
+		if(this == sketch.world){
 		count+=1;
-		if(count >= purnishingTime){
+		if(count >= punishingTime){
 			count = 0;
 			swarmlingsGeneratedForDeadObstacle -= difficulty;
+		}
 		}
 		if (sketch.world == this) {
 			if (level >= 2)
 				generateMovingObstacles();
 
-//			if (level >= 3)
-//				generateWanderingEnemy();
+			if (level >= 3)
+				generateWanderingEnemy();
 				
 //			if ((parent != null) && (Sketch.mag(sketch.leader.x, sketch.leader.y) > radius)) {
 //				while(Swarmling.lastInLine != sketch.leader){
@@ -471,25 +490,26 @@ public class World extends GameObject {
 		
 				}
 			} else {
-				ArrayList<Swarmling> inBand = new ArrayList<Swarmling>();
+				ArrayList<Swarmling> inRing = new ArrayList<Swarmling>();
 				for (int i = 0; i < parent.contents.size(); ++i) {
 					if (parent.contents.get(i) instanceof Swarmling) {
 						Swarmling s = (Swarmling) parent.contents.get(i);
 						if (s.following != null) {
 							float dist = Sketch.dist(x, y, s.x, s.y);
 							if ((dist  <= ringRadius) && (dist >= ringRadius - ringWidth)) {
-								inBand.add(s);
+								inRing.add(s);
 							}
 						}
 					}
 				}
-				if (inBand.size() >= ringRadius / 14) {
+				swarmlingsInRing = inRing.size();
+				if (inRing.size() >= openingRequirement) {
 					open = true;
 					while (Swarmling.lastInLine != sketch.leader) {
 						Swarmling.lastInLine.unfollow();
 					}
-					for (int i = 0; i < inBand.size(); ++i) {
-						inBand.get(i).enteringWorld = this;
+					for (int i = 0; i < inRing.size(); ++i) {
+						inRing.get(i).enteringWorld = this;
 					}
 				}
 			}
@@ -515,6 +535,7 @@ public class World extends GameObject {
 		//base case do not draw worlds that are too small
 		if(view.scale < 0.01) return;
 		
+		// Draw the ring.
 		if (!open) {
 			sketch.noStroke();
 			sketch.fill(cloudColor);
@@ -522,9 +543,14 @@ public class World extends GameObject {
 					view.scale * radius * 2, view.scale * radius * 2);
 			
 			sketch.noFill();
+			sketch.stroke(0, 0, 99, (float) swarmlingsInRing * 100 / (float) openingRequirement);
+			sketch.strokeWeight(ringWidth * view.scale * (radius / portalRadius));
+			float r = view.scale * (radius / portalRadius) * (ringRadius - (.5f * ringWidth)) * 2;
+			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
+			Sketch.println(swarmlingsInRing + ", " + openingRequirement + ", " + (float) swarmlingsInRing / (float) openingRequirement);
 			sketch.stroke(0, 0, 99);
 			sketch.strokeWeight(5 * view.scale * (radius / portalRadius));
-			float r = view.scale * (radius / portalRadius) * ringRadius * 2;
+			r = view.scale * (radius / portalRadius) * ringRadius * 2;
 			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
 			r = view.scale * (radius / portalRadius) * (ringRadius - ringWidth)  * 2;
 			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);

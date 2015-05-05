@@ -23,9 +23,8 @@ class Sparkling extends GameObject {
 
 	}
 	
-	public boolean update() {
+	public boolean update(float kx, float ky) {
 		ttl++;
-		
 		//reset ttl
 		if(ttl >= sparkleLength){
 			//only one or two of them are shining
@@ -33,6 +32,8 @@ class Sparkling extends GameObject {
 			rotateAngle = sketch.random(Sketch.PI / 200);
 			ttl = 0;
 		}
+		x = kx;
+		y = ky;
 		return true;
 	}
 	
@@ -150,7 +151,7 @@ public class Key extends Carryable {
 		if(!isCollected){
 			for(int i = 0; i < sparklingNumber; i++){
 				Sparkling sp = sparklings.get(i);
-				sp.update();
+				sp.update(x, y);
 				if((40 % sp.startTime) < 5){
 					sp.draw(camera);
 				}
