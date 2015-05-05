@@ -32,8 +32,7 @@ public class Food extends Carryable {
 				Swarmling carrier = carriedBy.get(j);
 				carrier.uncarry();
 			}
-			
-			return false;
+				return false;
 		}
 		ddx = 0;
 		ddy = 0;

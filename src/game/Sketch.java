@@ -22,7 +22,7 @@ public class Sketch extends PApplet {
 	float maxZoom = 1.5f;
 	float distortion = 1;
 	
-	Controller controller = new Controller();
+	Controller controller = new Controller(this);
 	boolean usingController = controller.device != null;
 	
 	Audio audio =  null;

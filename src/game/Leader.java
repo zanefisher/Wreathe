@@ -51,13 +51,31 @@ public class Leader extends Swarmling {
 		else 
 			speed = leading ? maxSpeed : 2 * maxSpeed;
 		
+		//slow the leader when someone in the line dies
+		if(firstInLine != null && Sketch.dist(x, y, firstInLine.x, firstInLine.y) > 100){
+			speed *= 0.8f;
+		}
+				
+		//add puff when not holding the right trigger
 		if (speed > maxSpeed) {
 			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(color, 50), radius * sketch.distortion, 0, 5));
 		}
 			
 		dx *= speed;
 		dy *= speed;
-		
+		//bounce off the obstacles
+		if(speed <= maxSpeed){
+			for(int i = 0; i< sketch.world.contents.size(); i++){
+				GameObject other = sketch.world.contents.get(i);
+				if(other instanceof Obstacle){
+					if(distTo(other) <= other.avoidRadius){
+						float centerDist = Sketch.dist(x, y, other.x, other.y);
+						dx += (-(other.x - x) / centerDist) * (1 - (distTo(other) / other.avoidRadius)) * 3;
+						dy += (-(other.y - y) / centerDist) * (1 - (distTo(other) / other.avoidRadius)) * 3;
+					}
+				}
+			}
+		}
 		x += dx * sketch.distortion;
 		y += dy * sketch.distortion;
 		
@@ -77,8 +95,7 @@ public class Leader extends Swarmling {
 			y = - y * 0.9f;
 		}
 		
-		
-		
+
 		return true;
 	}
 	
