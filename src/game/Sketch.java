@@ -8,8 +8,8 @@ public class Sketch extends PApplet {
 	static int screenWidth, screenHeight;
 
 
-	static int obstacleMax=10;
-	
+	//static int obstacleMax=10;
+	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
 
 	boolean wholeView; 
@@ -27,14 +27,18 @@ public class Sketch extends PApplet {
 	
 	Audio audio =  null;
 
-	ArrayList<Key> vault;
+	//for the vault
+	float vaultAlpha = 0;
+	ArrayList<Key> vault = new ArrayList<Key>();
 	float nextKeyX;
 	float nextKeyY;
-	
+	int timer = 0;
+	float currentTime = 0;
+	float lastTime = 0;
 	int tutorialStage = 4;
 	int tutorialAnimationStart = 0;
 	int tutorialRightTriggerCount = 0;
-	
+	int amtCount = 1;
 	public void setup() {
 		frameRate(targetFrameRate);
 		colorMode(HSB, 360, 100, 100, 100);
@@ -56,9 +60,9 @@ public class Sketch extends PApplet {
 		world.obstacleNumber=0;
 		world.count=0;
 		
-		vault = new ArrayList<Key>();
-		nextKeyX = width - 40;
-		nextKeyY = height - 40;
+		nextKeyX = width - 50 + Sketch.cos(0) * 33;
+		nextKeyY = height - 50 + Sketch.sin(0) * 33;
+		timer = 0;
 	}
 	
 	private void updateCamera() {
@@ -189,7 +193,7 @@ public class Sketch extends PApplet {
 		
 		//lle the current world
 		world.update();
-        Swarmling.queueCooldown = max(0, Swarmling.queueCooldown-1);
+       
 		
 		// Update everything in the world. Remove dead circles from the list.
 		ArrayList<GameObject> contents = world.contents;
@@ -207,10 +211,18 @@ public class Sketch extends PApplet {
 			}
 		}
 		
+		if(world.cameraFixed){
+			camera.x = world.x;
+			camera.y = world.y;
+			camera.scale = 0.5f;
+			world.draw(camera);
+			leader.draw(camera);
+		}
+		else{
 		updateCamera();
 		world.draw(camera);
 		leader.draw(camera);
-		
+		}
 		if ((leader.leading) && (Swarmling.attractRadius > 0)) {
 		      noFill();
 		      stroke(0, 0, 255);
@@ -230,16 +242,59 @@ public class Sketch extends PApplet {
 	}
 
 	void drawVault(){
+		
+		currentTime = millis();
+		if(currentTime - lastTime >= 1000){
+			timer += 1;
+			lastTime = currentTime;
+		}
+		String time = Integer.toString(timer /60) + " : " + Integer.toString(timer % 60);
+		float alpha = vaultAlpha;
+		//float alpha = 255;
+		
+		float amt = amtCount * 0.015f; 
+		if(vaultAlpha >= 120){
+			alpha = Sketch.lerp(120, 0, amt);
+			amtCount += 1;
+			if(alpha <= 1){
+				vaultAlpha = 0;
+				amtCount = 1;
+			}
+			
+		}
+		//Sketch.println(vaultAlpha);
 		noFill();
-		stroke(0, 0, 255);
+		stroke(0, 0, 255, alpha);
 		strokeWeight(2);
-		rect((width - 40 * (vault.size() + 1)), height - 40, 40 * (vault.size() + 1), 40, 7);
+		ellipse(width - 50, height - 50, 100, 100);
+		float angle = Sketch.TWO_PI / KeyNumber;
+		for(int i = 0; i < KeyNumber; i++){
+			ellipse(width - 50 + Sketch.cos(angle * i) * 33, height - 50 + Sketch.sin(angle * i) * 33, 28, 28);
+		}
 		for(int i = 0; i < vault.size(); i++){
 			Key key = vault.get(i);
-			fill(key.color, 125);
+			fill(key.color, alpha);
 			noStroke();
-			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
-			
+			ellipse(width - 50 + Sketch.cos(angle * i) * 33, height - 50 + Sketch.sin(angle * i) * 33, 28, 28);
+				
+			nextKeyX = width - 50 + Sketch.cos(angle * (i+1)) * 33;
+			nextKeyY = height - 50 + Sketch.sin(angle * (i+1)) * 33;
+		}
+		textSize(14);
+		fill(0, 0, 255, alpha);
+		text(time, width - 50, height - 45);
+		textSize(32);
+//		rect((width - 40 * (vault.size() + 1)), height - 40, 40 * (vault.size() + 1), 40, 7);
+//		for(int i = 0; i < vault.size(); i++){
+//			Key key = vault.get(i);
+//			fill(key.color, 125);
+//			noStroke();
+//			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
+//			
+//		}
+		
+		if(vault.size() == KeyNumber){
+			//TO DO: Winning Condition
 		}
 	}
 	

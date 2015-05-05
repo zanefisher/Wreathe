@@ -49,8 +49,11 @@ public class WanderingEnemy extends GameObject {
 
 	
 	public void initInWorld(World world){
+
+		radius = 30f;
 		puffPhase = (int) sketch.random(puffPeriod);
-		radius = 40f;
+
+
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
@@ -64,19 +67,24 @@ public class WanderingEnemy extends GameObject {
 		}
 		
 		
-//		int count = 0;
-//		boolean hitNest = true;
-//		while(hitNest && world.nest !=null && count<5000){
-//			dx = Sketch.sin(radians) * speed * -1;
-//			dy = Sketch.cos(radians) * speed * -1;
-//
-//			float k = dy/dx;
-//			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-//			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
-//			count++;
-//		}
-//		if(count<5000) world.contents.add(this);
-//		else Sketch.println("a warndering enemy doesn't init");
+
+		int count = 0;
+		boolean hitNest = true;
+		while(hitNest && world.nest !=null && count<50000){
+			float randomRadians = radians - Sketch.PI/4 + sketch.random(1) * Sketch.PI/2;
+			dx = Sketch.sin(randomRadians) * speed * -1;
+			dy = Sketch.cos(randomRadians) * speed * -1;
+
+			float k = dy/dx;
+			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+			if(distance >= (world.nest.radius + predateRadius)) hitNest = false;
+			count++;
+		}
+		if(count<50000) 
+			world.contents.add(this);
+		else Sketch.println("a warndering enemy doesn't init");
+
+
 	}
 	
 	public boolean update(){
@@ -205,6 +213,7 @@ public class WanderingEnemy extends GameObject {
 			sketch.noFill();
 			sketch.stroke(0,99,99,alpha);
 			sketch.strokeWeight(1);
+
 			sketch.ellipse(sketch.camera.screenX(this.x), sketch.camera.screenY(this.y), view.scale*predateRadius*2, view.scale*predateRadius*2);
 		}
 	}
