@@ -104,8 +104,8 @@ public class Key extends Carryable {
 		radius = 30;
 		sparklings = new ArrayList<Sparkling>();
 		
-		carryCap = 2;
-		weight = 2;
+		carryCap = 5;
+		weight = 5;
 		distanceCarry = this.radius * 1.5f;
 		
 		obstaclesAroundKey = (int)sketch.random(3, 6);
