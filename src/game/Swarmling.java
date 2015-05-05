@@ -208,7 +208,6 @@ public class Swarmling extends GameObject {
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
 					carry((Carryable) other);
-
 				}
 				
 				// attack behavoiur with obstacles

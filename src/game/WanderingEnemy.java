@@ -169,6 +169,7 @@ public class WanderingEnemy extends GameObject {
 		if(isOrbiting)
 		{
 			orbit();
+			isAttacking = true;
 
 		}
 		
@@ -178,7 +179,7 @@ public class WanderingEnemy extends GameObject {
 			float x0 = Sketch.sin(radians) * (predateRadius-radius);		
 			float y0 = Sketch.cos(radians) * (predateRadius-radius);
 			if ((puffPhase + sketch.frameCount) % puffPeriod == 0) {
-			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, 3, 10f, 30,this));
+			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, radius/5f, 10f, 30,this));
 			}
 		}
 		return true;
@@ -200,7 +201,7 @@ public class WanderingEnemy extends GameObject {
 			sketch.noFill();
 			sketch.stroke(0,99,99,alpha);
 			sketch.strokeWeight(1);
-			sketch.ellipse(sketch.camera.screenX(this.x), sketch.camera.screenY(this.y), predateRadius*2, predateRadius*2);
+			sketch.ellipse(sketch.camera.screenX(this.x), sketch.camera.screenY(this.y), view.scale*predateRadius*2, view.scale*predateRadius*2);
 		}
 	}
 }
