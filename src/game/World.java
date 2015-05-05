@@ -268,12 +268,12 @@ public class World extends GameObject {
 
 				float obDiameter = sketch.montecarlo((StationaryObstacle.stationaryObstacleMaxRadius - StationaryObstacle.stationaryObstacleMinRadius) / 2, 
 						(StationaryObstacle.stationaryObstacleMaxRadius + StationaryObstacle.stationaryObstacleMinRadius) / 2);
-					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter/1.2f);
+					StationaryObstacle sob= new StationaryObstacle(sketch, obDiameter / 2.5f);
 					//Sketch.println(obDiameter);
 					//set the entrance and set the obstacle's position around the world
 					sob.key = key;
-					sob.x = key.x + Sketch.cos(theta) * sob.radius * 0.8f;
-					sob.y = key.y + Sketch.sin(theta) * sob.radius * 0.8f;
+					sob.x = key.x + Sketch.cos(theta) * sob.radius * 4f;
+					sob.y = key.y + Sketch.sin(theta) * sob.radius * 4f;
 					//Sketch.println(key.radius);
 					
 					//recalculate theta

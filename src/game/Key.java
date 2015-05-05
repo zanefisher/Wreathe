@@ -108,7 +108,7 @@ public class Key extends Carryable {
 		weight = 5;
 		distanceCarry = this.radius * 1.5f;
 		
-		obstaclesAroundKey = (int)sketch.random(3, 6);
+		obstaclesAroundKey = (int)sketch.random(10, 14);
 		obstaclesRemaining = obstaclesAroundKey;
 				
 		//generate the sparklings
