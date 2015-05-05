@@ -64,19 +64,19 @@ public class WanderingEnemy extends GameObject {
 		}
 		
 		
-		int count = 0;
-		boolean hitNest = true;
-		while(hitNest && world.nest !=null && count<5000){
-			dx = Sketch.sin(radians) * speed * -1;
-			dy = Sketch.cos(radians) * speed * -1;
-
-			float k = dy/dx;
-			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
-			count++;
-		}
-		if(count<5000) world.contents.add(this);
-		else Sketch.println("a warndering enemy doesn't init");
+//		int count = 0;
+//		boolean hitNest = true;
+//		while(hitNest && world.nest !=null && count<5000){
+//			dx = Sketch.sin(radians) * speed * -1;
+//			dy = Sketch.cos(radians) * speed * -1;
+//
+//			float k = dy/dx;
+//			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
+//			if(distance >= (world.nest.radius + radius + predateRadius))hitNest = false;
+//			count++;
+//		}
+//		if(count<5000) world.contents.add(this);
+//		else Sketch.println("a warndering enemy doesn't init");
 	}
 	
 	public boolean update(){
