@@ -108,7 +108,7 @@ public class Key extends Carryable {
 		weight = 2;
 		distanceCarry = this.radius * 1.5f;
 
-		obstaclesAroundKey = 0;
+		obstaclesAroundKey = (int)sketch.random(3, 6);
 
 		obstaclesRemaining = obstaclesAroundKey;
 				
