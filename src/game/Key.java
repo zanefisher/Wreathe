@@ -42,10 +42,10 @@ class Sparkling extends GameObject {
 			
 			//fade in fade out
 			if(ttl <= sparkleLength /2){
-				alpha = Sketch.map(ttl, sparkleLength, 0, 255, 0);
+				alpha = Sketch.map(ttl, sparkleLength, 0, 125, 0);
 			}
 			else{
-				alpha = Sketch.map(ttl, sparkleLength, 0,  0, 255);
+				alpha = Sketch.map(ttl, sparkleLength, 0,  0, 125);
 				//alpha = 0;
 			}
 		    sketch.noStroke();
@@ -83,7 +83,6 @@ class Sparkling extends GameObject {
 }
 
 public class Key extends Carryable {
-	
 	boolean isInVault = false;
 	int amtCount = 1;
 	static int sparklingNumber = 3;
@@ -95,6 +94,9 @@ public class Key extends Carryable {
 	boolean isCollected = false;
 
 	Key(Sketch s, float ix, float iy) {
+		
+		//debug
+		//isCollected = true;
 		sketch = s;
 		x = ix;
 		y = iy;
@@ -102,8 +104,8 @@ public class Key extends Carryable {
 		radius = 30;
 		sparklings = new ArrayList<Sparkling>();
 		
-		carryCap = 10;
-		weight = 10;
+		carryCap = 2;
+		weight = 2;
 		distanceCarry = this.radius * 1.5f;
 		
 		obstaclesAroundKey = (int)sketch.random(3, 6);
@@ -131,7 +133,7 @@ public class Key extends Carryable {
 //			return !isInVault;
 //		}
 		Nest nest = sketch.world.nest;
-		if ((distTo(nest) <= 0)) {
+		if (Sketch.dist(nest.x, nest.y, x, y) <= nest.radius * 0.9f /*distTo(nest)*/) {
 			for (int j = carriedBy.size() - 1; j >= 0; --j) {
 				Swarmling carrier = carriedBy.get(j);
 				carrier.uncarry();
@@ -168,13 +170,16 @@ public class Key extends Carryable {
 			}
 			float drawX = Sketch.lerp(startX, sketch.nextKeyX, amt);
 			float drawY = Sketch.lerp(startY, sketch.nextKeyY, amt);
+			float scale = Sketch.lerp(camera.scale *radius, 28, amt);
+			sketch.vaultAlpha = Sketch.lerp(0, 120, amt);
 			sketch.noStroke();
 			sketch.fill(color, 125);
 			sketch.ellipse(drawX, drawY,
-					camera.scale * radius * 2, camera.scale * radius * 2);
+					 2 * scale,  2 * scale);
 			amtCount++;
 			if(drawX >= sketch.nextKeyX && drawY >= sketch.nextKeyY){
 				amtCount = 1;
+				//sketch.vaultAlpha = 255;
 				sketch.vault.add(this);
 				isInVault = true;
 			}

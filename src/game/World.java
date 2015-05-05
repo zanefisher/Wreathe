@@ -129,7 +129,7 @@ public class World extends GameObject {
 		parent = p;
 		x = ix;
 		y = iy;
-		level = (p == null ? 3 : p.level + 1);
+		level = (p == null ? 4 : p.level + 1);
 		radius = sketch.random(minWorldRadius, maxWorldRadius);
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
@@ -194,12 +194,13 @@ public class World extends GameObject {
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
 		
 		if(level == 2)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.5*radiusFactor),(int)(stationaryObstacleMaxNumber*0.5*radiusFactor));
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
 
-		if(level >= 3)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*radiusFactor),(int)(stationaryObstacleMaxNumber*radiusFactor));
+		if(level == 3)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.3*radiusFactor),(int)(stationaryObstacleMaxNumber*0.3*radiusFactor));
 		
-
+		if(level >= 4)
+			generateStationaryObstacles((int)(stationaryObstacleMinNumber*radiusFactor),(int)(stationaryObstacleMaxNumber*radiusFactor));
 		
 		//sprinkle food
 		for(int i=0; i < sprinkleFoodNumber; i++){
@@ -285,17 +286,30 @@ public class World extends GameObject {
 		StationaryPattern pattern = StationaryPattern.random;
 		stationaryObstaclesNumber = (int)sketch.random(minNumber, maxNumber);
 		
+		if(level == 2 || level == 3){
+			pattern = StationaryPattern.circle;
+		}
+		
 		//contain a pattern switch here.
 		if(pattern == StationaryPattern.circle){
-		float lineRadius = radius * sketch.random(0.65f, 0.9f);
+		float lineRadius = radius * sketch.random(0.3f, 0.4f);
 		//float lineDiameter = lineRadius * 2;
 		float lineCircle = Sketch.PI * lineRadius * 2;
 		float obDiameter = lineCircle / stationaryObstaclesNumber;
 		for(int i = 0; i <= stationaryObstaclesNumber; i++){
 			float angle = i * Sketch.TWO_PI / stationaryObstaclesNumber;
-			StationaryObstacle sob = new StationaryObstacle(sketch, obDiameter / 3);
-			sob.x = x + Sketch.cos(angle) * lineRadius;
-			sob.y = y + Sketch.sin(angle) * lineRadius;
+			for(int j = 0; j < sketch.random(1, 5); j++){
+				float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/1.5f);
+				StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
+				sob.x =  nest.x + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/1.5f);
+				sob.y =  nest.y + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/1.5f);
+				
+			
+				contents.add(sob);
+			}
+			StationaryObstacle sob = new StationaryObstacle(sketch, obDiameter / 1.5f);
+			sob.x = nest.x + Sketch.cos(angle) * lineRadius;
+			sob.y = nest.y + Sketch.sin(angle) * lineRadius;
 			
 			contents.add(sob);
 		}
@@ -352,10 +366,10 @@ public class World extends GameObject {
 					for(int j = 0; j < arcCircleNumber; j++ ){
 						float angle = j * ( arcAngle / arcCircleNumber);
 						for(int i = 0; i < sketch.random(1, 5); i++){
-							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/3);
+							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/1.5f);
 							StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
-							sob.x =  offsetX + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
-							sob.y =  offsetY + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/3);
+							sob.x =  offsetX + Sketch.cos(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/1.5f);
+							sob.y =  offsetY + Sketch.sin(angle) * lineRadius + sketch.randomGaussian() *(obDiameter/1.5f);
 							
 							//avoid nest and outside
 							if(Sketch.dist(sob.x, sob.y, x, y) > radius || Sketch.dist(sob.x, sob.y, nestX, nestY) < nestR){
@@ -386,10 +400,10 @@ public class World extends GameObject {
 					//Sketch.println("lineLength: " + lineLength);
 					for(int j = 0; j < lineLength; j++ ){
 						for(int i = 0; i < sketch.random(1, 5); i++){
-							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/3);
+							float obDiameterWithNoise = obDiameter + sketch.randomGaussian() * (obDiameter/1.5f);
 							StationaryObstacle sob = new StationaryObstacle(sketch, obDiameterWithNoise / 2);
-							sob.x =  Sketch.lerp(startX, endX, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
-							sob.y =  Sketch.lerp(startY, endY, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/3);
+							sob.x =  Sketch.lerp(startX, endX, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/1.5f);
+							sob.y =  Sketch.lerp(startY, endY, j/(float)lineLength) + sketch.randomGaussian() *(obDiameter/1.5f);
 							
 						
 							if(Sketch.dist(sob.x, sob.y, x, y) > radius || Sketch.dist(sob.x, sob.y, nestX, nestY) < nestR){

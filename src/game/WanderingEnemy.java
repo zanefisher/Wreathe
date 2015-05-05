@@ -26,6 +26,9 @@ public class WanderingEnemy extends GameObject {
 	float angle = 0;
 	float wSpeed = 0.01f;
 	
+	static final int puffPeriod = 1;
+	int puffPhase;
+	
 	WanderingEnemy(Sketch s){
 		sketch = s;
 		color=sketch.color(0,99,99);
@@ -46,8 +49,9 @@ public class WanderingEnemy extends GameObject {
 
 	
 	public void initInWorld(World world){
-		
 		radius = 30f;
+		puffPhase = (int) sketch.random(puffPeriod);
+
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
 		x = Sketch.sin(radians) * (radius + world.radius);		
@@ -64,12 +68,13 @@ public class WanderingEnemy extends GameObject {
 		int count = 0;
 		boolean hitNest = true;
 		while(hitNest && world.nest !=null && count<50000){
-			dx = Sketch.sin(radians) * speed * -1;
-			dy = Sketch.cos(radians) * speed * -1;
+			float randomRadians = radians - Sketch.PI/4 + sketch.random(1) * Sketch.PI/2;
+			dx = Sketch.sin(randomRadians) * speed * -1;
+			dy = Sketch.cos(randomRadians) * speed * -1;
 
 			float k = dy/dx;
 			float distance = Sketch.abs(k*world.nest.x-world.nest.y-k*x+y)/Sketch.sqrt(k*k+1);
-			if(distance >= (world.nest.radius + radius + predateRadius)) hitNest = false;
+			if(distance >= (world.nest.radius + predateRadius)) hitNest = false;
 			count++;
 		}
 		if(count<50000) world.contents.add(this);
@@ -130,6 +135,7 @@ public class WanderingEnemy extends GameObject {
 		}
 		else isAttacking = false;
 		
+		
 		//update the direction
 //		if(sketch.world.count % 300 ==0){
 //			
@@ -168,6 +174,15 @@ public class WanderingEnemy extends GameObject {
 
 		}
 		
+		if(isAttacking){		
+			
+			float radians = sketch.random(2) * Sketch.PI;
+			float x0 = Sketch.sin(radians) * (predateRadius-radius);		
+			float y0 = Sketch.cos(radians) * (predateRadius-radius);
+			if ((puffPhase + sketch.frameCount) % puffPeriod == 0) {
+			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, 3, 10f, 30,this));
+			}
+		}
 		return true;
 	}
 
