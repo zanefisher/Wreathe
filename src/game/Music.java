@@ -102,6 +102,9 @@ public class Music extends PApplet {
 		
 		public void run(){
 			
+			Synth synth = new Synth("Bass");
+			synth.create();
+			
 			try{
 				
 				while(true){
@@ -114,11 +117,10 @@ public class Music extends PApplet {
 								
 								if(score[2][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Bass");
 									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
 									synth.set("duration", score[2][section[s]][1][n] * 60/23);
 									synth.set("iteration", i);
-									synth.create();
+									
 									
 								}
 								
@@ -145,7 +147,8 @@ public class Music extends PApplet {
 	public class Tenor implements Runnable {
 		
 		public void run(){
-			
+			Synth synth = new Synth("Tenor");
+			synth.create();
 			try{
 				
 				while(true){
@@ -158,11 +161,11 @@ public class Music extends PApplet {
 								
 								if(score[1][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Tenor");
+									
 									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
 									synth.set("duration", score[2][section[s]][1][n] * 60/23);
 									synth.set("iteration", i);
-									synth.create();
+									
 									
 								}
 								
@@ -189,7 +192,8 @@ public class Music extends PApplet {
 	public class Treble implements Runnable {
 		
 		public void run(){
-			
+			Synth synth = new Synth("Treble");
+			synth.create();
 			try{
 				
 				while(true){
@@ -202,11 +206,11 @@ public class Music extends PApplet {
 								
 								if(score[0][section[s]][0][n] != 0){
 									
-									Synth synth = new Synth("Treble");
+									
 									synth.set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
 									synth.set("duration", score[2][section[s]][1][n] * 60/23);
 									synth.set("iteration", i);
-									synth.create();
+									
 									
 								}
 								

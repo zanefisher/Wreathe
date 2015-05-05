@@ -5,6 +5,7 @@ public class World extends GameObject {
 	
 	
 	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
+	boolean cameraFixed = false;
 	
 	boolean open = false;
 	float ringRadius = 250;
@@ -130,7 +131,13 @@ public class World extends GameObject {
 		x = ix;
 		y = iy;
 		level = (p == null ? 4 : p.level + 1);
-		radius = sketch.random(minWorldRadius, maxWorldRadius);
+		if(level >= 4){
+			radius = sketch.random(minWorldRadius, maxWorldRadius);
+		}
+		else{
+			radius = 700;
+			cameraFixed = true;
+		}
 		//generate random difficulty
 		float ran = sketch.randomGaussian();
 		ran =  Sketch.max(-1,ran);
@@ -239,7 +246,7 @@ public class World extends GameObject {
 	public void generateKey(){
 
 		float tmp = sketch.random(0, 1);
-		if(tmp<difficulty && level >= 3)
+		if(/*tmp<difficulty &&*/ level >= 3)
 		{
 			while(key == null){
 				float ix = sketch.random(-radius * 0.7f, radius * 0.7f);
@@ -455,6 +462,7 @@ public class World extends GameObject {
 			count = 0;
 			swarmlingsGeneratedForDeadObstacle -= difficulty;
 		}
+		 Swarmling.queueCooldown = Sketch.max(0, Swarmling.queueCooldown-1);
 		}
 		if (sketch.world == this) {
 			if (level >= 2)
