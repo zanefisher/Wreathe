@@ -8,8 +8,8 @@ public class Sketch extends PApplet {
 	static int screenWidth, screenHeight;
 
 
-	static int obstacleMax=10;
-	
+	//static int obstacleMax=10;
+	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
 
 	boolean wholeView; 
@@ -27,9 +27,11 @@ public class Sketch extends PApplet {
 	
 	Audio audio =  null;
 
-	ArrayList<Key> vault;
+	//for the vault
+	ArrayList<Key> vault = new ArrayList<Key>(5);
 	float nextKeyX;
 	float nextKeyY;
+	int timer = 0;
 	
 	int tutorialStage = 4;
 	int tutorialAnimationStart = 0;
@@ -56,9 +58,9 @@ public class Sketch extends PApplet {
 		world.obstacleNumber=0;
 		world.count=0;
 		
-		vault = new ArrayList<Key>();
 		nextKeyX = width - 40;
 		nextKeyY = height - 40;
+		timer = 0;
 	}
 	
 	private void updateCamera() {
@@ -227,14 +229,15 @@ public class Sketch extends PApplet {
 		noFill();
 		stroke(0, 0, 255);
 		strokeWeight(2);
-		rect((width - 40 * (vault.size() + 1)), height - 40, 40 * (vault.size() + 1), 40, 7);
-		for(int i = 0; i < vault.size(); i++){
-			Key key = vault.get(i);
-			fill(key.color, 125);
-			noStroke();
-			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
-			
-		}
+		ellipse(width - 30, height - 30, 60, 60);
+//		rect((width - 40 * (vault.size() + 1)), height - 40, 40 * (vault.size() + 1), 40, 7);
+//		for(int i = 0; i < vault.size(); i++){
+//			Key key = vault.get(i);
+//			fill(key.color, 125);
+//			noStroke();
+//			ellipse(width - 20 * (i+1), height - 20, key.radius, key.radius);
+//			
+//		}
 	}
 	
 	// Monte Carlo method to generate deviation from an offset number.
