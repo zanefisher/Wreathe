@@ -23,11 +23,13 @@ public class Controller extends PApplet {
 	}
 		
 	public float getJx(){
+		//TODO: change it according to mouse position 
 		jx = (!sketch.usingController)?0:device.getSlider("X").getValue();
 		return jx;
 	}
 	
 	public float getJy(){
+		//TODO: change it according to mouse position 
 		jy = (!sketch.usingController)?0:device.getSlider("Y").getValue();
 		return jy;
 	}

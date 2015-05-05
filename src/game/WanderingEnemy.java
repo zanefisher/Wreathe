@@ -26,6 +26,9 @@ public class WanderingEnemy extends GameObject {
 	float angle = 0;
 	float wSpeed = 0.04f;
 	
+	static final int puffPeriod = 1;
+	int puffPhase;
+	
 	WanderingEnemy(Sketch s){
 		sketch = s;
 		color=sketch.color(0,99,99);
@@ -46,7 +49,7 @@ public class WanderingEnemy extends GameObject {
 
 	
 	public void initInWorld(World world){
-		
+		puffPhase = (int) sketch.random(puffPeriod);
 		radius = 40f;
 		float speed = sketch.montecarlo((maxSpeed - minSpeed)/2, (maxSpeed + minSpeed)/2);
 		float radians = sketch.random(2) * Sketch.PI;
@@ -130,6 +133,7 @@ public class WanderingEnemy extends GameObject {
 		}
 		else isAttacking = false;
 		
+		
 		//update the direction
 //		if(sketch.world.count % 300 ==0){
 //			
@@ -168,6 +172,15 @@ public class WanderingEnemy extends GameObject {
 
 		}
 		
+		if(isAttacking){		
+			
+			float radians = sketch.random(2) * Sketch.PI;
+			float x0 = Sketch.sin(radians) * (predateRadius-radius);		
+			float y0 = Sketch.cos(radians) * (predateRadius-radius);
+			if ((puffPhase + sketch.frameCount) % puffPeriod == 0) {
+			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, 3, 10f, 30,this));
+			}
+		}
 		return true;
 	}
 

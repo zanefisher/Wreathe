@@ -213,7 +213,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		//updateAndDrawTutorial();
+		updateAndDrawTutorial();
 		
 		//display frame rate
 		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
