@@ -147,11 +147,9 @@ public class WanderingEnemy extends GameObject {
 			attackPeriod = attackPeriodCount;
 		}
 		
-		//set Alpha
-		if (isAttacking == false)
-			alpha = 60 - (int)(40 * attackCooldown/attackCooldownCount);
-		else alpha = 100;
-		color=sketch.color(0,99,99,alpha);
+		
+		
+
 		 
 		//check the place and change to the behavior of obiting in the world
 		
@@ -173,13 +171,19 @@ public class WanderingEnemy extends GameObject {
 
 		}
 		
+		//set Alpha
+		if (isAttacking == false)
+			alpha = 60 - (int)(40 * attackCooldown/attackCooldownCount);
+		else alpha = 100;
+		color=sketch.color(0,99,99,alpha);
+
 		if(isAttacking){		
 			
 			float radians = sketch.random(2) * Sketch.PI;
-			float x0 = Sketch.sin(radians) * (predateRadius-radius);		
-			float y0 = Sketch.cos(radians) * (predateRadius-radius);
+			float x0 = Sketch.sin(radians) * (predateRadius);		
+			float y0 = Sketch.cos(radians) * (predateRadius);
 			if ((puffPhase + sketch.frameCount) % puffPeriod == 0) {
-			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, radius/5f, 10f, 30,this));
+			sketch.world.contents.add(new Puff(sketch, x+x0, y+y0, color, radius/5f, 10f, 20,this));
 			}
 		}
 		return true;
