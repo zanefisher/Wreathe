@@ -12,7 +12,11 @@ public class Controller extends PApplet {
 	Sketch sketch = null;
 	
 	float jx,jy,jz,jrx,jry,jrz;
+	float mx,my;
+	boolean start = true;
+	boolean back = false;
 	boolean leading;
+	boolean lastFrameStartPressed = start;
 	
 	public Controller(Sketch s) {
 		sketch = s;
@@ -23,15 +27,26 @@ public class Controller extends PApplet {
 	}
 		
 	public float getJx(){
-		//TODO: change it according to mouse position 
-		jx = (!sketch.usingController)?0:device.getSlider("X").getValue();
+		if(!sketch.usingController)updateMxMy();
+		jx = (sketch.usingController)?device.getSlider("X").getValue():mx;
 		return jx;
 	}
 	
 	public float getJy(){
-		//TODO: change it according to mouse position 
-		jy = (!sketch.usingController)?0:device.getSlider("Y").getValue();
+		if(!sketch.usingController)updateMxMy();
+		jy = (sketch.usingController)?device.getSlider("Y").getValue():my;
 		return jy;
+	}
+	
+	public void updateMxMy(){
+		float dx = sketch.mouseX - sketch.camera.screenX(sketch.leader.x);
+		float dy = sketch.mouseY - sketch.camera.screenY(sketch.leader.y);
+		float dist = Sketch.mag(dx, dy);
+		float scale = Sketch.max(dist, sketch.leader.mouseMaxSpeedRadius);
+		dx /= scale;
+		dy /= scale;
+		mx = dx;
+		my = dy;
 	}
 	
 	public boolean isPressed(){
@@ -44,23 +59,36 @@ public class Controller extends PApplet {
 	}
 	
 	public float getJz(){
-		jz = (!sketch.usingController)?((sketch.mousePressed)?1:0):(device.getSlider("Z").getValue()+1)/2f;
+		jz = (sketch.usingController)?(device.getSlider("Z").getValue()+1)/2f:((sketch.mousePressed)?1:0);
 		return jz; //from 0~1
 	}
 	
 	public float getJrz(){
-		jrz = (!sketch.usingController)?((sketch.mousePressed)?0:1):(device.getSlider("RZ").getValue()+1)/2f;
+		jrz = (sketch.usingController)?(device.getSlider("RZ").getValue()+1)/2f:((sketch.mousePressed)?0:1);
 		return jrz; //from 0~1
 	}
 	
 	public float getJrx(){
-		jrx = (!sketch.usingController)?0:device.getSlider("RX").getValue();
+		jrx = (sketch.usingController)?device.getSlider("RX").getValue():0;
 		return jrx;
 	}
 	
 	public float getJry(){
-		jry =  (!sketch.usingController)?0:device.getSlider("RY").getValue();
+		jry =  (sketch.usingController)?device.getSlider("RY").getValue():0;
 		return jry;
+	}
+	
+	public boolean getStart(){
+		//return true if game start, false if game stop
+		boolean pressed= (sketch.usingController)?device.getButton("START").pressed():false;
+		if (pressed && (!lastFrameStartPressed)) start = !start;
+		lastFrameStartPressed = pressed;
+		return start;
+	}
+	
+	public boolean getBack(){
+		back = (sketch.usingController)?device.getButton("BACK").pressed():false;
+		return back;
 	}
 	
 }
