@@ -192,7 +192,7 @@ public class Swarmling extends GameObject {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
-						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
+						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 3f;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
