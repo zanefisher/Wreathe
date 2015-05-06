@@ -69,20 +69,40 @@ public class Leader extends Swarmling {
 		x += dx * sketch.distortion;
 		y += dy * sketch.distortion;
 		
+		
+		float centerDist = Sketch.mag(x, y);
+		
 		//flap over when go out of the first world
-		float centerDist = Sketch.dist(0, 0, x, y);
-		//Sketch.println("x: " + x);
-		if(centerDist > (sketch.world.radius + (Sketch.max(sketch.height, sketch.width)))){
-			
-			while(Swarmling.lastInLine != (Swarmling)this){
-				Swarmling.lastInLine.unfollow();
+		if (sketch.world.parent == null) {
+			if(centerDist > (sketch.world.radius + (Sketch.max(sketch.height, sketch.width)))){
+				
+				while(Swarmling.lastInLine != (Swarmling)this){
+					Swarmling.lastInLine.unfollow();
+				}
+				
+				sketch.camera.x -= 1.9 * x;
+				sketch.camera.y -= 1.9 * y;
+				
+				x = - x * 0.9f;
+				y = - y * 0.9f;
 			}
 			
-			sketch.camera.x -= 1.9 * x;
-			sketch.camera.y -= 1.9 * y;
-			
-			x = - x * 0.9f;
-			y = - y * 0.9f;
+		//exit the world
+		} else {
+			if (centerDist > sketch.world.radius + 5) {
+				while (lastInLine != this) {
+					lastInLine.unfollow();
+				}
+				World inner = sketch.world;
+				World outer = sketch.world.parent;
+				x = (x * inner.portalRadius / inner.radius) + inner.x;
+				y = (y * inner.portalRadius / inner.radius) + inner.y;
+//				sketch.camera.x = (sketch.camera.x * inner.portalRadius / inner.radius) + inner.x;
+//				sketch.camera.y = (sketch.camera.y * inner.portalRadius / inner.radius) + inner.y;
+				sketch.camera.scale(inner.portalRadius / inner.radius);
+				sketch.camera.trans(inner.x, inner.y);
+				sketch.world = outer;
+			}
 		}
 		
 
