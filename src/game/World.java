@@ -744,8 +744,16 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 13 && level == 4){
-			sketch.centerText = "Get The Shiny Circle from your enemy";
+			textTimeCount += 1;
+			if(textTimeCount < 100){
+				sketch.centerText = "Get The Shiny Circle from your enemy";
+			}
+			
+			if(textTimeCount >= 100){
+				sketch.centerText = "";
+			}
 			if(key.isCollected){
+				textTimeCount = 0;
 				sketch.centerText = "You need to collect five of them";
 			}
 			if(key.isInVault){
