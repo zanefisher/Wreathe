@@ -1,11 +1,16 @@
 package game;
 import java.util.ArrayList;
 
+
+//stage: level 1: 1-5; level 2: 6 - 10; level 3: 11 - 13
+
 public class World extends GameObject {
 	
 	
 	static final int maxLevel = 7; //difficulty will reach it's maximum at and after this level  
-	
+	int foodCount = 0;
+	int textTimeCount = 0;
+	int redAlarmCount = 0;
 	boolean open = false;
 	float ringRadius = 250;
 	int swarmlingsInRing = 0;
@@ -164,7 +169,7 @@ public class World extends GameObject {
 			wanderingEnemySpawnPeriod = hardestWanderingEnemySpawnPeriod * 5;
 			wanderingEnemyMax = 0;
 		
-			sprinkleFoodNumber = 12;
+			//sprinkleFoodNumber = 12;
 			swarmlingsGenerated = 3;
 		}
 		else if (level == 2){
@@ -230,7 +235,7 @@ public class World extends GameObject {
 
 		if(level == 1) {
 			sketch.controller.useRightTrigger = false;
-			sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
+			//sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
 		}
 		
 		if(level == 2){
@@ -543,6 +548,12 @@ public class World extends GameObject {
 					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
 					sketch.world = this;
+					if(sketch.stage == 5 ){
+						sketch.stage += 1;
+					}
+					else if (sketch.stage >= 8){
+						sketch.stage = 11;
+					}
 					sketch.audio.beamSetZero();
 					
 		
@@ -589,11 +600,80 @@ public class World extends GameObject {
 		else if(sketch.stage == 1 && level == 1){
 			sketch.controller.useLeftTrigger = true;
 			sketch.centerText = "Left Trigger to Build a chain";
+			//Sketch.println(Swarmling.swarmlingNumberFollowing);
 			if(Swarmling.swarmlingNumberFollowing >= 3)
 				sketch.stage = 2;
 		}
 		else if(sketch.stage == 2 && level == 1){
 			sketch.centerText = "Use followers to collect Lemons";
+			
+			for(; foodCount < nest.budGrowth + nest.blossomGrowth; foodCount++){
+				float rx = sketch.random(radius) - (radius / 2);
+				float ry = sketch.random(radius) - (radius / 2);
+				Food f= new Food(sketch, rx, ry);
+				contents.add(f);
+			}
+			
+			if(nest.growth >= 2){
+				sketch.stage = 3;
+			}
+		}
+		else if(sketch.stage == 3 && level == 1){
+			sketch.centerText = "Your Nest Needs More Lemons!!";
+			textTimeCount += 1;
+			if(children.size() > 0)
+				sketch.stage = 4;
+			if(textTimeCount >= 5000)
+				sketch.centerText = "";
+		}
+		else if(sketch.stage == 4 && level ==1){
+			sketch.centerText = "Fill the white ring with followers to open the new world";
+			if(children.get(0).open){
+				sketch.stage = 5;
+			}
+		}
+		else if(sketch.stage == 5 && level == 1){
+			sketch.centerText = "Congradulation! Go and Check out the new World";
+		}
+		else if(sketch.stage == 6 && level == 2){
+			sketch.centerText = "Hold right trigger to move faster and past through obstacles";
+			sketch.controller.useRightTrigger = true;
+			if(sketch.leader.distTo(nest) <= 0)
+				sketch.stage = 7;
+		}
+		else if(sketch.stage == 7 && level == 2){
+			sketch.centerText = "Followers can destroy nearby obstacles";
+			if(Swarmling.firstInLine.distTo(nest) > 10)
+				sketch.stage = 8;
+		}
+		else if(sketch.stage == 8 && level ==2){
+			sketch.centerText = "";
+			textTimeCount += 1;
+			if(textTimeCount >= 2000 && nest.growth < 1){
+				textTimeCount = 0;
+				sketch.stage = 10;
+			}
+		}
+		else if(sketch.stage == 9 && level == 2){
+			redAlarmCount += 1; 
+			if(redAlarmCount >= 1000){
+				redAlarmCount = 0;
+				sketch.stage = 8;
+			}
+		}
+		else if(sketch.stage == 10 && level == 2){
+			sketch.centerText = "break the large obstacles to get the precious lemons";
+			textTimeCount += 1;
+			if(nest.growth >= 1){
+				textTimeCount = 0;
+				sketch.stage = 8;
+			}
+			if(nest.growth < 1 && textTimeCount >= 2000){
+				textTimeCount = 0;
+			}
+		}
+		else if(sketch.stage >= 11 && level == 3){
+			sketch.centerText = "Your followers can survive on their own";
 		}
 	};
 	

@@ -85,6 +85,7 @@ public class Swarmling extends GameObject {
 	        followCooldown = 60;
 	    }
 		swarmlingNumberFollowing -= 1;
+		swarmlingNumberFollowing = Sketch.max(0,swarmlingNumberFollowing);
 		sketch.audio.globalSound(0);
 	}
 	
@@ -198,6 +199,7 @@ public class Swarmling extends GameObject {
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
 					if(lastFrameTarget != null) sketch.audio.beamSound(false);
+					if(sketch.world.level == 2) sketch.stage = 9;
 					return false;
 				}	
 				

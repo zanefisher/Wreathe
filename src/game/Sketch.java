@@ -256,8 +256,8 @@ public class Sketch extends PApplet {
 			//fade out effect
 			centerTextAlpha = min(1, (fadeOutTime - ((float) frameCount - fadeOutStart)) / fadeOutTime);
 			displayText = lastCenterText;
-			Sketch.println(centerTextAlpha);
-			Sketch.println("fade out begin");
+			//Sketch.println(centerTextAlpha);
+			//Sketch.println("fade out begin");
 		}
 
 		if(fadeOutStart != 0 &&centerTextAlpha<=0){
