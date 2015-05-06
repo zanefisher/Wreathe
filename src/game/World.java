@@ -493,15 +493,14 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
-		if(this == sketch.world){
-		count+=1;
-		if(count >= punishingTime){
-			count = 0;
-			swarmlingsGeneratedForDeadObstacle -= difficulty;
-		}
-		 Swarmling.queueCooldown = Sketch.max(0, Swarmling.queueCooldown-1);
-		}
 		if (sketch.world == this) {
+			count+=1;
+			if(count >= punishingTime){
+				count = 0;
+				swarmlingsGeneratedForDeadObstacle -= difficulty;
+			}
+			Swarmling.queueCooldown = Sketch.max(0, Swarmling.queueCooldown-1);
+
 			if (level >= 3)
 				generateMovingObstacles();
 
@@ -572,8 +571,30 @@ public class World extends GameObject {
 			}
 		}
 		
+		if(level == 1)
+			updateTutorialLevel1();
+		if(level == 2)
+			updateTutorialLevel2();
+		if(level == 3)
+			updateTutorialLevel3();
+		if(level == 4)
+			updateTutorialLevel4();
+		
 		return true;
 	}
+	
+	public void updateTutorialLevel1(){
+		
+	};
+	public void updateTutorialLevel2(){
+		
+	};
+	public void updateTutorialLevel3(){
+		
+	};
+	public void updateTutorialLevel4(){
+		
+	};
 	
 	public WorldView getView() {
 		World w = this;
