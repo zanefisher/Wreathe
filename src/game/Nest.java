@@ -18,6 +18,8 @@ public class Nest extends GameObject {
 	int blossomGrowth = 8;
 	float animationDelay = 0f;
 	
+	int deadColor = sketch.color(40, 20, 90);
+	
 	ArrayList<Branch> branches;
 	Branch trunk = null;
 	ArrayList<Bud> buds;
@@ -76,6 +78,9 @@ public class Nest extends GameObject {
 		}
 		
 		void draw(WorldView view) {
+			if ((!budBearing) && (life < 1)) {
+				sketch.stroke(sketch.lerpColor(deadColor, color, life));
+			}
 			lengthGrowth = Sketch.min(1f, 1.1f * lengthGrowth);
 			widthGrowth = Sketch.min(1f, 1.1f * widthGrowth);
 			sketch.strokeWeight(width * widthGrowth * view.scale);
@@ -176,16 +181,16 @@ public class Nest extends GameObject {
 
 	
 	public void draw(WorldView view) {
-		super.draw(view);
 		sketch.strokeCap(Sketch.ROUND);
-		sketch.stroke(color);
 		for (int i = 0; i < branches.size(); ++i) {
+			sketch.stroke(color);
 			branches.get(i).draw(view);
 		}
 		//sketch.stroke(40, 60, 60);
 		if (trunk != null) {
 			trunk.draw(view);
 		}
+		super.draw(view);
 		sketch.noStroke();
 		sketch.fill(120, 99, 50);
 		for (int i = 0; i < buds.size(); ++i) {
@@ -195,6 +200,10 @@ public class Nest extends GameObject {
 	}
 	
 	public boolean update() {
+		
+		if (sketch.world.swarmlingsGeneratedForDeadObstacle < 1) {
+			life = Sketch.min(0f, 0.95f * life);
+		}
 		
 		if ((growth < 1) && (sketch.world.count % 360 == 60)) {
 			Echo re = new Echo(sketch, x, y);

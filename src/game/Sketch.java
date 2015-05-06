@@ -342,6 +342,12 @@ public class Sketch extends PApplet {
 			for (int i = 0; i < world.children.size(); ++i) {
 				world.children.get(i).open = true;
 			}
+		} else if (key == 's') {
+			world = new World(this, world, 0, 0);
+			world.open = true;
+			while (Swarmling.lastInLine != leader) {
+				Swarmling.lastInLine.unfollow();
+			}
 		}
 	}
 	
