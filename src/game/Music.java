@@ -21,18 +21,19 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{69f, 62f, 60f, 57f, 69f, 62f, 60f, 57f, 64f, 60f, 57f, 64f, 62f, 60f, 57f,
 		   67f, 62f, 61f, 59f, 67f, 62f, 61f, 59f, 64f, 61f, 59f, 64f, 62f, 61f, 59f},
-		  {3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 1/8f, 1/8f, 1/8f, 3/16f, 3/16f, 3/16f, 3/16f,
-		   3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 1/8f, 1/8f, 1/8f, 3/16f, 3/16f, 3/16f, 3/16f}},
+
+		  {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f}},
 		   
 		 {{64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f,
 		   64f, 63f, 61f, 56f, 68f, 64f, 63f, 61f, 56f, 57f, 64f, 63f, 61f, 56f, 68f, 64f, 63f, 61f, 56f, 57f},
-		  {3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f,
-		   3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f, 3/20f}},
+		  {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f}},
 		   
 		 {{68f, 63f, 61f, 59f, 68f, 63f, 61f, 59f, 66f, 61f, 59f, 66f, 63f, 61f, 59f,
 		   71f, 63f, 61f, 59f, 71f, 63f, 61f, 59f, 70f, 61f, 59f, 70f, 66f, 61f, 59f},
-	      {3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 1/8f, 1/8f, 1/8f, 3/16f, 3/16f, 3/16f, 3/16f,
-		   3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 3/16f, 1/8f, 1/8f, 1/8f, 3/16f, 3/16f, 3/16f, 3/16f}},
+	      {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f}},
 		   
 		 {{70f, 66f, 65f, 63f, 70f, 66f, 65f, 63f, 68f, 66f, 65f, 63f, 68f, 66f, 65f, 63f,
 		   68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f},
@@ -47,8 +48,9 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{48f, 53f, 48f, 53f, 57f, 60f, 48f, 53f, 48f, 53f, 57f, 62f, 48f, 53f, 48f, 53f, 57f, 64f,
 		   47f, 47f, 47f, 50f, 57f, 62f, 0f},
+		   
 		  {1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f,
-		   1/8f, 1/12f, 1/12f, 1/12f, 1/16f, 7/16f, 3/4f}},
+		   1/8f, 1/12f, 1/12f, 1/12f, 1/16f, 5/16f, 3/4f}},
 		   
 		 {{53f, 60f, 53f, 60f, 53f, 60f, 65f, 53f, 60f, 52f, 60f, 52f, 60f, 64f, 52f, 57f, 52f,
 		   56f, 52f, 56f, 49f, 51f, 56f, 51f, 56f, 52f, 56f, 49f, 52f, 56f, 52f, 57f, 52f, 59f},
@@ -62,15 +64,16 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{51f, 58f, 56f, 58f, 51f, 58f, 61f, 51f, 58f, 56f, 54f, 56f, 58f, 61f, 51f, 54f, 58f,
 		   56f, 51f, 54f, 58f, 56f, 51f, 54f, 51f, 54f, 56f, 58f, 51f, 54f, 56f, 58f},
-		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f, 5/32f,
-		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8}}},
+		   
+		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f,
+		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f}}},
 		   
 		//bass
 	    {{{29f, 31f, 33f, 32f, 33f, 35f, 37f},
 		  {1/2f, 1/4f, 3/4f, 1/2f, 1/4f, 1/2f, 1/4f}},
 		  
 		 {{41f, 40f, 38f, 36f, 35f, 33f, 41f, 42f, 44f, 45f},
-		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 5/12f, 1/6f, 1/6}},
+		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 5/12f, 1/6f, 1/6f}},
 		  
 		 {{29f, 31f, 33f, 32f, 33f, 35f, 37f},
 		  {1/2f, 1/4f, 3/4f, 1/2f, 1/4f, 1/2f, 1/4f}},
@@ -90,6 +93,24 @@ public class Music extends PApplet implements Runnable {
 	}
 	
 	public void run(){
+		
+		for(int v = 0; v < 3; v++){
+			
+			for(int s = 0; s < 5; s++){
+				
+				float temp = 0;
+				
+				for(int n = 0; n < score[v][s][1].length; n++){
+					
+					temp += score[v][s][1][n];
+					
+				}
+				
+				println(v + ", " + s + ", " + temp);
+				
+			}
+			
+		}
 		
 		try{
 			
@@ -111,17 +132,14 @@ public class Music extends PApplet implements Runnable {
 								if(score[v][section[s]][0][n] != 0){
 									
 									out.playNote(time, score[v][section[s]][1][n] * 60/23f,
-											new Synth(cpsmidi(score[v][section[s]][0][n] - i), i));
-									
-									//Sketch.println(score[v][section[s]][0][n] - i);
-									//Sketch.println(cpsmidi(score[v][section[s]][0][n] - i));
+											new Synth(v, time, cpsmidi(score[v][section[s]][0][n] - i), i));
 									
 								}
 								
 								time += score[v][section[s]][1][n] * 60/23f;
 								
 							}
-							//Sketch.println("s: " + s);
+							
 						}
 						
 					}
@@ -137,7 +155,7 @@ public class Music extends PApplet implements Runnable {
 			
 			System.err.println(e);
 			
-		}	
+		}
 		
 	}
 	
@@ -151,12 +169,28 @@ public class Music extends PApplet implements Runnable {
 		
 		Oscil[] oscil = new Oscil[2];
 		ADSR[] adsr = new ADSR[2];
+		Wavetable down = WavetableGenerator.gen9(262144, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
+						new float[]{1, 0.48f, 0.22f, 0.12f, 0.06f}, new float[]{0f, 20f, 10f, 5f, 2.5f});
+		Wavetable off = WavetableGenerator.gen10(262144, new float[]{1f, 0.2f, 0.1f});
 		
-		Synth(float frequency, int iteration){
-			oscil[0] = new Oscil(frequency, (12 - iteration) / 12f, Waves.SINE);
-			oscil[1] = new Oscil(frequency * 2f, iteration / 12f, Waves.SINE);
-			adsr[0] = new ADSR(0.2f, 0.01f, 0.01f, 0.5f, 0.01f);
-			adsr[1] = new ADSR(0.2f, 0.01f, 0.01f, 0.5f, 0.01f);
+		
+		Synth(int instrument, float time, float frequency, int iteration){
+			
+			if(instrument == 0 && time % 45/46f < 15/46f || instrument == 1 && time % 30/23f < 15/46f){
+				
+				oscil[0] = new Oscil(frequency, (12 - iteration) / 12f, down);
+				oscil[1] = new Oscil(frequency * 2f, iteration / 12f, down);
+				
+			} else{
+				
+				oscil[0] = new Oscil(frequency, (12 - iteration) / 12f, off);
+				oscil[1] = new Oscil(frequency * 2f, iteration / 12f, off);
+				
+			}
+				
+			adsr[0] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			adsr[1] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+
 			oscil[0].patch(adsr[0]);
 			oscil[1].patch(adsr[1]);
 			
