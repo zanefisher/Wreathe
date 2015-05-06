@@ -22,9 +22,9 @@ public class Audio extends PApplet {
 	Audio(Sketch s){
 		sketch = s;
 		if(useAudio){
-			Music music = new Music(s);
-			new Thread(music).start();
-	
+//			Music music = new Music(s);
+//			new Thread(music).start();
+//	
 			localSound[0] = new Synth("attack");//begin of the attack
 			localSound[1] = new Synth("collect");//crystal
 			localSound[2] = new Synth("connect");
