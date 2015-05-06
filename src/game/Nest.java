@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class Nest extends GameObject {
 	
 	static float maxWidth = 50;
-	static float minWidth = 10;
-	static float branchWidth = 15;
+	static float minWidth = 5;
+	static float branchWidth = 10;
 	static float minWidthReduction = 1f;
 	static float maxWidthReduction = 3f;
 	static float minLength = 15;
@@ -18,8 +18,10 @@ public class Nest extends GameObject {
 	int blossomGrowth = 8;
 	float animationDelay = 0f;
 	
+	int deadColor = sketch.color(40, 20, 90);
+	
 	ArrayList<Branch> branches;
-	ArrayList<Branch> trunk;
+	Branch trunk = null;
 	ArrayList<Bud> buds;
 	
 	class Branch {
@@ -29,7 +31,7 @@ public class Nest extends GameObject {
 		ArrayList<Branch> children;
 		
 		Branch() {
-			angle = sketch.random(Sketch.PI);
+			angle = sketch.random(Sketch.PI * 2);
 			x1 = x + (radius * Sketch.cos(angle));
 			y1 = y + (radius * Sketch.sin(angle));
 			float length = sketch.random(minLength, maxLength);
@@ -44,8 +46,8 @@ public class Nest extends GameObject {
 			angle = a;
 			width = w;
 			if (p == null) {
-				x1 = radius * Sketch.cos(a);
-				x2 = radius * Sketch.sin(a);
+				x1 = x + (radius * Sketch.cos(a));
+				y1 = y + (radius * Sketch.sin(a));
 			} else {
 				x1 = p.x2;
 				y1 = p.y2;
@@ -76,6 +78,9 @@ public class Nest extends GameObject {
 		}
 		
 		void draw(WorldView view) {
+			if ((!budBearing) && (life < 1)) {
+				sketch.stroke(sketch.lerpColor(deadColor, color, life));
+			}
 			lengthGrowth = Sketch.min(1f, 1.1f * lengthGrowth);
 			widthGrowth = Sketch.min(1f, 1.1f * widthGrowth);
 			sketch.strokeWeight(width * widthGrowth * view.scale);
@@ -124,22 +129,22 @@ public class Nest extends GameObject {
 			
 			// Add the trunk.
 			float scaleUp = w.radius / w.portalRadius; 
-			float nextAngle = 0;
-			for (Branch b = parent; b != null; b = b.parent) {
-				nextAngle -= b.angle;
-			}
 			Branch refBranch = parent;
 			Branch trunkParent = null;
 			float dx = 0, dy = 0;
 			while ((refBranch != null) && (Sketch.mag(dx, dy) < 1.5 * w.radius)) {
 				float length = scaleUp * Sketch.dist(refBranch.x1, refBranch.y1, refBranch.x2, refBranch.y2);
-				Branch trunkBranch = new Branch(trunkParent, nextAngle, scaleUp * refBranch.width, length);
+				Branch trunkBranch = w.nest.new Branch(trunkParent, Sketch.PI + refBranch.angle, scaleUp * refBranch.width, length);
 				trunkBranch.lengthGrowth = 1;
 				trunkBranch.widthGrowth = 1;
 				trunkBranch.budBearing = true;
-				w.nest.trunk.add(trunkBranch);
+				if (trunkParent == null) {
+					w.nest.trunk = trunkBranch;
+				} else {
+					trunkParent.children.add(trunkBranch);
+				}
 				trunkParent = trunkBranch;
-				nextAngle = -1 * refBranch.angle;
+//				nextAngle = Sketch.PI - refBranch.angle;
 				refBranch = refBranch.parent;
 				dx += trunkBranch.x2 - trunkBranch.x1;
 				dy += trunkBranch.y2 - trunkBranch.y1;
@@ -167,7 +172,6 @@ public class Nest extends GameObject {
 		radius = 100;
 		color = sketch.color(40, 80, 80);
 		branches = new ArrayList<Branch>();
-		trunk = new ArrayList<Branch>();
 		buds = new ArrayList<Bud>();
 		int branchCount = (int) sketch.random(5, 10);
 		for (int i = 0; i < branchCount; ++i) {
@@ -177,16 +181,16 @@ public class Nest extends GameObject {
 
 	
 	public void draw(WorldView view) {
-		super.draw(view);
 		sketch.strokeCap(Sketch.ROUND);
-		sketch.stroke(color);
 		for (int i = 0; i < branches.size(); ++i) {
+			sketch.stroke(color);
 			branches.get(i).draw(view);
 		}
-		sketch.stroke(40, 60, 60);
-		for (int i = 0; i < trunk.size(); ++i) {
-			trunk.get(i).draw(view);
+		//sketch.stroke(40, 60, 60);
+		if (trunk != null) {
+			trunk.draw(view);
 		}
+		super.draw(view);
 		sketch.noStroke();
 		sketch.fill(120, 99, 50);
 		for (int i = 0; i < buds.size(); ++i) {
@@ -196,6 +200,10 @@ public class Nest extends GameObject {
 	}
 	
 	public boolean update() {
+		
+		if (sketch.world.swarmlingsGeneratedForDeadObstacle < 1) {
+			life = Sketch.min(0f, 0.95f * life);
+		}
 		
 		if ((growth < 1) && (sketch.world.count % 360 == 60)) {
 			Echo re = new Echo(sketch, x, y);

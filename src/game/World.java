@@ -231,6 +231,7 @@ public class World extends GameObject {
 
 		//add a nest
 		nest = new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2));
+		nest.budGrowth = Sketch.max(6, 2 * level);
 		contents.add(nest);
 
 		if(level == 1) {
@@ -500,6 +501,15 @@ public class World extends GameObject {
 	}
 	
 	public boolean update() {
+		if(this == sketch.world){
+		count+=1;
+		if(count >= punishingTime){
+			count = 0;
+			swarmlingsGeneratedForDeadObstacle -= difficulty;
+			Sketch.println(swarmlingsGeneratedForDeadObstacle);
+		}
+		 Swarmling.queueCooldown = Sketch.max(0, Swarmling.queueCooldown-1);
+		}
 		if (sketch.world == this) {
 			count+=1;
 			if(count >= punishingTime){
@@ -706,7 +716,7 @@ public class World extends GameObject {
 			sketch.strokeWeight(ringWidth * view.scale * (radius / portalRadius));
 			float r = view.scale * (radius / portalRadius) * (ringRadius - (.5f * ringWidth)) * 2;
 			sketch.ellipse(view.screenX(0), view.screenY(0), r, r);
-			Sketch.println(swarmlingsInRing + ", " + openingRequirement + ", " + (float) swarmlingsInRing / (float) openingRequirement);
+//			Sketch.println(swarmlingsInRing + ", " + openingRequirement + ", " + (float) swarmlingsInRing / (float) openingRequirement);
 			sketch.stroke(0, 0, 99);
 			sketch.strokeWeight(5 * view.scale * (radius / portalRadius));
 			r = view.scale * (radius / portalRadius) * ringRadius * 2;

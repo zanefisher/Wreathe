@@ -389,6 +389,24 @@ public class Sketch extends PApplet {
 		if (key == 'w') {
 			world.children.add(new World(this, world, 
 					random(world.radius) - (world.radius / 2), random(world.radius) - (world.radius / 2)));
+		} else if (key == 'g') {
+			world.nest.feed();
+		} else if (key == 'o') {
+			for (int i = 0; i < world.children.size(); ++i) {
+				world.children.get(i).open = true;
+			}
+		} else if (key == 's') {
+			world = new World(this, world, 0, 0);
+			world.open = true;
+			while (Swarmling.lastInLine != leader) {
+				Swarmling.lastInLine.unfollow();
+			}
+			if(world.level == 2){
+				stage = 6;
+			}
+			else if(world.level == 3){
+				stage = 11;
+			}
 		}
 	}
 	
