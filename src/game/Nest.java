@@ -14,7 +14,7 @@ public class Nest extends GameObject {
 	
 	float life = 1f; // if this is less than zero, the tree is dead, and the value represents how far dead.
 	int growth = 0;
-	int budgrowth = 4;
+	int budGrowth = 6;
 	int blossomGrowth = 8;
 	float animationDelay = 0f;
 	
@@ -43,8 +43,13 @@ public class Nest extends GameObject {
 			parent = p;
 			angle = a;
 			width = w;
-			x1 = p.x2;
-			y1 = p.y2;
+			if (p == null) {
+				x1 = radius * Sketch.cos(a);
+				x2 = radius * Sketch.sin(a);
+			} else {
+				x1 = p.x2;
+				y1 = p.y2;
+			}
 			x2 = x1 + (l * Sketch.cos(a));
 			y2 = y1 + (l * Sketch.sin(a));
 			children = new ArrayList<Branch>();
@@ -61,6 +66,7 @@ public class Nest extends GameObject {
 		}
 		
 		void grow() {
+			if (budBearing) return;
 			float newWidth = Sketch.min(width + 2, maxWidth);
 			widthGrowth = (width * widthGrowth) / newWidth;
 			width = newWidth;
@@ -95,10 +101,9 @@ public class Nest extends GameObject {
 		Bud() {
 			do {
 				parent = branches.get((int) sketch.random(branches.size()));
-				for (Branch b = parent; b.children.size() > 0;
-							b = b.children.get((int) sketch.random(b.children.size()))) {
-					parent = b;
-				}
+				do {
+					parent = parent.children.get((int) sketch.random(parent.children.size()));
+				} while (parent.children.size() > 0);
 			} while ((Sketch.mag(parent.x2, parent.y2) > sketch.world.radius - World.transitionRadius) ||
 					(Sketch.dist(x, y, parent.x2, parent.y2) < 2 * radius));
 			for (Branch b = parent; b != null; b = b.parent) {
@@ -112,19 +117,45 @@ public class Nest extends GameObject {
 			animation += 1;
 		}
 		
+		void blossom() {
+			World w = new World(sketch, sketch.world, parent.x2, parent.y2);
+			w.x -= (w.portalRadius / w.radius) * w.nest.x;
+			w.y -= (w.portalRadius / w.radius) * w.nest.y;
+			
+			// Add the trunk.
+			float scaleUp = w.radius / w.portalRadius; 
+			float nextAngle = 0;
+			for (Branch b = parent; b != null; b = b.parent) {
+				nextAngle -= b.angle;
+			}
+			Branch refBranch = parent;
+			Branch trunkParent = null;
+			float dx = 0, dy = 0;
+			while ((refBranch != null) && (Sketch.mag(dx, dy) < 1.5 * w.radius)) {
+				float length = scaleUp * Sketch.dist(refBranch.x1, refBranch.y1, refBranch.x2, refBranch.y2);
+				Branch trunkBranch = new Branch(trunkParent, nextAngle, scaleUp * refBranch.width, length);
+				trunkBranch.lengthGrowth = 1;
+				trunkBranch.widthGrowth = 1;
+				trunkBranch.budBearing = true;
+				w.nest.trunk.add(trunkBranch);
+				trunkParent = trunkBranch;
+				nextAngle = -1 * refBranch.angle;
+				refBranch = refBranch.parent;
+				dx += trunkBranch.x2 - trunkBranch.x1;
+				dy += trunkBranch.y2 - trunkBranch.y1;
+			}
+			sketch.world.children.add(w);
+			buds.remove(this);
+		}
+		
 		void draw(WorldView view) {
 			float x = Sketch.lerp(parent.x1, parent.x2, parent.lengthGrowth);
 			float y = Sketch.lerp(parent.y1, parent.y2, parent.lengthGrowth);
 			animation = Sketch.max(0f, 0.9f * animation);
 			float diameter = ((((float) growth) - animation) / (float) blossomGrowth) * 100f * view.scale;
-			sketch.noStroke();
-			sketch.fill(120, 99, 50);
 			sketch.ellipse(view.screenX(x), view.screenY(y), diameter, diameter);
 			if ((((float) growth) - animation) >= blossomGrowth) {
-				World w = new World(sketch, sketch.world, x, y);
-				//to do: add the trunk
-				sketch.world.children.add(w);
-				buds.remove(this);
+				blossom();
 			}
 		}
 	}
@@ -147,11 +178,17 @@ public class Nest extends GameObject {
 	
 	public void draw(WorldView view) {
 		super.draw(view);
-		sketch.stroke(color);
 		sketch.strokeCap(Sketch.ROUND);
+		sketch.stroke(color);
 		for (int i = 0; i < branches.size(); ++i) {
 			branches.get(i).draw(view);
 		}
+		sketch.stroke(40, 60, 60);
+		for (int i = 0; i < trunk.size(); ++i) {
+			trunk.get(i).draw(view);
+		}
+		sketch.noStroke();
+		sketch.fill(120, 99, 50);
 		for (int i = 0; i < buds.size(); ++i) {
 			buds.get(i).draw(view);
 		}
@@ -186,7 +223,7 @@ public class Nest extends GameObject {
 			for (int i = 0; i < buds.size(); ++i) {
 				buds.get(i).grow();
 			}
-			if (++growth % budgrowth == 0) {
+			if (++growth % budGrowth == 0) {
 				buds.add(new Bud());
 			}
 		}
