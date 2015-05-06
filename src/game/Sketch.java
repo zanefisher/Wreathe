@@ -8,6 +8,9 @@ public class Sketch extends PApplet {
 	static int screenWidth, screenHeight;
 
 
+	//for tutorial
+	int stage = 0;
+	
 	//static int obstacleMax=10;
 	static int KeyNumber = 5;
 	static int targetFrameRate = 40;

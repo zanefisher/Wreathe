@@ -229,6 +229,7 @@ public class World extends GameObject {
 		contents.add(nest);
 
 		if(level == 1) {
+			sketch.controller.useRightTrigger = false;
 			sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
 		}
 		
@@ -572,29 +573,28 @@ public class World extends GameObject {
 			}
 		}
 		
-		if(level == 1)
-			updateTutorialLevel1();
-		if(level == 2)
-			updateTutorialLevel2();
-		if(level == 3)
-			updateTutorialLevel3();
-		if(level == 4)
-			updateTutorialLevel4();
+		if(level <= 4)
+			updateTutorialLevel();
 		
 		return true;
 	}
 	
-	public void updateTutorialLevel1(){
-		
-	};
-	public void updateTutorialLevel2(){
-		
-	};
-	public void updateTutorialLevel3(){
-		
-	};
-	public void updateTutorialLevel4(){
-		
+	public void updateTutorialLevel(){
+		if(sketch.stage == 0 && level == 1){
+			sketch.centerText = "Use Left Stick to Move";
+			sketch.controller.useLeftTrigger = false;
+			if(Sketch.mag(sketch.leader.dx, sketch.leader.dy) > 0.4f)
+				sketch.stage = 1;
+		}
+		else if(sketch.stage == 1 && level == 1){
+			sketch.controller.useLeftTrigger = true;
+			sketch.centerText = "Left Trigger to Build a chain";
+			if(Swarmling.swarmlingNumberFollowing >= 3)
+				sketch.stage = 2;
+		}
+		else if(sketch.stage == 2 && level == 1){
+			sketch.centerText = "Use followers to collect Lemons";
+		}
 	};
 	
 	public WorldView getView() {

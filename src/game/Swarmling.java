@@ -3,7 +3,7 @@ package game;
 public class Swarmling extends GameObject {
 	static Swarmling lastInLine;
 	static Swarmling firstInLine;
-	
+	static int swarmlingNumberFollowing = 0;
 	static final float maxSpeed = 3.4f, maxAccel = 0.3f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float maxAttractRadius=90;
@@ -60,6 +60,7 @@ public class Swarmling extends GameObject {
 			firstInLine = this;
 		}
 		queueCooldown = 15;
+		swarmlingNumberFollowing += 1;
 		sketch.audio.localSound(2,this);
 
 	}
@@ -83,7 +84,7 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		
+		swarmlingNumberFollowing -= 1;
 		sketch.audio.globalSound(0);
 	}
 	
