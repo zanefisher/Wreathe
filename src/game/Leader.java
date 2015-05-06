@@ -85,7 +85,7 @@ public class Leader extends Swarmling {
 			y = - y * 0.9f;
 		}
 		
-
+		//Sketch.println("x: " + x + "y: " + y);
 		return true;
 	}
 	

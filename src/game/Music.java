@@ -113,15 +113,15 @@ public class Music extends PApplet implements Runnable {
 									out.playNote(time, score[v][section[s]][1][n] * 60/23f,
 											new Synth(cpsmidi(score[v][section[s]][0][n] - i), i));
 									
-									Sketch.println(score[v][section[s]][0][n] - i);
-									Sketch.println(cpsmidi(score[v][section[s]][0][n] - i));
+									//Sketch.println(score[v][section[s]][0][n] - i);
+									//Sketch.println(cpsmidi(score[v][section[s]][0][n] - i));
 									
 								}
 								
 								time += score[v][section[s]][1][n] * 60/23f;
 								
 							}
-							Sketch.println("s: " + s);
+							//Sketch.println("s: " + s);
 						}
 						
 					}

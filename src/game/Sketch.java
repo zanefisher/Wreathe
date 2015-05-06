@@ -211,18 +211,9 @@ public class Sketch extends PApplet {
 			}
 		}
 		
-		if(world.cameraFixed){
-			camera.x = world.x;
-			camera.y = world.y;
-			camera.scale = 0.5f;
-			world.draw(camera);
-			leader.draw(camera);
-		}
-		else{
 		updateCamera();
 		world.draw(camera);
 		leader.draw(camera);
-		}
 		if ((leader.leading) && (Swarmling.attractRadius > 0)) {
 		      noFill();
 		      stroke(0, 0, 255);

@@ -8,6 +8,7 @@ public class MovingObstacle extends Obstacle {
 	static float maxSpeed = 3.8f;
 	static float minSpeed = 2.4f;
 	
+	boolean isStill = false;
 	
 	ArrayList<Food> foodContained;
 	MovingObstacle(Sketch s){
@@ -16,12 +17,15 @@ public class MovingObstacle extends Obstacle {
 		foodContained = new ArrayList<Food>();
 	}
 	
-	MovingObstacle(Sketch s,World w, float ix, float iy){
+	MovingObstacle(Sketch s, float ix, float iy){
 		sketch = s;
 		x=ix;
 		y=iy;
+		dx=0;
+		dy=0;
 		color=sketch.color(30,30,60);
 		foodContained = new ArrayList<Food>();
+		isStill = true;
 	}
 	
 	public void initInWorld(World world){
@@ -29,6 +33,17 @@ public class MovingObstacle extends Obstacle {
 		float speed = sketch.random(minSpeed, maxSpeed) * minRadius / radius;
 		float radians = sketch.random(2) * Sketch.PI;
 		obstacleLife = radius * radius;
+		if(isStill){
+			avoidRadius = Sketch.min(radius/2f,Swarmling.attackRadius-Swarmling.swarmlingRadius);
+			
+			for(int i=0; i<(int)world.swarmlingsGeneratedForDeadObstacle*radius/maxRadius; i++){
+				float angle = sketch.random(2 * Sketch.PI);
+				float dist = sketch.random(radius);
+				foodContained.add(new Food(sketch, x + (dist * Sketch.cos(angle)), y + (dist * Sketch.sin(angle))));
+			}
+			world.contents.add(this);
+			return;
+		}
 		x = Sketch.sin(radians) * (radius + world.radius);		
 		y = Sketch.cos(radians) * (radius + world.radius);
 
@@ -124,7 +139,7 @@ public class MovingObstacle extends Obstacle {
 		
 	    sketch.noFill();
 	    sketch.stroke(0, 0, 0, 255);
-	    sketch.strokeWeight(6 * view.scale);
+	    sketch.strokeWeight(4 * view.scale);
 	    sketch.strokeCap(Sketch.SQUARE);
 	    float halfArcLength = Sketch.PI * (1-obstacleLife / radius);
 	    sketch.arc(view.screenX(x), view.screenY(y), radius*2*view.scale, radius*2*view.scale, Sketch.HALF_PI+halfArcLength, Sketch.TWO_PI+Sketch.HALF_PI - halfArcLength);
