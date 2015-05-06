@@ -232,7 +232,7 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		updateAndDrawTutorial();
+		//updateAndDrawTutorial();
 		
 		//display frame rate
 		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
@@ -264,7 +264,7 @@ public class Sketch extends PApplet {
 			fadeInStart = (float)frameCount;
 			
 			fadeOutStart = 0f;
-			Sketch.println("fade out end");
+			//Sketch.println("fade out end");
 			
 		}
 		
@@ -272,14 +272,14 @@ public class Sketch extends PApplet {
 			//fade in effect
 			displayText = centerText;
 			centerTextAlpha = min(1, (((float) frameCount - fadeInStart)) / fadeInTime);
-			Sketch.println("fade in start");
+			//Sketch.println("fade in start");
 		}
 		
 		if(fadeInStart != 0 && centerTextAlpha==1){
 			//fade in ends
 			lastCenterText = centerText;
 			fadeInStart = 0f;
-			Sketch.println("fade in end");
+			//Sketch.println("fade in end");
 		}
 		if(fadeInStart==0f && fadeOutStart == 0f)
 			displayText = centerText;

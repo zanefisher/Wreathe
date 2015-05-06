@@ -132,7 +132,7 @@ public class World extends GameObject {
 		x = ix;
 		y = iy;
 
-		level = (p == null ? 2 : p.level + 1);
+		level = (p == null ? 1 : p.level + 1);
 		
 		if(level >= 4){
 			radius = sketch.random(minWorldRadius, maxWorldRadius);
