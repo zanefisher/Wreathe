@@ -89,7 +89,7 @@ public class Leader extends Swarmling {
 			
 		//exit the world
 		} else {
-			if (centerDist > sketch.world.radius + 5) {
+			if ((sketch.world.level > 3) && (centerDist > sketch.world.radius + 5)) {
 				while (lastInLine != this) {
 					lastInLine.unfollow();
 				}
@@ -97,11 +97,14 @@ public class Leader extends Swarmling {
 				World outer = sketch.world.parent;
 				x = (x * inner.portalRadius / inner.radius) + inner.x;
 				y = (y * inner.portalRadius / inner.radius) + inner.y;
-//				sketch.camera.x = (sketch.camera.x * inner.portalRadius / inner.radius) + inner.x;
-//				sketch.camera.y = (sketch.camera.y * inner.portalRadius / inner.radius) + inner.y;
-				sketch.camera.scale(inner.portalRadius / inner.radius);
-				sketch.camera.trans(inner.x, inner.y);
+				sketch.camera.x = (sketch.camera.x * inner.portalRadius / inner.radius) + inner.x;
+				sketch.camera.y = (sketch.camera.y * inner.portalRadius / inner.radius) + inner.y;
+				sketch.camera.scale /= inner.portalRadius / inner.radius;
+//				sketch.camera.scale(inner.portalRadius / inner.radius);
+//				sketch.camera.trans(inner.x, inner.y);
 				sketch.world = outer;
+				sketch.updateDistortion();
+//				sketch.camera.scale *= sketch.distortion;
 			}
 		}
 		

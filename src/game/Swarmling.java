@@ -199,8 +199,8 @@ public class Swarmling extends GameObject {
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
 					if(lastFrameTarget != null) sketch.audio.beamSound(false);
-					if(sketch.world.level == 2) sketch.alarm = true;
-					if(sketch.world.level == 3 && following != null) sketch.alarm = true;
+					if(sketch.world.level == 2) sketch.world.alarm = true;
+					if(sketch.world.level == 3 && sketch.leader.leading) sketch.world.alarm = true;
 					return false;
 				}	
 				

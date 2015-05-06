@@ -11,6 +11,7 @@ public class World extends GameObject {
 	int foodCount = 0;
 	int textTimeCount = 0;
 	int redAlarmCount = 0;
+	boolean alarm = false;
 	boolean open = false;
 	float ringRadius = 250;
 	int swarmlingsInRing = 0;
@@ -77,6 +78,8 @@ public class World extends GameObject {
 	ArrayList<GameObject> contents;
 	ArrayList<Blotch> blotches;
 	ArrayList<Cloud> clouds;
+	
+	Puffer puffer = null;
 	
 	class Blotch {
 		float x, y, r;
@@ -208,7 +211,8 @@ public class World extends GameObject {
 		clouds = new ArrayList<Cloud>();
 		
 		if (p != null) {
-			parent.contents.add(new Puffer(sketch, x, y, portalRadius * 15, cloudColor));
+			puffer = new Puffer(sketch, x, y, portalRadius * 15, cloudColor);
+			parent.contents.add(puffer);
 		}
 		
 		//add blotches
@@ -552,14 +556,25 @@ public class World extends GameObject {
 					sketch.camera.scale *= 1 / r;
 					float x0 = sketch.leader.x;
 					float y0 = sketch.leader.y;
-					sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
-					sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
-					//update stage 
-					if(sketch.stage == 5 && level == 1 ){
-						sketch.stage = 6;
+//					sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
+//					sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
+//					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+//					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+					sketch.leader.x = (sketch.leader.x - x) * (radius / portalRadius);
+					sketch.leader.y = (sketch.leader.y - y) * (radius / portalRadius);
+//					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+					sketch.camera.x = (sketch.camera.x - x) * (radius / portalRadius);
+					sketch.camera.y = (sketch.camera.y - y) * (radius / portalRadius);
+					sketch.camera.scale = portalRadius / (radius * sketch.distortion);
+					
+					if (puffer != null) {
+						sketch.world.contents.remove(puffer);
+						puffer = null;
+					}
+					sketch.world = this;
+					sketch.updateDistortion();
+					if(sketch.stage == 5 ){
+						sketch.stage += 1;
 					}
 					else if (sketch.stage >= 8 && level == 2){
 						sketch.stage = 11;
@@ -606,8 +621,12 @@ public class World extends GameObject {
 		if(level <= 4)
 			updateTutorialLevel();
 		
-		if(nest.life < 1)
+		if(nest.life < 1){
 			sketch.centerText = "Your Tree is Dieing, Go back to a old frozen world";
+			if(sketch.leader.distTo(this) >= 0)
+				sketch.centerText = "";
+			}
+		
 		return true;
 	}
 	
@@ -671,7 +690,7 @@ public class World extends GameObject {
 		else if(sketch.stage == 8 && level ==2){
 			sketch.centerText = "";
 			textTimeCount += 1;
-			if(sketch.alarm){
+			if(alarm){
 				sketch.stage = 9;
 			}
 			if(textTimeCount >= 200 && nest.growth < 1){
@@ -683,7 +702,7 @@ public class World extends GameObject {
 			redAlarmCount += 1; 
 			if(redAlarmCount >= 80){
 				sketch.flashingText = "";
-				sketch.alarm = false;
+				alarm = false;
 				redAlarmCount = 0;
 				sketch.stage = 8;
 			}
@@ -691,7 +710,7 @@ public class World extends GameObject {
 		else if(sketch.stage == 10 && level == 2){
 			sketch.centerText = "Break the Large Obstacles to Get the Precious Lemons";
 			textTimeCount += 1;
-			if(sketch.alarm){
+			if(alarm){
 				sketch.stage = 9;
 			}
 			if(nest.growth >= 1){
@@ -705,27 +724,27 @@ public class World extends GameObject {
 		else if(sketch.stage == 11 && level == 3){
 			sketch.centerText = "Your followers can survive on their own";
 			textTimeCount += 1;
-			if(textTimeCount >= 100){
+			if(textTimeCount >= 120){
 				sketch.centerText = "";
 			}
 			//Sketch.println(sketch.alarm);
-			if(sketch.alarm){
+			if(alarm){
 				sketch.stage = 12;
 			}
 		}
 		else if(sketch.stage == 12 && level == 3 ){
 			sketch.flashingText = "Press right trigger to stop leading your followers to their deaths";
 			redAlarmCount += 1;
-			if(redAlarmCount >= 80){
+			if(redAlarmCount >= 100){
 				sketch.flashingText = "";
 				textTimeCount = 0;
-				sketch.alarm = false;
+				alarm = false;
 				redAlarmCount = 0;
 				sketch.stage = 11;
 			}
 		}
 		else if(sketch.stage == 13 && level == 4){
-			sketch.centerText = "Collect The Shiny Circle!";
+			sketch.centerText = "Get The Shiny Circle from your enemy";
 			if(key.isCollected){
 				sketch.centerText = "You need to collect five of them";
 			}

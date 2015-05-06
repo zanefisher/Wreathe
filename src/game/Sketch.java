@@ -10,7 +10,6 @@ public class Sketch extends PApplet {
 
 	//for tutorial
 	int stage = 0;
-	boolean alarm = false;
 	//static int obstacleMax=10;
 	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
@@ -160,6 +159,18 @@ public class Sketch extends PApplet {
 		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
 	}
 	
+	void updateDistortion() {
+		distortion = 1;
+		for (int i = 0; i < world.children.size(); ++i) {
+			World w = world.children.get(i);
+			if (w.open) {
+				float dist = dist(leader.x, leader.y, w.x, w.y);
+				distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
+						1, w.portalRadius / w.radius));
+			}
+		}
+	}
+	
 	public void draw() {
 		
 		if (!focused) return;
@@ -189,22 +200,7 @@ public class Sketch extends PApplet {
 		}
 		
 		// Calculate distortion
-		distortion = 1;
-//		if (world.parent != null) {
-//			distortion = max(distortion, map(mag(leader.x, leader.y),
-//					world.radius - World.transitionRadius, world.radius,
-//					1, (world.radius + world.portalRadius) / (2 *world.portalRadius)));
-//		}
-		if (distortion == 1) {
-			for (int i = 0; i < world.children.size(); ++i) {
-				World w = world.children.get(i);
-				if (w.open) {
-					float dist = dist(leader.x, leader.y, w.x, w.y);
-					distortion = min(distortion, map(dist, w.portalRadius + World.transitionRadius, w.portalRadius,
-							1, w.portalRadius / w.radius));
-				}
-			}
-		}
+		updateDistortion();
 		
 		// Update the leader
 		leader.update();
@@ -418,7 +414,9 @@ public class Sketch extends PApplet {
 				world.children.get(i).open = true;
 			}
 		} else if (key == 's') {
-			world = new World(this, world, 0, 0);
+			World newWorld = new World(this, world, 0, 0);
+			world.children.add(newWorld);
+			world = newWorld;
 			world.open = true;
 			while (Swarmling.lastInLine != leader) {
 				Swarmling.lastInLine.unfollow();
