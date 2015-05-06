@@ -79,7 +79,7 @@ public class Music extends PApplet implements Runnable {
 		  {1/2f, 1/4f, 3/4f, 1/2f, 1/4f, 1/2f, 1/4f}},
 		  
 		 {{44f, 42f, 40f, 39f, 37f, 35f, 30f, 32f, 32f, 32f, 35f, 37f},
-		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 1/8f, 1/8f, 1/4f, 1/6f, 1/6f}},
+		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 1/8f, 1/8f, 1/6f, 1/6f, 1/6f}},
 		  
 		 {{39f, 41f, 42f, 30f, 35f, 34f, 32f},
 		  {1/2f, 1/4f, 3/8f, 3/8f, 1/2f, 1/4f, 3/4f}}}};
@@ -169,9 +169,9 @@ public class Music extends PApplet implements Runnable {
 		
 		Oscil[] oscil = new Oscil[2];
 		ADSR[] adsr = new ADSR[2];
-		Wavetable down = WavetableGenerator.gen9(262144, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
+		Wavetable down = WavetableGenerator.gen9(8192, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
 						new float[]{1, 0.48f, 0.22f, 0.12f, 0.06f}, new float[]{0f, 20f, 10f, 5f, 2.5f});
-		Wavetable off = WavetableGenerator.gen10(262144, new float[]{1f, 0.2f, 0.1f});
+		Wavetable off = WavetableGenerator.gen10(8192, new float[]{1f, 0.2f, 0.1f});
 		
 		
 		Synth(int instrument, float time, float frequency, int iteration){
