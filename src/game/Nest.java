@@ -103,14 +103,24 @@ public class Nest extends GameObject {
 		float animation = 1;
 		Branch parent;
 		
+		boolean check() {
+			if (Sketch.mag(parent.x2, parent.y2) > sketch.world.radius - World.transitionRadius) return false;
+			if (Sketch.dist(x, y, parent.x2, parent.y2) < 2 * radius) return false;
+			for (int i = 0; i < buds.size(); ++i) {
+				float otherX = buds.get(i).parent.x2;
+				float otherY = buds.get(i).parent.y2;
+				if (Sketch.dist(otherX, otherY, parent.x2, parent.y2) < 2 * sketch.world.ringRadius) return false;
+			}
+			return true;
+		}
+		
 		Bud() {
 			do {
 				parent = branches.get((int) sketch.random(branches.size()));
 				do {
 					parent = parent.children.get((int) sketch.random(parent.children.size()));
 				} while (parent.children.size() > 0);
-			} while ((Sketch.mag(parent.x2, parent.y2) > sketch.world.radius - World.transitionRadius) ||
-					(Sketch.dist(x, y, parent.x2, parent.y2) < 2 * radius));
+			} while (!check());
 			for (Branch b = parent; b != null; b = b.parent) {
 				b.budBearing = true;
 			}
