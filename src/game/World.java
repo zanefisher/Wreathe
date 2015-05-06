@@ -679,16 +679,17 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 9 && level == 2){
-			sketch.centerText = "Don’t let your followers touch the obstacles";
+			sketch.flashingText = "Don’t let your followers touch the obstacles";
 			redAlarmCount += 1; 
 			if(redAlarmCount >= 80){
+				sketch.flashingText = "";
 				sketch.alarm = false;
 				redAlarmCount = 0;
 				sketch.stage = 8;
 			}
 		}
 		else if(sketch.stage == 10 && level == 2){
-			sketch.centerText = "break the large obstacles to get the precious lemons";
+			sketch.centerText = "Break the Large Obstacles to Get the Precious Lemons";
 			textTimeCount += 1;
 			if(sketch.alarm){
 				sketch.stage = 9;
@@ -704,17 +705,19 @@ public class World extends GameObject {
 		else if(sketch.stage == 11 && level == 3){
 			sketch.centerText = "Your followers can survive on their own";
 			textTimeCount += 1;
-			if(textTimeCount >= 50){
+			if(textTimeCount >= 100){
 				sketch.centerText = "";
 			}
+			//Sketch.println(sketch.alarm);
 			if(sketch.alarm){
 				sketch.stage = 12;
 			}
 		}
 		else if(sketch.stage == 12 && level == 3 ){
-			sketch.centerText = "Press right trigger to stop leading your followers to their deaths";
+			sketch.flashingText = "Press right trigger to stop leading your followers to their deaths";
 			redAlarmCount += 1;
 			if(redAlarmCount >= 80){
+				sketch.flashingText = "";
 				textTimeCount = 0;
 				sketch.alarm = false;
 				redAlarmCount = 0;
