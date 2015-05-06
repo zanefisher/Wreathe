@@ -27,6 +27,7 @@ public class Sketch extends PApplet {
 	
 	Controller controller = new Controller(this);
 	boolean usingController = controller.device != null;
+	boolean showFPS = false;
 	
 	Audio audio =  null;
 
@@ -235,8 +236,10 @@ public class Sketch extends PApplet {
 		//updateAndDrawTutorial();
 		
 		//display frame rate
-		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
-		text(frameRate, width / 2, 40);
+		if (showFPS) {
+			fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
+			text(frameRate, width / 2, 40);
+		}
 		
 		//draw centertext
 
@@ -392,6 +395,10 @@ public class Sketch extends PApplet {
 			for (int i = 0; i < world.children.size(); ++i) {
 				world.children.get(i).open = true;
 			}
+		} else if (key == 'r') {
+			world = new World(this, null, 0, 0);
+			world.open = true;
+			stage = 0;
 		} else if (key == 's') {
 			World newWorld = new World(this, world, 0, 0);
 			world.children.add(newWorld);
@@ -406,6 +413,8 @@ public class Sketch extends PApplet {
 			else if(world.level == 3){
 				stage = 11;
 			}
+		} else if (key == 'f') {
+			showFPS = !showFPS;
 		}
 	}
 	
