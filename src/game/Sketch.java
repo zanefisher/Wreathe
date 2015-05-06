@@ -403,10 +403,14 @@ public class Sketch extends PApplet {
 			}
 			if(world.level == 2){
 				controller.useLeftTrigger = true;
+				controller.useRightTrigger = true;
 				stage = 6;
 			}
 			else if(world.level == 3){
 				stage = 11;
+			}
+			else if(world.level == 4){
+				stage = 13;
 			}
 		}
 	}

@@ -235,7 +235,7 @@ public class World extends GameObject {
 		contents.add(nest);
 
 		if(level == 1) {
-			sketch.controller.useRightTrigger = false;
+			//sketch.controller.useRightTrigger = false;
 			//sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
 		}
 		
@@ -557,13 +557,22 @@ public class World extends GameObject {
 					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
 					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
-					sketch.world = this;
-					if(sketch.stage == 5 ){
-						sketch.stage += 1;
+					//update stage 
+					if(sketch.stage == 5 && level == 1 ){
+						sketch.stage = 6;
 					}
-					else if (sketch.stage >= 8){
+					else if (sketch.stage >= 8 && level == 2){
 						sketch.stage = 11;
 					}
+					else if (sketch.stage >= 11 && level ==3 ){
+						sketch.stage = 13;
+					}
+					else if (level == 4){
+						sketch.stage = 20;
+					}
+					
+					sketch.world = this;
+
 					sketch.audio.beamSetZero();
 					
 		
@@ -597,12 +606,14 @@ public class World extends GameObject {
 		if(level <= 4)
 			updateTutorialLevel();
 		
+		if(nest.life < 1)
+			sketch.centerText = "Your Tree is Dieing, Go back to a old frozen world";
 		return true;
 	}
 	
 	public void updateTutorialLevel(){
-		Sketch.println(redAlarmCount);
 		if(sketch.stage == 0 && level == 1){
+			sketch.controller.useRightTrigger = false;
 			sketch.centerText = "Use Left Stick to Move";
 			sketch.controller.useLeftTrigger = false;
 			if(Sketch.mag(sketch.leader.dx, sketch.leader.dy) > 0.4f)
@@ -664,7 +675,6 @@ public class World extends GameObject {
 				sketch.stage = 9;
 			}
 			if(textTimeCount >= 200 && nest.growth < 1){
-				textTimeCount = 0;
 				sketch.stage = 10;
 			}
 		}
@@ -687,12 +697,38 @@ public class World extends GameObject {
 				textTimeCount = 0;
 				sketch.stage = 8;
 			}
-			if(nest.growth < 1 && textTimeCount >= 2000){
-				textTimeCount = 0;
+			if(nest.growth < 1 && textTimeCount >= 300){
+				sketch.centerText = "";
 			}
 		}
-		else if(sketch.stage >= 11 && level == 3){
+		else if(sketch.stage == 11 && level == 3){
 			sketch.centerText = "Your followers can survive on their own";
+			textTimeCount += 1;
+			if(textTimeCount >= 50){
+				sketch.centerText = "";
+			}
+			if(sketch.alarm){
+				sketch.stage = 12;
+			}
+		}
+		else if(sketch.stage == 12 && level == 3 ){
+			sketch.centerText = "Press right trigger to stop leading your followers to their deaths";
+			redAlarmCount += 1;
+			if(redAlarmCount >= 80){
+				textTimeCount = 0;
+				sketch.alarm = false;
+				redAlarmCount = 0;
+				sketch.stage = 11;
+			}
+		}
+		else if(sketch.stage == 13 && level == 4){
+			sketch.centerText = "Collect The Shiny Circle!";
+			if(key.isCollected){
+				sketch.centerText = "You need to collect five of them";
+			}
+			if(key.isInVault){
+				sketch.centerText = "The deeper you get the more gems you will find";
+			}
 		}
 	};
 	
