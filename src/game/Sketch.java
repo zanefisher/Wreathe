@@ -10,7 +10,7 @@ public class Sketch extends PApplet {
 
 	//for tutorial
 	int stage = 0;
-	
+	boolean alarm = false;
 	//static int obstacleMax=10;
 	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
@@ -402,6 +402,7 @@ public class Sketch extends PApplet {
 				Swarmling.lastInLine.unfollow();
 			}
 			if(world.level == 2){
+				controller.useLeftTrigger = true;
 				stage = 6;
 			}
 			else if(world.level == 3){

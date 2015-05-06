@@ -601,6 +601,7 @@ public class World extends GameObject {
 	}
 	
 	public void updateTutorialLevel(){
+		Sketch.println(redAlarmCount);
 		if(sketch.stage == 0 && level == 1){
 			sketch.centerText = "Use Left Stick to Move";
 			sketch.controller.useLeftTrigger = false;
@@ -653,20 +654,25 @@ public class World extends GameObject {
 		}
 		else if(sketch.stage == 7 && level == 2){
 			sketch.centerText = "Followers can destroy nearby obstacles";
-			if(Swarmling.firstInLine.distTo(nest) > 10)
+			if(Swarmling.firstInLine != null && Swarmling.firstInLine.distTo(nest) > 50)
 				sketch.stage = 8;
 		}
 		else if(sketch.stage == 8 && level ==2){
 			sketch.centerText = "";
 			textTimeCount += 1;
-			if(textTimeCount >= 2000 && nest.growth < 1){
+			if(sketch.alarm){
+				sketch.stage = 9;
+			}
+			if(textTimeCount >= 200 && nest.growth < 1){
 				textTimeCount = 0;
 				sketch.stage = 10;
 			}
 		}
 		else if(sketch.stage == 9 && level == 2){
+			sketch.centerText = "Don’t let your followers touch the obstacles";
 			redAlarmCount += 1; 
-			if(redAlarmCount >= 1000){
+			if(redAlarmCount >= 80){
+				sketch.alarm = false;
 				redAlarmCount = 0;
 				sketch.stage = 8;
 			}
@@ -674,6 +680,9 @@ public class World extends GameObject {
 		else if(sketch.stage == 10 && level == 2){
 			sketch.centerText = "break the large obstacles to get the precious lemons";
 			textTimeCount += 1;
+			if(sketch.alarm){
+				sketch.stage = 9;
+			}
 			if(nest.growth >= 1){
 				textTimeCount = 0;
 				sketch.stage = 8;
