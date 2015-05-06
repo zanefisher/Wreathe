@@ -336,6 +336,12 @@ public class Sketch extends PApplet {
 		if (key == 'w') {
 			world.children.add(new World(this, world, 
 					random(world.radius) - (world.radius / 2), random(world.radius) - (world.radius / 2)));
+		} else if (key == 'g') {
+			world.nest.feed();
+		} else if (key == 'o') {
+			for (int i = 0; i < world.children.size(); ++i) {
+				world.children.get(i).open = true;
+			}
 		}
 	}
 	
