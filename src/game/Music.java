@@ -1,16 +1,17 @@
 package game;
 
 import processing.core.PApplet;
-import supercollider.*;
-import oscP5.*;
+import ddf.minim.*;
+import ddf.minim.ugens.*;
 
-public class Music extends PApplet {
-	
-	Synth[] instrument = new Synth[3];
-	Sketch sketch;
+public class Music extends PApplet implements Runnable {
+
+	Minim minim;
+	AudioOutput out;
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
 	
+
 	float[][][][] score =
 
 			//treble
@@ -147,19 +148,60 @@ public class Music extends PApplet {
 
 			  {0.5f, 0.25f, 0.375f, 0.375f, 0.5f, 0.25f, 0.75f}}}};
 	
-	Music(){
-		
-		instrument[0] = new Synth("Treble");
-		instrument[1] = new Synth("Tenor");
-		instrument[2] = new Synth("Bass");
+	Music(Sketch sketch){
 
-		Treble treble = new Treble();
-		Tenor tenor = new Tenor();
-		Bass bass = new Bass();
+		minim = new Minim(sketch);
+		out = minim.getLineOut(Minim.STEREO, 1024);
+		
+	}
+	
+	public void run(){
+		
+		try{
 			
-		new Thread(treble).start();
-		new Thread(tenor).start();
-		new Thread(bass).start();
+			while(true){
+				
+				out.pauseNotes();
+				float time = 0;
+				
+				for(int v = 0; v < 3; v++){
+					Sketch.println("v: " + v);
+					time = 0;
+					
+					for(int i = 0; i < 12; i++){
+						
+						for(int s = 0; s < section.length; s++){
+							
+							for(int n = 0; n < score[v][section[s]][0].length; n++){
+								
+								if(score[v][section[s]][0][n] != 0){
+									
+									out.playNote(time, score[v][section[s]][1][n] * 60/23,
+											new Synth(cpsmidi(score[v][section[s]][0][n] - i), i));
+									
+								}
+								
+								Sketch.println(n);
+								time += score[v][section[s]][1][n] * 60/23;
+								
+							}
+							Sketch.println("s: " + s);
+						}
+						
+					}
+				
+				}
+				
+				out.resumeNotes();
+				Thread.sleep((long)time * 1000);
+				
+			}
+			
+		} catch (InterruptedException e){
+			
+			System.err.println(e);
+			
+		}	
 		
 	}
 	
@@ -169,130 +211,39 @@ public class Music extends PApplet {
 	  
 	}
 	
-	class Bass implements Runnable {
+	class Synth implements Instrument {
 		
-		public void run(){
+		Oscil[] oscil = new Oscil[2];
+		ADSR[] adsr = new ADSR[2];
+		
+		Synth(float frequency, int iteration){
 			
-			try{
-				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[2][section[s]][0].length; n++){
-								
-								if(score[2][section[s]][0][n] != 0){
-									
-									instrument[2].set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									instrument[2].set("duration", score[2][section[s]][1][n] * 60/23);
-									instrument[2].set("iteration", i);
-									instrument[2].create();
-									
-								}
-								
-								Thread.sleep((long)(score[2][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
-				
-			} catch (InterruptedException e){
-				
-				System.err.println(e);
-				
-			}	
+			oscil[0] = new Oscil(frequency, (12 - iteration) / 12, Waves.SINE);
+			oscil[1] = new Oscil(frequency * 2, iteration / 12, Waves.SINE);
+			adsr[0] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			adsr[1] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			oscil[0].patch(adsr[0]);
+			oscil[1].patch(adsr[1]);
 			
 		}
 		
-	}
-	
-	class Tenor implements Runnable {
-		
-		public void run(){
+		public void noteOn(float duration){
 			
-			try{
-				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[1][section[s]][0].length; n++){
-								
-								if(score[1][section[s]][0][n] != 0){
-									
-									instrument[1].set("frequency", cpsmidi(score[1][section[s]][0][n] - i));
-									instrument[1].set("duration", score[1][section[s]][1][n] * 60/23);
-									instrument[1].set("iteration", i);
-									instrument[1].create();
-									
-								}
-								
-								Thread.sleep((long)(score[1][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
-				
-			} catch (InterruptedException e){
-				
-				System.err.println(e);
-				
-			}	
+			adsr[0].noteOn();
+			adsr[1].noteOn();
+			adsr[0].patch(out);
+			adsr[1].patch(out);
+			
+			Sketch.println("note one");
 			
 		}
 		
-	}
-	
-	class Treble implements Runnable {
-		
-		public void run(){
+		public void noteOff(){
 			
-			try{
-				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[0][section[s]][0].length; n++){
-								
-								if(score[0][section[s]][0][n] != 0){
-									
-									instrument[0].set("frequency", cpsmidi(score[0][section[s]][0][n] - i));
-									instrument[0].set("duration", score[0][section[s]][1][n] * 60/23);
-									instrument[0].set("iteration", i);
-									instrument[0].create();
-									
-								}
-								
-								Thread.sleep((long)(score[0][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
-				
-			} catch (InterruptedException e){
-				
-				System.err.println(e);
-				
-			}	
+			adsr[0].unpatchAfterRelease(out);
+			adsr[1].unpatchAfterRelease(out);
+			adsr[0].noteOff();
+			adsr[1].noteOff();
 			
 		}
 		
