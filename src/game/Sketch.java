@@ -8,6 +8,9 @@ public class Sketch extends PApplet {
 	static int screenWidth, screenHeight;
 
 
+	//for tutorial
+	int stage = 0;
+	
 	//static int obstacleMax=10;
 	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
@@ -39,6 +42,16 @@ public class Sketch extends PApplet {
 	int tutorialAnimationStart = 0;
 	int tutorialRightTriggerCount = 0;
 	int amtCount = 1;
+	
+	String centerText = "";
+	String lastCenterText = "";
+	float fadeOutStart = 0f;
+	float fadeInStart = 0f;
+	float fadeInTime = 40f;
+	float fadeOutTime = 40f;
+	float centerTextAlpha = 1f;
+	
+	
 	public void setup() {
 		frameRate(targetFrameRate);
 		colorMode(HSB, 360, 100, 100, 100);
@@ -211,18 +224,9 @@ public class Sketch extends PApplet {
 			}
 		}
 		
-		if(world.cameraFixed){
-			camera.x = world.x;
-			camera.y = world.y;
-			camera.scale = 0.5f;
-			world.draw(camera);
-			leader.draw(camera);
-		}
-		else{
 		updateCamera();
 		world.draw(camera);
 		leader.draw(camera);
-		}
 		if ((leader.leading) && (Swarmling.attractRadius > 0)) {
 		      noFill();
 		      stroke(0, 0, 255);
@@ -236,6 +240,55 @@ public class Sketch extends PApplet {
 		//display frame rate
 		fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
 		text(frameRate, width / 2, 40);
+		
+		//draw centertext
+
+
+		String displayText = "";
+		
+		if(centerText != lastCenterText && fadeOutStart == 0f){
+			if(lastCenterText != "")
+				fadeOutStart = (float)frameCount;
+			else
+				fadeInStart = (float)frameCount;
+		}
+		if(fadeOutStart != 0 && centerTextAlpha > 0){
+			//fade out effect
+			centerTextAlpha = min(1, (fadeOutTime - ((float) frameCount - fadeOutStart)) / fadeOutTime);
+			displayText = lastCenterText;
+			//Sketch.println(centerTextAlpha);
+			//Sketch.println("fade out begin");
+		}
+
+		if(fadeOutStart != 0 &&centerTextAlpha<=0){
+			//fade out ends, begin to fade in
+			lastCenterText = centerText;
+			
+			fadeInStart = (float)frameCount;
+			
+			fadeOutStart = 0f;
+			//Sketch.println("fade out end");
+			
+		}
+		
+		if(fadeInStart != 0 && centerTextAlpha < 1f){
+			//fade in effect
+			displayText = centerText;
+			centerTextAlpha = min(1, (((float) frameCount - fadeInStart)) / fadeInTime);
+			//Sketch.println("fade in start");
+		}
+		
+		if(fadeInStart != 0 && centerTextAlpha==1){
+			//fade in ends
+			lastCenterText = centerText;
+			fadeInStart = 0f;
+			//Sketch.println("fade in end");
+		}
+		if(fadeInStart==0f && fadeOutStart == 0f)
+			displayText = centerText;
+		
+		fill(0,0,99, centerTextAlpha * 100);
+		text(displayText, width / 2, height / 2);
 		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
@@ -348,23 +401,28 @@ public class Sketch extends PApplet {
 			while (Swarmling.lastInLine != leader) {
 				Swarmling.lastInLine.unfollow();
 			}
+			if(world.level == 2){
+				stage = 6;
+			}
+			else if(world.level == 3){
+				stage = 11;
+			}
 		}
 	}
 	
 	void updateAndDrawTutorial() {
-		String text = "";
 		switch(tutorialStage) {
 		case 0:
 			return;
 		case 4:
-			text = "Move with the left stick.";
+			centerText = "Move with the left stick.";
 			if (leader.distTo(world.nest) > 0) {
 				tutorialStage -= 1;
 				tutorialAnimationStart = frameCount;
 			}
 			break;
 		case 3:
-			text = "Hold left trigger to build the chain.";
+			centerText = "Hold left trigger to build the chain.";
 			int count = 0;
 			Swarmling s = Swarmling.lastInLine;
 			while (s != leader) {
@@ -377,7 +435,7 @@ public class Sketch extends PApplet {
 			}
 			break;
 		case 2:
-			text = "Hold right trigger to break the chain and move fast.";
+			centerText = "Hold right trigger to break the chain and move fast.";
 			if (controller.getJrz() > 0) {
 				if (tutorialRightTriggerCount++ > 30) {
 					tutorialStage -= 1;
@@ -388,16 +446,16 @@ public class Sketch extends PApplet {
 			}
 			break;
 		case 1:
-			text = "Collect the Yellows using your followers.";
+			centerText = "Collect the Yellows using your followers.";
 			if (world.nest.growth > 0.5) {
 				tutorialStage -= 1;
 				tutorialAnimationStart = frameCount;
 			}
 			break;
 		}
-		float alpha = min(1, ((float) frameCount - (float) tutorialAnimationStart) / 40f);
-		fill(0,0,99, alpha * 100);
-		text(text, width / 2, height / 2);
+//		float alpha = min(1, ((float) frameCount - (float) tutorialAnimationStart) / 40f);
+//		fill(0,0,99, alpha * 100);
+//		text(centerText, width / 2, height / 2);
 	}
 	
 	public static void main(String args[]) {
@@ -410,5 +468,4 @@ public class Sketch extends PApplet {
 		audio.exit();
 	} 
 	
-
 }

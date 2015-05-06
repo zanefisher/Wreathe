@@ -105,7 +105,7 @@ public class Leader extends Swarmling {
 			}
 		}
 		
-
+		//Sketch.println("x: " + x + "y: " + y);
 		return true;
 	}
 	

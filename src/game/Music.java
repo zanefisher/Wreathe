@@ -1,298 +1,201 @@
 package game;
 
 import processing.core.PApplet;
-import supercollider.*;
-import oscP5.*;
+import ddf.minim.*;
+import ddf.minim.ugens.*;
 
-public class Music extends PApplet {
-	
-	Synth[] instrument = new Synth[3];
-	Sketch sketch;
+public class Music extends PApplet implements Runnable {
+
+	Minim minim;
+	AudioOutput out;
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
 	
+
 	float[][][][] score =
-
-			//treble
-
-			  {{{{64, 62, 60, 64, 62, 60, 64, 62, 60, 64, 62, 60,
-
-			  64, 63, 61, 64, 63, 61, 64, 63, 61, 64, 63, 61},
-
-			  {0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f,
-
-			  0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f, 0.125f}},
-
-			   
-
-			{{69, 62, 60, 57, 69, 62, 60, 57, 64, 60, 57, 64, 62, 60, 57,
-
-			  67, 62, 61, 59, 67, 62, 61, 59, 64, 61, 59, 64, 62, 61, 59},
-
-			  {0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f,
-
-			  0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f}},
-
-			   
-
-			{{64, 62, 60, 59, 64, 62, 60, 59, 64, 62, 60, 59, 64, 62, 60, 59,
-
-			  64, 63, 61, 56, 68, 64, 63, 61, 56, 57, 64, 63, 61, 56, 68, 64, 63, 61, 56, 57},
-
-			  {0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f,
-
-			  0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f}},
-
-			   
-
-			{{68, 63, 61, 59, 68, 63, 61, 59, 66, 61, 59, 66, 63, 61, 59,
-
-			  71, 63, 61, 59, 71, 63, 61, 59, 70, 61, 59, 70, 66, 61, 59},
-
-			      {0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f,
-
-			  0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f}},
-
-			   
-
-			{{70, 66, 65, 63, 70, 66, 65, 63, 68, 66, 65, 63, 68, 66, 65, 63,
-
-			  68, 65, 63, 59, 68, 65, 63, 59, 68, 65, 63, 59, 68, 65, 63, 59},
-
-			  {0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f,
-
-			  0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.1875f, 0.125f, 0.125f, 0.125f, 0.1875f, 0.1875f, 0.1875f, 0.1875f}}},
-
-			   
-
-			//tenor
-
-			{{{53, 60, 53, 60, 53, 60, 65, 53, 60, 52, 60, 52, 60, 64, 52, 57, 52,
-
-			  56, 52, 56, 49, 51, 56, 51, 56, 52, 56, 49, 52, 56, 52, 57, 52, 59},
-
-			  {0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.125f, 0.125f, 0.125f,
-
-			  0.125f, 0.125f, 0.125f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f}},
-
-			   
-
-			{{48, 53, 48, 53, 57, 60, 48, 53, 48, 53, 57, 62, 48, 53, 48, 53, 57, 64,
-
-			  47, 47, 47, 50, 57, 62, 0},
-
-			  {0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f,
-
-			  0.125f, 0.08333f, 0.08333f, 0.08333f, 0.0625f, 0.4375f, 0.75f}},
-
-			   
-
-			{{53, 60, 53, 60, 53, 60, 65, 53, 60, 52, 60, 52, 60, 64, 52, 57, 52,
-
-			  56, 52, 56, 49, 51, 56, 51, 56, 52, 56, 49, 52, 56, 52, 57, 52, 59},
-
-			  {0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.125f, 0.125f, 0.125f,
-
-			  0.125f, 0.125f, 0.125f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f}},
-
-			   
-
-			{{47, 51, 47, 51, 56, 59, 47, 51, 47, 51, 56, 61, 47, 51, 47, 51, 56, 61,
-
-			  47, 47, 47, 51, 59, 59, 59, 59, 54, 0},
-
-			  {0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.0625f, 0.0625f, 0.08333f, 0.08333f, 0.08333f, 0.125f,
-
-			  0.125f, 0.08333f, 0.08333f, 0.08333f, 0.0625f, 0.4375f, 0.75f}},
-
-			   
-
-			{{51, 58, 56, 58, 51, 58, 61, 51, 58, 56, 54, 56, 58, 61, 51, 54, 58,
-
-			  56, 51, 54, 58, 56, 51, 54, 51, 54, 56, 58, 51, 54, 56, 58},
-
-			  {0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.0625f, 0.125f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f, 0.15625f,
-
-			  0.125f, 0.125f, 0.125f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.08333f, 0.125f, 0.08333f, 0.08333f, 0.08333f, 0.125f}}},
-
-			   
-
-			//bass
-
-			    {{{29, 31, 33, 32, 33, 35, 37},
-
-			  {0.5f, 0.25f, 0.75f, 0.5f, 0.25f, 0.5f, 0.25f}},
-
-			 
-
-			{{41, 40, 38, 36, 35, 33, 41, 42, 44, 45},
-
-			  {0.5f, 0.25f, 0.416666667f, 0.1666667f, 0.1666667f, 0.5f, 0.25f, 0.416666667f, 0.1666667f, 0.1666667f}},
-
-			 
-
-			{{29, 31, 33, 32, 33, 35, 37},
-
-			  {0.5f, 0.25f, 0.75f, 0.5f, 0.25f, 0.5f, 0.25f}},
-
-			 
-
-			{{44, 42, 40, 39, 37, 35, 30, 32, 32, 32, 35, 37},
-
-			  {0.5f, 0.25f, 0.416666667f, 0.1666667f, 0.1666667f, 0.5f, 0.25f, 0.125f, 0.125f, 0.25f, 0.1666667f, 0.1666667f}},
-
-			 
-
-			{{39, 41, 42, 30, 35, 34, 32},
-
-			  {0.5f, 0.25f, 0.375f, 0.375f, 0.5f, 0.25f, 0.75f}}}};
+		//treble
+	   {{{{64f, 62f, 60f, 64f, 62f, 60f, 64f, 62f, 60f, 64f, 62f, 60f,
+		   64f, 63f, 61f, 64f, 63f, 61f, 64f, 63f, 61f, 64f, 63f, 61f},
+		  {1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f,
+		   1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f, 1/8f}},
+		   
+		 {{69f, 62f, 60f, 57f, 69f, 62f, 60f, 57f, 64f, 60f, 57f, 64f, 62f, 60f, 57f,
+		   67f, 62f, 61f, 59f, 67f, 62f, 61f, 59f, 64f, 61f, 59f, 64f, 62f, 61f, 59f},
+
+		  {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f}},
+		   
+		 {{64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f, 64f, 62f, 60f, 59f,
+		   64f, 63f, 61f, 56f, 68f, 64f, 63f, 61f, 56f, 57f, 64f, 63f, 61f, 56f, 68f, 64f, 63f, 61f, 56f, 57f},
+		  {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f, 3/40f}},
+		   
+		 {{68f, 63f, 61f, 59f, 68f, 63f, 61f, 59f, 66f, 61f, 59f, 66f, 63f, 61f, 59f,
+		   71f, 63f, 61f, 59f, 71f, 63f, 61f, 59f, 70f, 61f, 59f, 70f, 66f, 61f, 59f},
+	      {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f,
+		   3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f}},
+		   
+		 {{70f, 66f, 65f, 63f, 70f, 66f, 65f, 63f, 68f, 66f, 65f, 63f, 68f, 66f, 65f, 63f,
+		   68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f, 68f, 65f, 63f, 59f},
+		  {1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f,
+		   1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f}}},
+		   
+		//tenor
+		{{{53f, 60f, 53f, 60f, 53f, 60f, 65f, 53f, 60f, 52f, 60f, 52f, 60f, 64f, 52f, 57f, 52f,
+		   56f, 52f, 56f, 49f, 51f, 56f, 51f, 56f, 52f, 56f, 49f, 52f, 56f, 52f, 57f, 52f, 59f},
+		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/8f, 1/8f, 1/8f,
+		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f}},
+		   
+		 {{48f, 53f, 48f, 53f, 57f, 60f, 48f, 53f, 48f, 53f, 57f, 62f, 48f, 53f, 48f, 53f, 57f, 64f,
+		   47f, 47f, 47f, 50f, 57f, 62f, 0f},
+		   
+		  {1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f,
+		   1/8f, 1/12f, 1/12f, 1/12f, 1/16f, 5/16f, 3/4f}},
+		   
+		 {{53f, 60f, 53f, 60f, 53f, 60f, 65f, 53f, 60f, 52f, 60f, 52f, 60f, 64f, 52f, 57f, 52f,
+		   56f, 52f, 56f, 49f, 51f, 56f, 51f, 56f, 52f, 56f, 49f, 52f, 56f, 52f, 57f, 52f, 59f},
+		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/8f, 1/8f, 1/8f,
+		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f}},
+		   
+		 {{47f, 51f, 47f, 51f, 56f, 59f, 47f, 51f, 47f, 51f, 56f, 61f, 47f, 51f, 47f, 51f, 56f, 61f,
+		   47f, 47f, 47f, 51f, 59f, 59f, 59f, 59f, 54f, 0f},
+		  {1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f,
+		   1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/16f, 5/16f, 1/2f}},
+		   
+		 {{51f, 58f, 56f, 58f, 51f, 58f, 61f, 51f, 58f, 56f, 54f, 56f, 58f, 61f, 51f, 54f, 58f,
+		   56f, 51f, 54f, 58f, 56f, 51f, 54f, 51f, 54f, 56f, 58f, 51f, 54f, 56f, 58f},
+		   
+		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f,
+		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f}}},
+		   
+		//bass
+	    {{{29f, 31f, 33f, 32f, 33f, 35f, 37f},
+		  {1/2f, 1/4f, 3/4f, 1/2f, 1/4f, 1/2f, 1/4f}},
+		  
+		 {{41f, 40f, 38f, 36f, 35f, 33f, 41f, 42f, 44f, 45f},
+		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 5/12f, 1/6f, 1/6f}},
+		  
+		 {{29f, 31f, 33f, 32f, 33f, 35f, 37f},
+		  {1/2f, 1/4f, 3/4f, 1/2f, 1/4f, 1/2f, 1/4f}},
+		  
+		 {{44f, 42f, 40f, 39f, 37f, 35f, 30f, 32f, 32f, 32f, 35f, 37f},
+		  {1/2f, 1/4f, 5/12f, 1/6f, 1/6f, 1/2f, 1/4f, 1/8f, 1/8f, 1/6f, 1/6f, 1/6f}},
+		  
+		 {{39f, 41f, 42f, 30f, 35f, 34f, 32f},
+		  {1/2f, 1/4f, 3/8f, 3/8f, 1/2f, 1/4f, 3/4f}}}};
 	
-	Music(){
-		
-		instrument[0] = new Synth("Treble");
-		instrument[1] = new Synth("Tenor");
-		instrument[2] = new Synth("Bass");
+	
+	Music(Sketch sketch){
 
-		Treble treble = new Treble();
-		Tenor tenor = new Tenor();
-		Bass bass = new Bass();
-			
-		new Thread(treble).start();
-		new Thread(tenor).start();
-		new Thread(bass).start();
+		minim = new Minim(sketch);
+		out = minim.getLineOut(Minim.STEREO, 1024);
 		
 	}
 	
-	float cpsmidi (float freq){
+	public void run(){
 		
-	  return (log(freq / 440f) / log(2f)) * 12 + 69;
+		try{
+			
+			while(true){
+				
+				out.pauseNotes();
+				float time = 0;
+				
+				for(int v = 0; v < 3; v++){
+				
+					time = 0;
+					
+					for(int i = 0; i < 12; i++){
+						
+						for(int s = 0; s < section.length; s++){
+							
+							for(int n = 0; n < score[v][section[s]][0].length; n++){
+								
+								if(score[v][section[s]][0][n] != 0){
+									
+									out.playNote(time, score[v][section[s]][1][n] * 60/23f,
+											new Synth(v, time, cpsmidi(score[v][section[s]][0][n] - i), i));
+									
+								}
+								
+								time += score[v][section[s]][1][n] * 60/23f;
+								
+							}
+							
+							//Sketch.println(v + ", " + i);
+							
+						}
+						
+					}
+				
+				}
+				
+				out.resumeNotes();
+				//Sketch.println("over");
+				Thread.sleep((long)time * 1000);
+				
+			}
+			
+		} catch (InterruptedException e){
+			
+			System.err.println(e);
+			
+		}
+		
+	}
+	
+	float cpsmidi(float freq){
+		
+	  return Sketch.pow(2, (freq - 69) / 12) * 440;
 	  
 	}
 	
-	class Bass implements Runnable {
+	class Synth implements Instrument {
 		
-		public void run(){
+		Oscil[] oscil = new Oscil[2];
+		ADSR[] adsr = new ADSR[2];
+		Wavetable down = WavetableGenerator.gen9(1024, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
+						new float[]{1, 0.48f, 0.22f, 0.12f, 0.06f}, new float[]{0f, 20f, 10f, 5f, 2.5f});
+		Wavetable off = WavetableGenerator.gen10(1024, new float[]{1f, 0.2f, 0.1f});
+		
+		
+		Synth(int instrument, float time, float frequency, int iteration){
 			
-			try{
+			if(instrument == 0 && time % 45/46f < 15/46f || instrument == 1 && time % 30/23f < 15/46f){
 				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[2][section[s]][0].length; n++){
-								
-								if(score[2][section[s]][0][n] != 0){
-									
-									instrument[2].set("frequency", cpsmidi(score[2][section[s]][0][n] - i));
-									instrument[2].set("duration", score[2][section[s]][1][n] * 60/23);
-									instrument[2].set("iteration", i);
-									instrument[2].create();
-									
-								}
-								
-								Thread.sleep((long)(score[2][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
+				oscil[0] = new Oscil(frequency, (12 - iteration) / 12f, down);
+				oscil[1] = new Oscil(frequency * 2f, iteration / 12f, down);
 				
-			} catch (InterruptedException e){
+			} else{
 				
-				System.err.println(e);
+				oscil[0] = new Oscil(frequency, (12 - iteration) / 12f, off);
+				oscil[1] = new Oscil(frequency * 2f, iteration / 12f, off);
 				
-			}	
+			}
+				
+			adsr[0] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+			adsr[1] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+
+			oscil[0].patch(adsr[0]);
+			oscil[1].patch(adsr[1]);
 			
 		}
 		
-	}
-	
-	class Tenor implements Runnable {
-		
-		public void run(){
+		public void noteOn(float duration){
 			
-			try{
-				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[1][section[s]][0].length; n++){
-								
-								if(score[1][section[s]][0][n] != 0){
-									
-									instrument[1].set("frequency", cpsmidi(score[1][section[s]][0][n] - i));
-									instrument[1].set("duration", score[1][section[s]][1][n] * 60/23);
-									instrument[1].set("iteration", i);
-									instrument[1].create();
-									
-								}
-								
-								Thread.sleep((long)(score[1][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
-				
-			} catch (InterruptedException e){
-				
-				System.err.println(e);
-				
-			}	
+			adsr[0].noteOn();
+			adsr[1].noteOn();
+			adsr[0].patch(out);
+			adsr[1].patch(out);
 			
 		}
 		
-	}
-	
-	class Treble implements Runnable {
-		
-		public void run(){
+		public void noteOff(){
 			
-			try{
-				
-				while(true){
-					
-					for(int i = 0; i < 12; i++){
-						
-						for(int s = 0; s < section.length; s++){
-							
-							for(int n = 0; n < score[0][section[s]][0].length; n++){
-								
-								if(score[0][section[s]][0][n] != 0){
-									
-									instrument[0].set("frequency", cpsmidi(score[0][section[s]][0][n] - i));
-									instrument[0].set("duration", score[0][section[s]][1][n] * 60/23);
-									instrument[0].set("iteration", i);
-									instrument[0].create();
-									
-								}
-								
-								Thread.sleep((long)(score[0][section[s]][1][n] * 60000/23));
-								
-							}
-							
-						}
-						
-					}	
-					
-				}
-				
-			} catch (InterruptedException e){
-				
-				System.err.println(e);
-				
-			}	
+			adsr[0].unpatchAfterRelease(out);
+			adsr[1].unpatchAfterRelease(out);
+			adsr[0].noteOff();
+			adsr[1].noteOff();
 			
 		}
 		

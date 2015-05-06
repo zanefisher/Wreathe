@@ -17,6 +17,8 @@ public class Controller extends PApplet {
 	boolean back = false;
 	boolean leading;
 	boolean lastFrameStartPressed = start;
+	boolean useLeftTrigger = true;
+	boolean useRightTrigger = true;
 	
 	public Controller(Sketch s) {
 		sketch = s;
@@ -60,11 +62,13 @@ public class Controller extends PApplet {
 	
 	public float getJz(){
 		jz = (sketch.usingController)?(device.getSlider("Z").getValue()+1)/2f:((sketch.mousePressed)?1:0);
+		jz = (useLeftTrigger)?jz:0;
 		return jz; //from 0~1
 	}
 	
 	public float getJrz(){
 		jrz = (sketch.usingController)?(device.getSlider("RZ").getValue()+1)/2f:((sketch.mousePressed)?0:1);
+		jrz = (useRightTrigger)?jrz:0;
 		return jrz; //from 0~1
 	}
 	

@@ -3,7 +3,7 @@ package game;
 public class Swarmling extends GameObject {
 	static Swarmling lastInLine;
 	static Swarmling firstInLine;
-	
+	static int swarmlingNumberFollowing = 0;
 	static final float maxSpeed = 3.4f, maxAccel = 0.3f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float maxAttractRadius=90;
@@ -60,6 +60,7 @@ public class Swarmling extends GameObject {
 			firstInLine = this;
 		}
 		queueCooldown = 15;
+		swarmlingNumberFollowing += 1;
 		sketch.audio.localSound(2,this);
 
 	}
@@ -83,7 +84,8 @@ public class Swarmling extends GameObject {
 	        following = null;
 	        followCooldown = 60;
 	    }
-		
+		swarmlingNumberFollowing -= 1;
+		swarmlingNumberFollowing = Sketch.max(0,swarmlingNumberFollowing);
 		sketch.audio.globalSound(0);
 	}
 	
@@ -197,12 +199,12 @@ public class Swarmling extends GameObject {
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
 					if(lastFrameTarget != null) sketch.audio.beamSound(false);
+					if(sketch.world.level == 2) sketch.stage = 9;
 					return false;
 				}	
 				
 				if ((carrying == null) && (other instanceof Key) && (distance > 0) && (distance <= keyDist)){
 					targetCarryable = (Carryable)other;
-					
 //						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
 //							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
 //							sketch.world.chasingEnemy.initInWorld(sketch.world);
@@ -241,6 +243,7 @@ public class Swarmling extends GameObject {
 						float centerDist = Sketch.dist(x, y, other.x, other.y);
 						ddx -= ((other.x - x) / centerDist) / 10;
 						ddy -= ((other.y - y) / centerDist) / 10;
+
 					}else /*if (nestDist > 0)*/{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
 					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
@@ -308,6 +311,18 @@ public class Swarmling extends GameObject {
 			ddx += 2f*maxAccel*(targetCarryable.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 			ddy += 2f*maxAccel*(targetCarryable.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 
+			if (true) {
+				float avoidFactorForSwarmling = 0.2f;
+			
+				for (int i = 0; i < targetCarryable.carriedBy.size(); ++i) {
+					Swarmling other = targetCarryable.carriedBy.get(i);
+					float centerDist = Sketch.dist(x, y, other.x, other.y);
+					if(centerDist<5*radius){
+						ddx -= avoidFactorForSwarmling*((other.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+						ddy -= avoidFactorForSwarmling*((other.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+					}
+				}
+			}
 		}
 		
 		
