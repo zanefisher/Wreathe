@@ -10,7 +10,6 @@ public class Sketch extends PApplet {
 
 	//for tutorial
 	int stage = 0;
-	
 	//static int obstacleMax=10;
 	static int KeyNumber = 5;
 	static int targetFrameRate = 40;
@@ -51,6 +50,11 @@ public class Sketch extends PApplet {
 	float fadeInTime = 40f;
 	float fadeOutTime = 40f;
 	float centerTextAlpha = 1f;
+	
+	String flashingText = "";
+	String lastFlashingText = "";
+	float flashingTextAlpha = 1f;
+	float flashingTextStart;
 	
 	
 	public void setup() {
@@ -290,6 +294,23 @@ public class Sketch extends PApplet {
 		fill(0,0,99, centerTextAlpha * 100);
 		text(displayText, width / 2, height / 2);
 		
+		//Draw Flashing Text
+		if(flashingText != "" && lastFlashingText == ""){
+			flashingTextStart = (float)frameCount;
+		}
+		
+		if(flashingText != ""){
+			float tmp = Sketch.sin(((float)frameCount - flashingTextStart)/5f);
+//			flashingTextAlpha = Sketch.sin((float)frameCount - flashingTextStart);
+			flashingTextAlpha = 1f;
+			int tmpColor = lerpColor(color(0,0,99), color(0,99,99), (1f+tmp));
+//			Sketch.println(flashingTextAlpha);
+			fill(tmpColor, flashingTextAlpha * 100);
+			text(flashingText, width / 2, height / 2 - height /10f);
+			lastFlashingText = flashingText;
+		}
+
+		
 		//above all stuff, render the Vault on the right buttom corner
 		drawVault();
 	}
@@ -408,10 +429,13 @@ public class Sketch extends PApplet {
 				Swarmling.lastInLine.unfollow();
 			}
 			if(world.level == 2){
+				controller.useLeftTrigger = true;
+				controller.useRightTrigger = true;
 				stage = 6;
-			}
-			else if(world.level == 3){
+			} else if(world.level == 3){
 				stage = 11;
+			} else if(world.level == 4){
+				stage = 13;
 			}
 		} else if (key == 'f') {
 			showFPS = !showFPS;
@@ -423,14 +447,14 @@ public class Sketch extends PApplet {
 		case 0:
 			return;
 		case 4:
-			centerText = "Move with the left stick.";
+			flashingText = "Move with the left stick.";
 			if (leader.distTo(world.nest) > 0) {
 				tutorialStage -= 1;
 				tutorialAnimationStart = frameCount;
 			}
 			break;
 		case 3:
-			centerText = "Hold left trigger to build the chain.";
+			flashingText = "Hold left trigger to build the chain.";
 			int count = 0;
 			Swarmling s = Swarmling.lastInLine;
 			while (s != leader) {
@@ -443,7 +467,7 @@ public class Sketch extends PApplet {
 			}
 			break;
 		case 2:
-			centerText = "Hold right trigger to break the chain and move fast.";
+			flashingText = "Hold right trigger to break the chain and move fast.";
 			if (controller.getJrz() > 0) {
 				if (tutorialRightTriggerCount++ > 30) {
 					tutorialStage -= 1;
@@ -454,7 +478,7 @@ public class Sketch extends PApplet {
 			}
 			break;
 		case 1:
-			centerText = "Collect the Yellows using your followers.";
+			flashingText = "Collect the Yellows using your followers.";
 			if (world.nest.growth > 0.5) {
 				tutorialStage -= 1;
 				tutorialAnimationStart = frameCount;

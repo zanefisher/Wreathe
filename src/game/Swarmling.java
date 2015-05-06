@@ -13,7 +13,7 @@ public class Swarmling extends GameObject {
 	static final float attackRadius = 100f;
 	static final float attackPower = 20f;
 	static final float swarmlingAvoidRadius = 10f;
-	static final int puffPeriod = 10;
+	static final int puffPeriod = 3;
 	int puffPhase;
 	static float seed=0;
 	
@@ -199,7 +199,8 @@ public class Swarmling extends GameObject {
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
 					if(lastFrameTarget != null) sketch.audio.beamSound(false);
-					if(sketch.world.level == 2) sketch.stage = 9;
+					if(sketch.world.level == 2) sketch.world.alarm = true;
+					if(sketch.world.level == 3 && sketch.leader.leading) sketch.world.alarm = true;
 					return false;
 				}	
 				
@@ -277,6 +278,15 @@ public class Swarmling extends GameObject {
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;
 			tmp.obstacleLife -= attackPower;
+			//generating puffs
+			if  ((puffPhase + sketch.frameCount) % puffPeriod == 0) {
+				float tmpx, tmpy;
+				float dist = Sketch.dist(tmp.x, tmp.y, x, y);
+				tmpx = tmp.x+tmp.radius*(x-tmp.x)/dist;
+				tmpy = tmp.y+tmp.radius*(y-tmp.y)/dist;		
+				sketch.world.contents.add(new Puff(sketch, tmpx, tmpy, Projectile.defaultColor, attackPower/12f, attackPower/10f, 10));
+				sketch.world.contents.add(new Puff(sketch, tmpx, tmpy, tmp.color, attackPower/12f, attackPower/10f, 10));
+			}
 
 		}
 		

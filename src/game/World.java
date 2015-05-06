@@ -11,6 +11,7 @@ public class World extends GameObject {
 	int foodCount = 0;
 	int textTimeCount = 0;
 	int redAlarmCount = 0;
+	boolean alarm = false;
 	boolean open = false;
 	float ringRadius = 250;
 	int swarmlingsInRing = 0;
@@ -238,7 +239,7 @@ public class World extends GameObject {
 		contents.add(nest);
 
 		if(level == 1) {
-			sketch.controller.useRightTrigger = false;
+			//sketch.controller.useRightTrigger = false;
 			//sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
 		}
 		
@@ -575,9 +576,18 @@ public class World extends GameObject {
 					if(sketch.stage == 5 ){
 						sketch.stage += 1;
 					}
-					else if (sketch.stage >= 8){
+					else if (sketch.stage >= 8 && level == 2){
 						sketch.stage = 11;
 					}
+					else if (sketch.stage >= 11 && level ==3 ){
+						sketch.stage = 13;
+					}
+					else if (level == 4){
+						sketch.stage = 20;
+					}
+					
+					sketch.world = this;
+
 					sketch.audio.beamSetZero();
 					
 		
@@ -611,25 +621,32 @@ public class World extends GameObject {
 		if(level <= 4)
 			updateTutorialLevel();
 		
+		if(nest.life < 1){
+			sketch.centerText = "The nest tree has died. You must leave this world.";
+			if(sketch.leader.distTo(this) >= 0)
+				sketch.centerText = "";
+			}
+		
 		return true;
 	}
 	
 	public void updateTutorialLevel(){
 		if(sketch.stage == 0 && level == 1){
-			sketch.centerText = "Use Left Stick to Move";
+			sketch.controller.useRightTrigger = false;
+			sketch.centerText = "Use the left stick to move.";
 			sketch.controller.useLeftTrigger = false;
 			if(Sketch.mag(sketch.leader.dx, sketch.leader.dy) > 0.4f)
 				sketch.stage = 1;
 		}
 		else if(sketch.stage == 1 && level == 1){
 			sketch.controller.useLeftTrigger = true;
-			sketch.centerText = "Left Trigger to Build a chain";
+			sketch.centerText = "Hold left trigger to build a chain.";
 			//Sketch.println(Swarmling.swarmlingNumberFollowing);
 			if(Swarmling.swarmlingNumberFollowing >= 3)
 				sketch.stage = 2;
 		}
 		else if(sketch.stage == 2 && level == 1){
-			sketch.centerText = "Use followers to collect Lemons";
+			sketch.centerText = "Use your followers to collect the lemons.";
 			
 			for(; foodCount < nest.budGrowth + nest.blossomGrowth; foodCount++){
 				float rx = sketch.random(radius) - (radius / 2);
@@ -643,7 +660,7 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 3 && level == 1){
-			sketch.centerText = "Your Nest Needs More Lemons!!";
+			sketch.centerText = "Keep feeding the nest tree.";
 			textTimeCount += 1;
 			if(children.size() > 0)
 				sketch.stage = 4;
@@ -651,53 +668,89 @@ public class World extends GameObject {
 				sketch.centerText = "";
 		}
 		else if(sketch.stage == 4 && level ==1){
-			sketch.centerText = "Fill the white ring with followers to open the new world";
+			sketch.centerText = "Fill the white ring with followers to open the new world.";
 			if(children.get(0).open){
 				sketch.stage = 5;
 			}
 		}
 		else if(sketch.stage == 5 && level == 1){
-			sketch.centerText = "Congradulation! Go and Check out the new World";
+			sketch.centerText = /*"This is Wreathe."*/ "";
 		}
 		else if(sketch.stage == 6 && level == 2){
-			sketch.centerText = "Hold right trigger to move faster and past through obstacles";
+			sketch.centerText = "Hold the right trigger to move through obstacles";
 			sketch.controller.useRightTrigger = true;
 			if(sketch.leader.distTo(nest) <= 0)
 				sketch.stage = 7;
 		}
 		else if(sketch.stage == 7 && level == 2){
-			sketch.centerText = "Followers can destroy nearby obstacles";
-			if(Swarmling.firstInLine.distTo(nest) > 10)
+			sketch.centerText = "Your followers can destroy nearby obstacles.";
+			if(Swarmling.firstInLine != null && Swarmling.firstInLine.distTo(nest) > 50)
 				sketch.stage = 8;
 		}
 		else if(sketch.stage == 8 && level ==2){
 			sketch.centerText = "";
 			textTimeCount += 1;
-			if(textTimeCount >= 2000 && nest.growth < 1){
-				textTimeCount = 0;
+			if(alarm){
+				sketch.stage = 9;
+			}
+			if(textTimeCount >= 200 && nest.growth < 1){
 				sketch.stage = 10;
 			}
 		}
 		else if(sketch.stage == 9 && level == 2){
+			sketch.flashingText = "Don’t let your followers touch the obstacles.";
 			redAlarmCount += 1; 
-			if(redAlarmCount >= 1000){
+			if(redAlarmCount >= 80){
+				sketch.flashingText = "";
+				alarm = false;
 				redAlarmCount = 0;
 				sketch.stage = 8;
 			}
 		}
 		else if(sketch.stage == 10 && level == 2){
-			sketch.centerText = "break the large obstacles to get the precious lemons";
+			sketch.centerText = "Break the large obstacles to get the lemons within.";
 			textTimeCount += 1;
+			if(alarm){
+				sketch.stage = 9;
+			}
 			if(nest.growth >= 1){
 				textTimeCount = 0;
 				sketch.stage = 8;
 			}
-			if(nest.growth < 1 && textTimeCount >= 2000){
-				textTimeCount = 0;
+			if(nest.growth < 1 && textTimeCount >= 300){
+				sketch.centerText = "";
 			}
 		}
-		else if(sketch.stage >= 11 && level == 3){
-			sketch.centerText = "Your followers can survive on their own";
+		else if(sketch.stage == 11 && level == 3){
+			sketch.centerText = "Your followers can survive on their own.";
+			textTimeCount += 1;
+			if(textTimeCount >= 120){
+				sketch.centerText = "";
+			}
+			//Sketch.println(sketch.alarm);
+			if(alarm){
+				sketch.stage = 12;
+			}
+		}
+		else if(sketch.stage == 12 && level == 3 ){
+			sketch.flashingText = "Press right trigger to stop leading your followers to their deaths";
+			redAlarmCount += 1;
+			if(redAlarmCount >= 100){
+				sketch.flashingText = "";
+				textTimeCount = 0;
+				alarm = false;
+				redAlarmCount = 0;
+				sketch.stage = 11;
+			}
+		}
+		else if(sketch.stage == 13 && level == 4){
+			sketch.centerText = "Get The Shiny Circle from your enemy";
+			if(key.isCollected){
+				sketch.centerText = "You need to collect five of them";
+			}
+			if(key.isInVault){
+				sketch.centerText = "The deeper you get the more gems you will find";
+			}
 		}
 	};
 	
