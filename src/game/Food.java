@@ -19,8 +19,9 @@ public class Food extends Carryable {
 	
 	public boolean update() {
 		Nest nest = sketch.world.nest;
-		if ((distTo(nest) <= 0)) {
+		if ((Sketch.dist(x, y, nest.x, nest.y) <= 20)) {
 			int spawnCount = (int) (1 + sketch.random(3));
+			if (sketch.world.level == 1) spawnCount = 1;
 			while (spawnCount-- > 0) {
 				float spawnX = sketch.random(nest.x - (nest.radius / 2), nest.x + (nest.radius / 2));
 				float spawnY = sketch.random(nest.y - (nest.radius / 2), nest.y + (nest.radius / 2));

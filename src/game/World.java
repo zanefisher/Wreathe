@@ -11,7 +11,7 @@ public class World extends GameObject {
 	float ringRadius = 250;
 	int swarmlingsInRing = 0;
 	int openingRequirement = (int) (ringRadius / 14f);
-	float ringWidth = 50;
+	float ringWidth = 70;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
 	int br, bg, bb; //background color
@@ -200,8 +200,9 @@ public class World extends GameObject {
 		nest = new Nest(sketch, sketch.random(radius) - (radius / 2), sketch.random(radius) - (radius / 2));
 		contents.add(nest);
 
-		if(level == 1)
-			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
+		if(level == 1) {
+			sprinkleFoodNumber = nest.budGrowth + nest.blossomGrowth;
+		}
 		
 		if(level == 2)
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));

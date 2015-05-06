@@ -9,7 +9,7 @@ public class WanderingEnemy extends GameObject {
 	boolean isAttacking = false;
 	int attackCooldownCount = 200;	
 	int attackCooldown = (int)Math.random()*attackCooldownCount;
-	int attackPeriodCount = (int)attackCooldownCount/3;
+	int attackPeriodCount = 160;
 	int attackPeriod = attackPeriodCount;
 	int alpha = 100;
 	int predateeThreshold = 4;
