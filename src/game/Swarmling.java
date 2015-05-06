@@ -285,8 +285,6 @@ public class Swarmling extends GameObject {
 				sketch.world.contents.add(new Puff(sketch, tmpx, tmpy, tmp.color, attackPower/12f, attackPower/10f, 10));
 			}
 
-			
-
 		}
 		
 		if (lastFrameTarget == null && target != null){
