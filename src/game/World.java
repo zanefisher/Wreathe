@@ -78,6 +78,8 @@ public class World extends GameObject {
 	ArrayList<Blotch> blotches;
 	ArrayList<Cloud> clouds;
 	
+	Puffer puffer = null;
+	
 	class Blotch {
 		float x, y, r;
 		
@@ -208,7 +210,8 @@ public class World extends GameObject {
 		clouds = new ArrayList<Cloud>();
 		
 		if (p != null) {
-			parent.contents.add(new Puffer(sketch, x, y, portalRadius * 15, cloudColor));
+			puffer = new Puffer(sketch, x, y, portalRadius * 15, cloudColor);
+			parent.contents.add(puffer);
 		}
 		
 		//add blotches
@@ -552,12 +555,23 @@ public class World extends GameObject {
 					sketch.camera.scale *= 1 / r;
 					float x0 = sketch.leader.x;
 					float y0 = sketch.leader.y;
-					sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
-					sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
-					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
-					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+//					sketch.leader.x = Sketch.map(sketch.leader.x, x - portalRadius, x + portalRadius, -1 * radius, radius);
+//					sketch.leader.y = Sketch.map(sketch.leader.y, y - portalRadius, y + portalRadius, -1 * radius, radius);
+//					sketch.leader.x *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+//					sketch.leader.y *= radius / Sketch.mag(sketch.leader.x, sketch.leader.y);
+					sketch.leader.x = (sketch.leader.x - x) * (radius / portalRadius);
+					sketch.leader.y = (sketch.leader.y - y) * (radius / portalRadius);
+//					sketch.camera.trans(sketch.leader.x - x0, sketch.leader.y - y0);
+					sketch.camera.x = (sketch.camera.x - x) * (radius / portalRadius);
+					sketch.camera.y = (sketch.camera.y - y) * (radius / portalRadius);
+					sketch.camera.scale = portalRadius / (radius * sketch.distortion);
+					
+					if (puffer != null) {
+						sketch.world.contents.remove(puffer);
+						puffer = null;
+					}
 					sketch.world = this;
+					sketch.updateDistortion();
 					if(sketch.stage == 5 ){
 						sketch.stage += 1;
 					}

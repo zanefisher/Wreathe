@@ -212,7 +212,7 @@ public class Nest extends GameObject {
 	public boolean update() {
 		
 		if (sketch.world.swarmlingsGeneratedForDeadObstacle < 1) {
-			life = Sketch.min(0f, 0.95f * life);
+			life = Sketch.max(0f, 0.95f * life);
 		}
 		
 		if ((growth < 1) && (sketch.world.count % 360 == 60)) {
