@@ -6,5 +6,4 @@ public abstract class Carryable extends GameObject {
 	int carryCap;
 	float weight;
 	public static float distanceCarry; //the distance swarmlings will have a vector towards the carryable
-
 }

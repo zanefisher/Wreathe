@@ -3,21 +3,29 @@ import java.util.ArrayList;
 
 public class Nest extends GameObject {
 	
-	static float maxWidth = 100;
+	static float maxWidth = 50;
 	static float minWidth = 10;
+	static float branchWidth = 15;
 	static float minWidthReduction = 1f;
 	static float maxWidthReduction = 3f;
 	static float minLength = 15;
 	static float maxLength = 70;
 	static float branchRate = 0.05f;
 	
-	float growth = 0.1f;
+	float life = 1f; // if this is less than zero, the tree is dead, and the value represents how far dead.
+	int growth = 0;
+	int budGrowth = 6;
+	int blossomGrowth = 8;
 	float animationDelay = 0f;
 	
 	ArrayList<Branch> branches;
+	ArrayList<Branch> trunk;
+	ArrayList<Bud> buds;
 	
 	class Branch {
-		float x1, y1, x2, y2, angle, width;
+		float x1, y1, x2, y2, angle, width, lengthGrowth = 0.01f, widthGrowth = 0.01f;
+		boolean budBearing = false;
+		Branch parent = null;
 		ArrayList<Branch> children;
 		
 		Branch() {
@@ -27,44 +35,127 @@ public class Nest extends GameObject {
 			float length = sketch.random(minLength, maxLength);
 			x2 = x1 + (length * Sketch.cos(angle));
 			y2 = y1 + (length * Sketch.sin(angle));
-			width = sketch.random(minWidth, maxWidth);
+			width = sketch.random(minWidth, minWidth * 1.5f);
 			children = new ArrayList<Branch>();
-			if (width > minWidth) {
-				generateChildren();
-			}
 		}
 		
-		Branch(Branch parent, float a, float w, float l) {
+		Branch(Branch p, float a, float w, float l) {
+			parent = p;
 			angle = a;
 			width = w;
-			x1 = parent.x2;
-			y1 = parent.y2;
+			if (p == null) {
+				x1 = radius * Sketch.cos(a);
+				x2 = radius * Sketch.sin(a);
+			} else {
+				x1 = p.x2;
+				y1 = p.y2;
+			}
 			x2 = x1 + (l * Sketch.cos(a));
 			y2 = y1 + (l * Sketch.sin(a));
 			children = new ArrayList<Branch>();
-			if (w > minWidth) {
-				generateChildren();
-			}
 		}
 		
 		void generateChildren() {
 			int childCount = sketch.random(1) < branchRate ? 2 : 1;
 			for (int i = 0; i < childCount; ++i) {
-				float childAngle = angle + sketch.random(sketch.PI / 2) - (sketch.PI / 4);
+				float childAngle = angle + sketch.random(Sketch.PI / 2) - (Sketch.PI / 4);
 				float childWidth = width - sketch.random(minWidthReduction, maxWidthReduction);
 				float childLength = sketch.random(minLength, maxLength);
 				children.add(new Branch(this, childAngle, childWidth, childLength));
 			}
 		}
 		
+		void grow() {
+			if (budBearing) return;
+			float newWidth = Sketch.min(width + 2, maxWidth);
+			widthGrowth = (width * widthGrowth) / newWidth;
+			width = newWidth;
+			for (int i = 0; i < children.size(); ++i) {
+				children.get(i).grow();
+			}
+		}
+		
 		void draw(WorldView view) {
-			float grownWidth = width * (growth - animationDelay);
-			if (grownWidth > minWidth) {
-				sketch.strokeWeight(grownWidth * growth * view.scale);
-				sketch.line(view.screenX(x1), view.screenY(y1), view.screenX(x2), view.screenY(y2));
+			lengthGrowth = Sketch.min(1f, 1.1f * lengthGrowth);
+			widthGrowth = Sketch.min(1f, 1.1f * widthGrowth);
+			sketch.strokeWeight(width * widthGrowth * view.scale);
+			float xMid = Sketch.lerp(x1, x2, lengthGrowth);
+			float yMid = Sketch.lerp(y1, y2, lengthGrowth);
+			sketch.line(view.screenX(x1), view.screenY(y1), view.screenX(xMid), view.screenY(yMid));
+			if ((children.size() == 0) && (!budBearing) && (width * widthGrowth >= branchWidth)) {
+				generateChildren();
+			}
+			if (lengthGrowth == 1) {
 				for (int i = 0; i < children.size(); ++i) {
 					children.get(i).draw(view);
 				}
+			}
+		}
+	}
+	
+	class Bud {
+		int growth = 1;
+		float animation = 1;
+		Branch parent;
+		
+		Bud() {
+			do {
+				parent = branches.get((int) sketch.random(branches.size()));
+				do {
+					parent = parent.children.get((int) sketch.random(parent.children.size()));
+				} while (parent.children.size() > 0);
+			} while ((Sketch.mag(parent.x2, parent.y2) > sketch.world.radius - World.transitionRadius) ||
+					(Sketch.dist(x, y, parent.x2, parent.y2) < 2 * radius));
+			for (Branch b = parent; b != null; b = b.parent) {
+				b.budBearing = true;
+			}
+			animation = 0;
+		}
+		
+		void grow() {
+			growth += 1;
+			animation += 1;
+		}
+		
+		void blossom() {
+			World w = new World(sketch, sketch.world, parent.x2, parent.y2);
+			w.x -= (w.portalRadius / w.radius) * w.nest.x;
+			w.y -= (w.portalRadius / w.radius) * w.nest.y;
+			
+			// Add the trunk.
+			float scaleUp = w.radius / w.portalRadius; 
+			float nextAngle = 0;
+			for (Branch b = parent; b != null; b = b.parent) {
+				nextAngle -= b.angle;
+			}
+			Branch refBranch = parent;
+			Branch trunkParent = null;
+			float dx = 0, dy = 0;
+			while ((refBranch != null) && (Sketch.mag(dx, dy) < 1.5 * w.radius)) {
+				float length = scaleUp * Sketch.dist(refBranch.x1, refBranch.y1, refBranch.x2, refBranch.y2);
+				Branch trunkBranch = new Branch(trunkParent, nextAngle, scaleUp * refBranch.width, length);
+				trunkBranch.lengthGrowth = 1;
+				trunkBranch.widthGrowth = 1;
+				trunkBranch.budBearing = true;
+				w.nest.trunk.add(trunkBranch);
+				trunkParent = trunkBranch;
+				nextAngle = -1 * refBranch.angle;
+				refBranch = refBranch.parent;
+				dx += trunkBranch.x2 - trunkBranch.x1;
+				dy += trunkBranch.y2 - trunkBranch.y1;
+			}
+			sketch.world.children.add(w);
+			buds.remove(this);
+		}
+		
+		void draw(WorldView view) {
+			float x = Sketch.lerp(parent.x1, parent.x2, parent.lengthGrowth);
+			float y = Sketch.lerp(parent.y1, parent.y2, parent.lengthGrowth);
+			animation = Sketch.max(0f, 0.9f * animation);
+			float diameter = ((((float) growth) - animation) / (float) blossomGrowth) * 100f * view.scale;
+			sketch.ellipse(view.screenX(x), view.screenY(y), diameter, diameter);
+			if ((((float) growth) - animation) >= blossomGrowth) {
+				blossom();
 			}
 		}
 	}
@@ -76,6 +167,8 @@ public class Nest extends GameObject {
 		radius = 100;
 		color = sketch.color(40, 80, 80);
 		branches = new ArrayList<Branch>();
+		trunk = new ArrayList<Branch>();
+		buds = new ArrayList<Bud>();
 		int branchCount = (int) sketch.random(5, 10);
 		for (int i = 0; i < branchCount; ++i) {
 			branches.add(new Branch());
@@ -85,10 +178,19 @@ public class Nest extends GameObject {
 	
 	public void draw(WorldView view) {
 		super.draw(view);
-		sketch.stroke(color);
 		sketch.strokeCap(Sketch.ROUND);
+		sketch.stroke(color);
 		for (int i = 0; i < branches.size(); ++i) {
 			branches.get(i).draw(view);
+		}
+		sketch.stroke(40, 60, 60);
+		for (int i = 0; i < trunk.size(); ++i) {
+			trunk.get(i).draw(view);
+		}
+		sketch.noStroke();
+		sketch.fill(120, 99, 50);
+		for (int i = 0; i < buds.size(); ++i) {
+			buds.get(i).draw(view);
 		}
 		animationDelay -= Sketch.min(0.0004f, animationDelay);
 	}
@@ -111,24 +213,18 @@ public class Nest extends GameObject {
 	}
 	
 	public void feed() {
-		sketch.audio.localSound(5,this);
-		if (growth < 1) {
-			float amt = 1 / (growth * 50);
-			growth += amt;
-			animationDelay += amt;
-			if (growth > 0.8) {
-				float wx = x;
-				float wy = y;
-				do {
-					for (Branch b = branches.get((int) sketch.random(branches.size())); b.children.size() != 0; b = b.children.get(0)) {
-						wx = b.x2;
-						wy = b.y2;
-					}
-				} while (Sketch.mag(wx, wy) > sketch.world.radius - World.portalRadius);
-				World w = new World(sketch, sketch.world, wx, wy);
-				sketch.world.children.add(w);
-				animationDelay += 1 - growth;
-				growth = 1;
+		if (life == 1) {
+			sketch.audio.localSound(5,this);
+			
+			for (int i = 0; i < branches.size(); ++i) {
+				branches.get(i).grow();
+			}
+			
+			for (int i = 0; i < buds.size(); ++i) {
+				buds.get(i).grow();
+			}
+			if (++growth % budGrowth == 0) {
+				buds.add(new Bud());
 			}
 		}
 	}

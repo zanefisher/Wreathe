@@ -13,7 +13,6 @@ public class Audio extends PApplet {
 	Synth[] globalSound = new Synth[2];
 	Synth beam = new Synth("beam");//attacking
 	
-
 	Sketch sketch;
 	boolean useAudio = true;
 	
@@ -22,8 +21,8 @@ public class Audio extends PApplet {
 	Audio(Sketch s){
 		sketch = s;
 		if(useAudio){
-			Music music = new Music();
-			
+			Music music = new Music(s);
+			new Thread(music).start();
 			localSound[0] = new Synth("attack");//begin of the attack
 			localSound[1] = new Synth("collect");//crystal
 			localSound[2] = new Synth("connect");
@@ -44,21 +43,25 @@ public class Audio extends PApplet {
 	
 	public void globalSound(int input){
 		//for sound doesn't need left and right
-		globalSound[input].create();
+		if(useAudio)
+			globalSound[input].create();
 	}
 	
 	public void beamSound(boolean attacking){
-		beaming += attacking ? 1 : -1;
-		beaming = Sketch.max(0,beaming);
-		if(beaming < 12)
-			beam.set("amp", Sketch.sqrt(beaming / 48f));
-	}
+		if(useAudio){
+			beaming += attacking ? 1 : -1;
+			beaming = Sketch.max(0,beaming);
+			if(beaming < 12)
+				beam.set("amp", Sketch.sqrt(beaming / 48f));
 	
+		}
+	}
 	public void beamSetZero(){
-		beaming = 0;
-		beam.set("amp", beaming);
+		if(useAudio){
+			beaming = 0;
+			beam.set("amp", beaming);
+		}
 	}
-	
 	public void localSound(int input, GameObject other){
 		localSound(input,other.x,other.y);
 	}

@@ -2,7 +2,8 @@ package game;
 
 public class Swarmling extends GameObject {
 	static Swarmling lastInLine;
-
+	static Swarmling firstInLine;
+	
 	static final float maxSpeed = 3.4f, maxAccel = 0.3f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float maxAttractRadius=90;
@@ -10,7 +11,7 @@ public class Swarmling extends GameObject {
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
-	static final float attackPower = 0.2f;
+	static final float attackPower = 20f;
 	static final float swarmlingAvoidRadius = 10f;
 	static final int puffPeriod = 10;
 	int puffPhase;
@@ -33,6 +34,8 @@ public class Swarmling extends GameObject {
 	float carryX, carryY; // swarmling's position relative to what it's carrying
 	
 	Nest nest = null;
+	
+	World enteringWorld = null;
 
 	Obstacle lastFrameTarget = null; // find if the swarmling start to attack, for use of audio
 	
@@ -53,6 +56,9 @@ public class Swarmling extends GameObject {
 	public void follow(Swarmling s) {
 		following = s;
 		lastInLine = this;
+		if(s == sketch.leader){
+			firstInLine = this;
+		}
 		queueCooldown = 15;
 		sketch.audio.localSound(2,this);
 
@@ -70,10 +76,14 @@ public class Swarmling extends GameObject {
 	        		s = s.following;
 	        	}
 	        	s.following = following;
+        		if(s.following == sketch.leader){
+        			firstInLine = s;
+        		}
 	        }
 	        following = null;
 	        followCooldown = 60;
 	    }
+		
 		sketch.audio.globalSound(0);
 	}
 	
@@ -103,13 +113,18 @@ public class Swarmling extends GameObject {
 	}
 	
 	public boolean update() {
-		if (sketch.usingController) 
-			attractRadius = sketch.controller.getJz()*maxAttractRadius;
-		else 
-			attractRadius = maxAttractRadius;
-
-
 		
+		if (enteringWorld != null) {
+			x = Sketch.lerp(x, enteringWorld.x, 0.05f);
+			y = Sketch.lerp(y, enteringWorld.y, 0.05f);
+			float dist = Sketch.dist(x, y, enteringWorld.x, enteringWorld.y);
+			float portalR = enteringWorld.portalRadius;
+//			Sketch.println(distTo(enteringWorld) + ", " + Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			radius = swarmlingRadius * Sketch.min(1, Sketch.map(dist, World.transitionRadius, portalR, 1, portalR / enteringWorld.radius));
+			//Sketch.println(x + ", " + y + ", " + radius);
+			return dist > enteringWorld.portalRadius;
+		}
+
 		float ddx = 0, ddy = 0; //acceleration
 		float avoidFactor = 1f;
 		
@@ -150,10 +165,12 @@ public class Swarmling extends GameObject {
 		//attackCooldown is set to 0 now	
 //		attackCooldown = Sketch.max(0, attackCooldown-1);
 		
-		//closest food
-		Food targetFood = null;
+		//closest carryable
+		Carryable targetCarryable = null;
 		float foodDist = Food.distanceCarry;
 		float nestDist = 0; 
+		float keyDist = Key.distanceCarry;
+		
 		// Iterate through other GameObjects in the world,
 		// checking for collision and movement influence
 		for (int i = 0; i < sketch.world.contents.size(); ++i) {
@@ -167,12 +184,15 @@ public class Swarmling extends GameObject {
 					nestDist = distTo(nest);
 				}
 				
+				WanderingEnemy tmpEnemy = null;
+				if (other instanceof WanderingEnemy)
+					tmpEnemy = (WanderingEnemy)other;
 				// death on collision 
-				if (distance <= 0 && (other instanceof Obstacle || other instanceof WanderingEnemy) /*&& nestDist > 0*/) {
+				if (distance <= 0 && (other instanceof Obstacle || tmpEnemy!=null )/*&& nestDist > 0*/) {
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
-						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 2;
+						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 3f;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
 					sketch.audio.localSound(4,this);
@@ -180,30 +200,26 @@ public class Swarmling extends GameObject {
 					return false;
 				}	
 				
-				if (other instanceof Key){
-					if(distance <= 0) {
-						Key collectable = (Key)other;
-						collectable.collected();
+				if ((carrying == null) && (other instanceof Key) && (distance > 0) && (distance <= keyDist)){
+					targetCarryable = (Carryable)other;
 //						if(sketch.world.chasingEnemy == null && sketch.world.level >= 5 ){
 //							sketch.world.chasingEnemy = new ChasingEnemy(sketch);
 //							sketch.world.chasingEnemy.initInWorld(sketch.world);
 //						}
-					}
 				}
 				//find closest food
 				if ((carrying == null) && (other instanceof Food) && (distance>0) && (distance <= foodDist)) {
-					targetFood = (Food)other;
+					targetCarryable = (Carryable)other;
 				}
 				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
 					//start carrying
 					carry((Carryable) other);
-
 				}
 				
 				// attack behavoiur with obstacles
 				if (other instanceof Obstacle) {
-
+					if(!(target!= null && target.obstacleLife>=0 && distTo(target)<attackRadius))
 					// check if it can be our new target.
 					if ((attackCooldown == 0) && (distance < targetDist) && (carrying == null)) {
 						target = (Obstacle) other;
@@ -212,7 +228,6 @@ public class Swarmling extends GameObject {
 				}
 				
 				if (other instanceof WanderingEnemy){
-					WanderingEnemy tmpEnemy = (WanderingEnemy)other;
 					if(distance < WanderingEnemy.predateRadius && tmpEnemy.isAttacking==true /*&& nestDist > 0*/){
 						ddx += (tmpEnemy.x - x) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
 						ddy += (tmpEnemy.y - y) / ((distance/WanderingEnemy.predateRadius + 0.3f) * 10);
@@ -225,6 +240,7 @@ public class Swarmling extends GameObject {
 						float centerDist = Sketch.dist(x, y, other.x, other.y);
 						ddx -= ((other.x - x) / centerDist) / 10;
 						ddy -= ((other.y - y) / centerDist) / 10;
+
 					}else /*if (nestDist > 0)*/{
 					float centerDist = Sketch.dist(x, y, other.x, other.y);
 					ddx += avoidFactor * (-(other.x - x) / centerDist) * (1 - (distance / other.avoidRadius)) / 4;
@@ -250,6 +266,10 @@ public class Swarmling extends GameObject {
 			ddx -= distOutsideWorld * x / sketch.world.radius;
 			ddy -= distOutsideWorld * y / sketch.world.radius;
 		}
+		
+
+		if(lastFrameTarget!= null && lastFrameTarget.obstacleLife>=0 && distTo(lastFrameTarget)<attackRadius)
+		target = lastFrameTarget;
 		
 		if (target != null){
 			Obstacle tmp = (Obstacle)target;
@@ -282,13 +302,26 @@ public class Swarmling extends GameObject {
 			ddy *= maxAccel / accel;
 		}
 		
-		// Add food vector if we found a food
-		if(targetFood != null && targetFood.carriedBy.size()<targetFood.carryCap){
+		// Add carry vector if we found a carryable
+		if(targetCarryable != null && targetCarryable.carriedBy.size()<targetCarryable.carryCap){
 			unfollow();
-			ddx += 2f*maxAccel*(targetFood.x - x) / Sketch.dist(x, y,targetFood.x, targetFood.y);
-			ddy += 2f*maxAccel*(targetFood.y - y) / Sketch.dist(x, y,targetFood.x, targetFood.y);
+			ddx += 2f*maxAccel*(targetCarryable.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
+			ddy += 2f*maxAccel*(targetCarryable.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y);
 
+			if (true) {
+				float avoidFactorForSwarmling = 0.2f;
+			
+				for (int i = 0; i < targetCarryable.carriedBy.size(); ++i) {
+					Swarmling other = targetCarryable.carriedBy.get(i);
+					float centerDist = Sketch.dist(x, y, other.x, other.y);
+					if(centerDist<5*radius){
+						ddx -= avoidFactorForSwarmling*((other.x - x) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+						ddy -= avoidFactorForSwarmling*((other.y - y) / Sketch.dist(x, y,targetCarryable.x, targetCarryable.y));
+					}
+				}
+			}
 		}
+		
 		
 		dx += ddx;
 		dy += ddy;
@@ -307,7 +340,7 @@ public class Swarmling extends GameObject {
 		else {
 			carrying.dx += dx * (1 / carrying.weight);
 			carrying.dy += dy * (1 / carrying.weight);
-			float carrySpeed = Sketch.mag(dx, dy);
+			float carrySpeed = Sketch.mag(carrying.dx, carrying.dy);
 			float maxCarrySpeed = maxSpeed / carrying.weight;
 			if (carrySpeed > maxCarrySpeed) {
 				carrying.dx *= maxCarrySpeed / carrySpeed;
@@ -316,21 +349,37 @@ public class Swarmling extends GameObject {
 			x = carrying.x + carryX;
 			y = carrying.y + carryY;
 		}
-		if(sketch.usingController){
-			if (sketch.controller.getJz()>0.1f && (following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
-		else
-		{
-			if ((following == null) && (carrying == null) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
-				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
-			}
-		}
+//		if(sketch.usingController){
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
+//		else
+//		{
+//			if (((following != null) || (carrying != null)) && ((puffPhase + sketch.frameCount) % puffPeriod == 0)) {
+//				sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(255), 2, 0.7f, 20));
+//			}
+//		}
 		return true;
 	}
 	
 	public void draw(WorldView view) {
+		
+		float outlineWidth = 0f;
+				
+		if (following != null) {
+			outlineWidth = 1.5f;
+		} else if ((sketch.controller.getJz() > 0) && (sketch.controller.getJrz() == 0) && (carrying == null)) {
+			outlineWidth = Sketch.abs(Sketch.sin((float) sketch.frameCount / 10f)) * 5 * sketch.controller.getJz();
+		}
+		
+		if (outlineWidth > 0) {
+			sketch.noStroke();
+			sketch.fill(0, 0, 99);
+			float d = (radius + outlineWidth) * view.scale * 2;
+			sketch.ellipse(view.screenX(x), view.screenY(y), d, d);
+		}
+		
 		super.draw(view);
 		
 		if (target != null) {

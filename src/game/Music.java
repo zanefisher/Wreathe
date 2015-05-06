@@ -11,6 +11,7 @@ public class Music extends PApplet implements Runnable {
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
 	
+
 	float[][][][] score =
 		//treble
 	   {{{{64f, 62f, 60f, 64f, 62f, 60f, 64f, 62f, 60f, 64f, 62f, 60f,
@@ -20,6 +21,7 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{69f, 62f, 60f, 57f, 69f, 62f, 60f, 57f, 64f, 60f, 57f, 64f, 62f, 60f, 57f,
 		   67f, 62f, 61f, 59f, 67f, 62f, 61f, 59f, 64f, 61f, 59f, 64f, 62f, 61f, 59f},
+
 		  {3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f,
 		   3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 3/32f, 1/8f, 1/8f, 1/8f, 3/32f, 3/32f, 3/32f, 3/32f}},
 		   
@@ -46,6 +48,7 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{48f, 53f, 48f, 53f, 57f, 60f, 48f, 53f, 48f, 53f, 57f, 62f, 48f, 53f, 48f, 53f, 57f, 64f,
 		   47f, 47f, 47f, 50f, 57f, 62f, 0f},
+		   
 		  {1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f, 1/16f, 1/16f, 1/12f, 1/12f, 1/12f, 1/8f,
 		   1/8f, 1/12f, 1/12f, 1/12f, 1/16f, 5/16f, 3/4f}},
 		   
@@ -61,6 +64,7 @@ public class Music extends PApplet implements Runnable {
 		   
 		 {{51f, 58f, 56f, 58f, 51f, 58f, 61f, 51f, 58f, 56f, 54f, 56f, 58f, 61f, 51f, 54f, 58f,
 		   56f, 51f, 54f, 58f, 56f, 51f, 54f, 51f, 54f, 56f, 58f, 51f, 54f, 56f, 58f},
+		   
 		  {1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/16f, 1/8f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f, 1/10f,
 		   1/8f, 1/8f, 1/8f, 1/8f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/12f, 1/8f, 1/12f, 1/12f, 1/12f, 1/8f}}},
 		   
@@ -155,9 +159,9 @@ public class Music extends PApplet implements Runnable {
 		
 	}
 	
-	float cpsmidi (float freq){
+	float cpsmidi(float freq){
 		
-	  return (log(freq / 440f) / log(2f)) * 12 + 69;
+	  return Sketch.pow(2, (freq - 69) / 12) * 440;
 	  
 	}
 	
@@ -186,6 +190,7 @@ public class Music extends PApplet implements Runnable {
 				
 			adsr[0] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
 			adsr[1] = new ADSR(0.2f, 0.06f, 0.3f, 0.5f, 0.5f);
+
 			oscil[0].patch(adsr[0]);
 			oscil[1].patch(adsr[1]);
 			

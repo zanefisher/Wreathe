@@ -9,30 +9,46 @@ public class Controller extends PApplet {
 	//for controller
 	ControlIO control;
 	ControlDevice device = null;
+	Sketch sketch = null;
 	
-	float jx,jy;
+	float jx,jy,jz,jrx,jry,jrz;
+	float mx,my;
+	boolean start = true;
+	boolean back = false;
 	boolean leading;
+	boolean lastFrameStartPressed = start;
+	boolean useLeftTrigger = true;
+	boolean useRightTrigger = true;
 	
-	public Controller() {
+	public Controller(Sketch s) {
+		sketch = s;
 		// Initialise the ControlIO
 		control = ControlIO.getInstance(this);
 		// Find a device that matches the configuration file
 		device = control.getMatchedDevice("joystick");
 	}
-	
-	public void update(){
-		jx = device.getSlider("X").getValue();
-		jy = device.getSlider("Y").getValue();
-	}
-	
+		
 	public float getJx(){
-		jx = device.getSlider("X").getValue();
+		if(!sketch.usingController)updateMxMy();
+		jx = (sketch.usingController)?device.getSlider("X").getValue():mx;
 		return jx;
 	}
 	
 	public float getJy(){
-		jy = device.getSlider("Y").getValue();
+		if(!sketch.usingController)updateMxMy();
+		jy = (sketch.usingController)?device.getSlider("Y").getValue():my;
 		return jy;
+	}
+	
+	public void updateMxMy(){
+		float dx = sketch.mouseX - sketch.camera.screenX(sketch.leader.x);
+		float dy = sketch.mouseY - sketch.camera.screenY(sketch.leader.y);
+		float dist = Sketch.mag(dx, dy);
+		float scale = Sketch.max(dist, sketch.leader.mouseMaxSpeedRadius);
+		dx /= scale;
+		dy /= scale;
+		mx = dx;
+		my = dy;
 	}
 	
 	public boolean isPressed(){
@@ -45,13 +61,38 @@ public class Controller extends PApplet {
 	}
 	
 	public float getJz(){
-		return (device.getSlider("Z").getValue()+1)/2f; //from 0~1
+		jz = (sketch.usingController)?(device.getSlider("Z").getValue()+1)/2f:((sketch.mousePressed)?1:0);
+		jz = (useLeftTrigger)?jz:0;
+		return jz; //from 0~1
 	}
 	
 	public float getJrz(){
-		return (device.getSlider("RZ").getValue()+1)/2f; //from 0~1
+		jrz = (sketch.usingController)?(device.getSlider("RZ").getValue()+1)/2f:((sketch.mousePressed)?0:1);
+		jrz = (useRightTrigger)?jrz:0;
+		return jrz; //from 0~1
 	}
 	
+	public float getJrx(){
+		jrx = (sketch.usingController)?device.getSlider("RX").getValue():0;
+		return jrx;
+	}
 	
+	public float getJry(){
+		jry =  (sketch.usingController)?device.getSlider("RY").getValue():0;
+		return jry;
+	}
+	
+	public boolean getStart(){
+		//return true if game start, false if game stop
+		boolean pressed= (sketch.usingController)?device.getButton("START").pressed():false;
+		if (pressed && (!lastFrameStartPressed)) start = !start;
+		lastFrameStartPressed = pressed;
+		return start;
+	}
+	
+	public boolean getBack(){
+		back = (sketch.usingController)?device.getButton("BACK").pressed():false;
+		return back;
+	}
 	
 }

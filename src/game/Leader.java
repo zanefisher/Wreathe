@@ -14,32 +14,24 @@ public class Leader extends Swarmling {
 		color = sketch.color(0, 0, 255);
 		avoidRadius = 10f;
 		leading = false;
-		
+		radius = swarmlingRadius + 1.5f;
 	}
 	// Move towards the mouse. If the mouse is not pressed, move at double speed.
 	public boolean update() {
 		float minOffset;
-		
-		if (sketch.usingController) {
-			leading = sketch.controller.isPressed();
-			minOffset = 0.15f;
-			
-			dx = sketch.controller.getJx();
-			dy = sketch.controller.getJy();
-			
-		} else {
-			leading = sketch.mousePressed;
+
+		if (sketch.usingController) 
+		{
+			minOffset = 0.15f;		
+		} 
+		else 
+		{
 			minOffset = 0.25f;
-
-			dx = sketch.mouseX - sketch.camera.screenX(x);
-			dy = sketch.mouseY - sketch.camera.screenY(y);
-			float dist = Sketch.mag(dx, dy);
-			float scale = Sketch.max(dist, mouseMaxSpeedRadius);
-
-			dx /= scale;
-			dy /= scale;
 		}
-		
+		leading = sketch.controller.isPressed();
+		Swarmling.attractRadius = sketch.controller.getJz()*maxAttractRadius;
+		dx = sketch.controller.getJx();
+		dy = sketch.controller.getJy();
 		// ignore small offsets;
 		dx = Sketch.abs(dx) < minOffset ? 0 : dx;
 		dy = Sketch.abs(dy) < minOffset ? 0 : dy;
@@ -48,10 +40,32 @@ public class Leader extends Swarmling {
 			speed = maxSpeed + sketch.controller.getJrz()*maxSpeed;
 		else 
 			speed = leading ? maxSpeed : 2 * maxSpeed;
+		
+		//slow the leader when someone in the line dies
+		if(firstInLine != null && Sketch.dist(x, y, firstInLine.x, firstInLine.y) > 100){
+			speed *= 0.8f;
+		}
+				
+		//add puff when not holding the right trigger
+		if (speed > maxSpeed) {
+			sketch.world.contents.add(new Puff(sketch, x, y, sketch.color(color, 50), radius * sketch.distortion, 0, 5));
+		}
 			
 		dx *= speed;
 		dy *= speed;
-		
+		//bounce off the obstacles
+		if(speed <= maxSpeed){
+			for(int i = 0; i< sketch.world.contents.size(); i++){
+				GameObject other = sketch.world.contents.get(i);
+				if(other instanceof Obstacle){
+					if(distTo(other) <= other.avoidRadius){
+						float centerDist = Sketch.dist(x, y, other.x, other.y);
+						dx += (-(other.x - x) / centerDist) * (1 - (distTo(other) / other.avoidRadius)) * 3;
+						dy += (-(other.y - y) / centerDist) * (1 - (distTo(other) / other.avoidRadius)) * 3;
+					}
+				}
+			}
+		}
 		x += dx * sketch.distortion;
 		y += dy * sketch.distortion;
 		
@@ -71,8 +85,7 @@ public class Leader extends Swarmling {
 			y = - y * 0.9f;
 		}
 		
-		
-		
+		//Sketch.println("x: " + x + "y: " + y);
 		return true;
 	}
 	
