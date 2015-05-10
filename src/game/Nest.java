@@ -106,11 +106,11 @@ public class Nest extends GameObject {
 		boolean check() {
 			if (Sketch.mag(parent.x2, parent.y2) > sketch.world.radius - World.transitionRadius) return false;
 			if (Sketch.dist(x, y, parent.x2, parent.y2) < 2 * radius) return false;
-			for (int i = 0; i < buds.size(); ++i) {
-				float otherX = buds.get(i).parent.x2;
-				float otherY = buds.get(i).parent.y2;
-				if (Sketch.dist(otherX, otherY, parent.x2, parent.y2) < 2 * sketch.world.ringRadius) return false;
-			}
+//			for (int i = 0; i < buds.size(); ++i) {
+//				float otherX = buds.get(i).parent.x2;
+//				float otherY = buds.get(i).parent.y2;
+//				if (Sketch.dist(otherX, otherY, parent.x2, parent.y2) < 2 * sketch.world.ringRadius) return false;
+//			}
 			return true;
 		}
 		
@@ -124,6 +124,13 @@ public class Nest extends GameObject {
 			for (Branch b = parent; b != null; b = b.parent) {
 				b.budBearing = true;
 			}
+			while (parent.width * 35 > 3 * maxWidth) {
+				Branch b = new Branch(parent, parent.angle + sketch.random(Sketch.HALF_PI) - Sketch.QUARTER_PI,
+						0.7f * parent.width, 0.7f * Sketch.dist(parent.x1, parent.y1, parent.x2, parent.y2));
+				b.budBearing = true;
+				parent.children.add(b);
+				parent = b;
+			}
 			animation = 0;
 		}
 		
@@ -134,8 +141,6 @@ public class Nest extends GameObject {
 		
 		void blossom() {
 			World w = new World(sketch, sketch.world, parent.x2, parent.y2);
-			w.x -= (w.portalRadius / w.radius) * w.nest.x;
-			w.y -= (w.portalRadius / w.radius) * w.nest.y;
 			
 			// Add the trunk.
 			float scaleUp = w.radius / w.portalRadius; 
@@ -154,16 +159,20 @@ public class Nest extends GameObject {
 					trunkParent.children.add(trunkBranch);
 				}
 				trunkParent = trunkBranch;
-//				nextAngle = Sketch.PI - refBranch.angle;
 				refBranch = refBranch.parent;
 				dx += trunkBranch.x2 - trunkBranch.x1;
 				dy += trunkBranch.y2 - trunkBranch.y1;
 			}
+			
+			w.x -= (w.portalRadius / w.radius) * w.nest.trunk.x1;
+			w.y -= (w.portalRadius / w.radius) * w.nest.trunk.y1;
+			
 			sketch.world.children.add(w);
 			buds.remove(this);
 		}
 		
 		void draw(WorldView view) {
+			if (parent.lengthGrowth < 1) return;
 			float x = Sketch.lerp(parent.x1, parent.x2, parent.lengthGrowth);
 			float y = Sketch.lerp(parent.y1, parent.y2, parent.lengthGrowth);
 			animation = Sketch.max(0f, 0.9f * animation);

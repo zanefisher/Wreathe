@@ -173,7 +173,7 @@ public class World extends GameObject {
 			wanderingEnemyMax = 0;
 		
 			//sprinkleFoodNumber = 12;
-			swarmlingsGenerated = 3;
+			swarmlingsGenerated = 5;
 		}
 		else if (level == 2){
 			radius = 750;
@@ -245,7 +245,7 @@ public class World extends GameObject {
 		
 		if(level == 2){
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
-			generateStillMovingObstacles(5);
+			generateStillMovingObstacles(7);
 		}
 
 		if(level == 3)
@@ -698,7 +698,7 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 9 && level == 2){
-			sketch.flashingText = "Don’t let your followers touch the obstacles.";
+			sketch.flashingText = "Don/'t let your followers touch the obstacles.";
 			redAlarmCount += 1; 
 			if(redAlarmCount >= 80){
 				sketch.flashingText = "";
@@ -729,6 +729,7 @@ public class World extends GameObject {
 			}
 			//Sketch.println(sketch.alarm);
 			if(alarm){
+				textTimeCount = 0;
 				sketch.stage = 12;
 			}
 		}
@@ -746,18 +747,19 @@ public class World extends GameObject {
 		else if(sketch.stage == 13 && level == 4){
 			textTimeCount += 1;
 			if(textTimeCount < 100){
-				sketch.centerText = "Get The Shiny Circle from your enemy";
+				sketch.centerText = "Collect the blue gem.";
 			}
-			
-			if(textTimeCount >= 100){
-				sketch.centerText = "";
+		
+			else if(textTimeCount >= 100 && key.isCollected && !key.isInVault){
+				sketch.centerText = "You need to collect five gems.";
 			}
-			if(key.isCollected){
-				textTimeCount = 0;
-				sketch.centerText = "You need to collect five of them";
+			else if(textTimeCount >= 100 && key.isInVault){
+				sketch.centerText = "The deeper you go, the more gems you will find.";
 			}
-			if(key.isInVault){
-				sketch.centerText = "The deeper you get the more gems you will find";
+			else{
+				if(textTimeCount >= 300){
+					sketch.centerText = "";
+				}
 			}
 		}
 	};

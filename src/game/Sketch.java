@@ -417,6 +417,9 @@ public class Sketch extends PApplet {
 				world.children.get(i).open = true;
 			}
 		} else if (key == 'r') {
+			while (Swarmling.lastInLine != leader) {
+				Swarmling.lastInLine.unfollow();
+			}
 			world = new World(this, null, 0, 0);
 			world.open = true;
 			stage = 0;

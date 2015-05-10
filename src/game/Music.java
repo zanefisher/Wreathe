@@ -8,6 +8,9 @@ public class Music extends PApplet implements Runnable {
 
 	Minim minim;
 	AudioOutput out;
+	Wavetable down = WavetableGenerator.gen9(1024, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
+			new float[]{1, 0.48f, 0.22f, 0.12f, 0.06f}, new float[]{0f, 20f, 10f, 5f, 2.5f});
+	Wavetable off = WavetableGenerator.gen10(1024, new float[]{1f, 0.2f, 0.1f});
 	
 	int[] section = {0, 0, 1, 1, 0, 0, 1, 1, 0, 2, 3, 3, 4, 4}; 
 	
@@ -131,7 +134,6 @@ public class Music extends PApplet implements Runnable {
 				}
 				
 				out.resumeNotes();
-				//Sketch.println("over");
 				Thread.sleep((long)time * 1000);
 				
 			}
@@ -154,9 +156,6 @@ public class Music extends PApplet implements Runnable {
 		
 		Oscil[] oscil = new Oscil[2];
 		ADSR[] adsr = new ADSR[2];
-		Wavetable down = WavetableGenerator.gen9(1024, new float[]{1f, 2f, 3.01f, 4.015f, 5.02f},
-						new float[]{1, 0.48f, 0.22f, 0.12f, 0.06f}, new float[]{0f, 20f, 10f, 5f, 2.5f});
-		Wavetable off = WavetableGenerator.gen10(1024, new float[]{1f, 0.2f, 0.1f});
 		
 		
 		Synth(int instrument, float time, float frequency, int iteration){
