@@ -191,16 +191,16 @@ public class Swarmling extends GameObject {
 					tmpEnemy = (WanderingEnemy)other;
 				// death on collision 
 				if (distance <= 0 && (other instanceof Obstacle || tmpEnemy!=null )/*&& nestDist > 0*/) {
+					sketch.audio.localSound(4,this);
+					if(lastFrameTarget != null) sketch.audio.beamSound(false);
+					if(sketch.world.level == 2) sketch.world.alarm = true;
+					if((sketch.world.level == 3) && (following != null)) sketch.world.alarm = true;
 					unfollow();
 					uncarry();
 					if(other instanceof Obstacle){
 						((Obstacle) other).obstacleLife -= attackPower * sketch.frameRate * 3f;
 					}
 					sketch.world.contents.add(new Burst(sketch, x, y, color));
-					sketch.audio.localSound(4,this);
-					if(lastFrameTarget != null) sketch.audio.beamSound(false);
-					if(sketch.world.level == 2) sketch.world.alarm = true;
-					if(sketch.world.level == 3 && sketch.leader.leading) sketch.world.alarm = true;
 					return false;
 				}	
 				

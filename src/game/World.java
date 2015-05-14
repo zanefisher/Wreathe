@@ -245,7 +245,7 @@ public class World extends GameObject {
 		
 		if(level == 2){
 			generateStationaryObstacles((int)(stationaryObstacleMinNumber*0.2*radiusFactor),(int)(stationaryObstacleMaxNumber*0.2*radiusFactor));
-			generateStillMovingObstacles(7);
+			generateStillMovingObstacles();
 		}
 
 		if(level == 3)
@@ -262,10 +262,13 @@ public class World extends GameObject {
 			contents.add(f);
 		}
 		
+		if (level == 3) swarmlingsGenerated += 6;
+			
 		//swarmling generation, they should try not to be spawned on the stationary obstacles
 		for(int i = 0; i < swarmlingsGenerated;){
-			float rx = nest.x + sketch.random(nest.radius) - (nest.radius / 2);
-			float ry = nest.y + sketch.random(nest.radius) - (nest.radius / 2);
+			float spawnRadius = level == 3 ? radius : nest.radius;
+			float rx = nest.x + sketch.random(spawnRadius) - (spawnRadius / 2);
+			float ry = nest.y + sketch.random(spawnRadius) - (spawnRadius / 2);
 			//check if the swarmlins are generated in with in the stationary ostacles
 //			for(int j = 0; j < contents.size() - i; j++){
 //				if(Sketch.dist(rx, ry, contents.get(j).x, contents.get(j).y) <= contents.get(j).radius){
@@ -467,8 +470,8 @@ public class World extends GameObject {
 		}
 	}
 	
-	public void generateStillMovingObstacles(int number){
-		for(int i = 0; i < number;){
+	public void generateStillMovingObstacles(){
+		for(int foodCount = 0; foodCount < nest.budGrowth + nest.blossomGrowth;){
 			float rx = 0 + sketch.random(-radius * 0.8f, radius * 0.8f);
 			float ry = 0 + sketch.random(-radius * 0.8f, radius * 0.8f);
 			if(Sketch.dist(rx, ry, nest.x, nest.y) <= nest.radius + 200) {continue;}
@@ -476,7 +479,7 @@ public class World extends GameObject {
 				count = 0;
 				MovingObstacle stillMO = new MovingObstacle(sketch, rx, ry);
 				stillMO.initInWorld(this);		
-				i++;
+				foodCount += stillMO.foodContained.size();
 			}
 		}
 	}
