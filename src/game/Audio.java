@@ -67,16 +67,18 @@ public class Audio extends PApplet {
 	}
 	public void localSound(int input, float ix, float iy){
 		if(useAudio){
-			//TO DO: change it to match the view of current window
-			float maxDist = sketch.width/2;
 			
+			float maxDistOnX = sketch.width/2;
 			
-			float distance = Sketch.sqrt((ix-sketch.camera.x)*(ix-sketch.camera.x)+(iy-sketch.camera.y)*(iy-sketch.camera.y));
-			if (distance<=maxDist)
+			float distanceOnX = Sketch.abs(ix-sketch.camera.x);
+			
+			// check if the local sound is inside the window
+			if (Sketch.abs(ix-sketch.camera.x)<sketch.width/2 && Sketch.abs(iy-sketch.camera.y)<sketch.height/2)
 			{
-				float scale = ((ix-sketch.camera.x)+maxDist)/(2*maxDist); // from 0~1
+				float scale = ((ix-sketch.camera.x)+maxDistOnX)/(2*maxDistOnX); // from 0~1
 
-				float overallAmp = 1-distance/maxDist;
+				float overallAmp = 1-distanceOnX/maxDistOnX;
+				
 				float left = Sketch.sqrt(overallAmp*(1-scale)/2f);
 				float right = Sketch.sqrt(overallAmp*scale/2f);
 				
