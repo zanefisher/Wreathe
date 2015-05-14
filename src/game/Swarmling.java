@@ -217,8 +217,12 @@ public class Swarmling extends GameObject {
 				}
 				
 				if ((carrying == null) && (other instanceof Carryable) && (distance <= 0)) {
-					//start carrying
-					carry((Carryable) other);
+					//fix bug when gems is collected, swarmlings still try to carry
+					if(!(other instanceof Key && ((Key) other).isCollected))
+					{
+						//start carrying
+						carry((Carryable) other);
+					}
 				}
 				
 				// attack behavoiur with obstacles
