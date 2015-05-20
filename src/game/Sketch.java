@@ -237,8 +237,6 @@ public class Sketch extends PApplet {
 		    		  Swarmling.attractRadius*2 * camera.scale, Swarmling.attractRadius*2 * camera.scale);
 		}
 		
-		//updateAndDrawTutorial();
-		
 		//display frame rate
 		if (showFPS) {
 			fill(0, frameRate < 0.9 * targetFrameRate ? 99 : 0, 99);
@@ -443,54 +441,6 @@ public class Sketch extends PApplet {
 		} else if (key == 'f') {
 			showFPS = !showFPS;
 		}
-	}
-	
-	void updateAndDrawTutorial() {
-		switch(tutorialStage) {
-		case 0:
-			return;
-		case 4:
-			flashingText = "Move with the left stick.";
-			if (leader.distTo(world.nest) > 0) {
-				tutorialStage -= 1;
-				tutorialAnimationStart = frameCount;
-			}
-			break;
-		case 3:
-			flashingText = "Hold left trigger to build the chain.";
-			int count = 0;
-			Swarmling s = Swarmling.lastInLine;
-			while (s != leader) {
-				s = s.following;
-				if (++count >= 8) {
-					tutorialStage -= 1;
-					tutorialAnimationStart = frameCount;
-					break;
-				}
-			}
-			break;
-		case 2:
-			flashingText = "Hold right trigger to break the chain and move fast.";
-			if (controller.getJrz() > 0) {
-				if (tutorialRightTriggerCount++ > 30) {
-					tutorialStage -= 1;
-					tutorialAnimationStart = frameCount;
-				}
-			} else {
-				tutorialRightTriggerCount = 0;
-			}
-			break;
-		case 1:
-			flashingText = "Collect the Yellows using your followers.";
-			if (world.nest.growth > 0.5) {
-				tutorialStage -= 1;
-				tutorialAnimationStart = frameCount;
-			}
-			break;
-		}
-//		float alpha = min(1, ((float) frameCount - (float) tutorialAnimationStart) / 40f);
-//		fill(0,0,99, alpha * 100);
-//		text(centerText, width / 2, height / 2);
 	}
 	
 	public static void main(String args[]) {

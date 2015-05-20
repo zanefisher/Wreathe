@@ -321,7 +321,7 @@ public class World extends GameObject {
 				}
 			}
 			this.contents.add(key);
-			if(level ==4){
+			if(level !=4){
 				WanderingEnemy wanderingEnemy= new WanderingEnemy(sketch,key);			
 				wanderingEnemy.initInWorld(this);
 			}
@@ -512,7 +512,7 @@ public class World extends GameObject {
 		count+=1;
 		if(count >= punishingTime){
 			count = 0;
-			swarmlingsGeneratedForDeadObstacle -= difficulty;
+			swarmlingsGeneratedForDeadObstacle -= difficulty / 4;
 			Sketch.println(swarmlingsGeneratedForDeadObstacle);
 		}
 		 Swarmling.queueCooldown = Sketch.max(0, Swarmling.queueCooldown-1);
@@ -701,7 +701,7 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 9 && level == 2){
-			sketch.flashingText = "Don/'t let your followers touch the obstacles.";
+			sketch.flashingText = "Don't let your followers touch the obstacles.";
 			redAlarmCount += 1; 
 			if(redAlarmCount >= 80){
 				sketch.flashingText = "";
