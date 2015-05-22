@@ -42,7 +42,7 @@ public class Leader extends Swarmling {
 			speed = leading ? maxSpeed : 2 * maxSpeed;
 		
 		//slow the leader when someone in the line dies
-		if(firstInLine != null && Sketch.dist(x, y, firstInLine.x, firstInLine.y) > 100){
+		if(firstInLine != null && Sketch.dist(x, y, firstInLine.x, firstInLine.y) > 5){
 			speed *= 0.8f;
 		}
 				
@@ -89,7 +89,7 @@ public class Leader extends Swarmling {
 			
 		//exit the world
 		} else {
-			if ((sketch.world.level > 3) && (centerDist > sketch.world.radius + 5)) {
+			if ((sketch.world.level > 3) && (centerDist > sketch.world.radius + World.transitionRadius)) {
 				while (lastInLine != this) {
 					lastInLine.unfollow();
 				}

@@ -15,7 +15,7 @@ public class World extends GameObject {
 	boolean open = false;
 	float ringRadius = 250;
 	int swarmlingsInRing = 0;
-	int openingRequirement = (int) (ringRadius / 14f);
+	int openingRequirement = (int) (ringRadius / 18f);
 	float ringWidth = 70;
 	static float transitionRadius = 200;
 	float portalRadius = 50; //radius of the world while you're outside it.
@@ -677,7 +677,7 @@ public class World extends GameObject {
 			}
 		}
 		else if(sketch.stage == 5 && level == 1){
-			sketch.centerText = /*"This is Wreathe."*/ "";
+			sketch.centerText = "This is Wreathe.";
 		}
 		else if(sketch.stage == 6 && level == 2){
 			sketch.centerText = "Hold the right trigger to move through obstacles";

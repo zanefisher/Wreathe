@@ -23,6 +23,12 @@ public class Sketch extends PApplet {
 	float minZoom = 0.2f;
 	float maxZoom = 1.5f;
 	float distortion = 1;
+	float cameraDx = 0f;
+	float cameraDy = 0f;
+	float cameraDzoom = 0f;
+	float cameraMaxAccel = 0.75f;
+	float cameraMaxSpeed = 30f;
+	float cameraMaxZoomRate = 0.05f;
 	
 	Controller controller = new Controller(this);
 	boolean usingController = controller.device != null;
@@ -56,6 +62,8 @@ public class Sketch extends PApplet {
 	float flashingTextAlpha = 1f;
 	float flashingTextStart;
 	
+	float restartCountDown = 80f;
+	
 	
 	public void setup() {
 		frameRate(targetFrameRate);
@@ -85,10 +93,14 @@ public class Sketch extends PApplet {
 	
 	private void updateCamera() {
 		
-		// find the range of all swarmlings in line, plus a projection of the leader 
-		float minX = leader.x + (60 * leader.dx);
+		// get a projection of the leader's position in 60 frames
+		float projectedLeaderX = leader.x + (60 * leader.dx);
+		float projectedLeaderY = leader.y + (60 * leader.dy);
+		
+		// find the range of all swarmlings in line, plus the leader projection
+		float minX = projectedLeaderX;
 		float maxX = minX;
-		float minY = leader.y + (60 * leader.dy);
+		float minY = projectedLeaderY;
 		float maxY = minY;
 		for (Swarmling s = Swarmling.lastInLine; s != null; s = s.following) {
 			minX = min(minX, s.x);
@@ -97,66 +109,42 @@ public class Sketch extends PApplet {
 			maxY = max(maxY, s.y);
 		}
 		
+		// find the midpoint of the range 
 		float midX = lerp(minX, maxX, 0.5f);
 		float midY = lerp(minY, maxY, 0.5f);
 		
-//		for (int i = 0; i < world.contents.size(); ++i) {
-//			GameObject obj = world.contents.get(i);
-//			if ((obj instanceof WanderingEnemy) || (obj instanceof ChasingEnemy)) {
-//				if (dist(midX, midY, obj.x, obj.y) < camera.scale * sqrt(sq(width) + sq(height))) {
-//					minX = min(minX, obj.x);
-//					maxX = max(maxX, obj.x);
-//					minY = min(minY, obj.y);
-//					maxY = max(maxY, obj.y);
-//				}
-//			}
-//		}
-//		
-//		midX = lerp(minX, maxX, 0.5f);
-//		midY = lerp(minY, maxY, 0.5f);
-		
-//		float modMinZoom = minZoom;
-//		for (int i = 0; i < world.children.size(); ++i) {
-//			World w = world.children.get(i);
-//			float dist = dist(leader.x, leader.y, w.x, w.y);
-//			modMinZoom = min(modMinZoom, map(dist, w.portalRadius, w.portalRadius + World.transitionRadius,
-//					minZoom * w.portalRadius / w.radius, minZoom));
-//		}
-//		float modMaxZoom = max(maxZoom, modMinZoom);
+		// find the radius of a circle centered at the midpoint which contains all the points.
 		
 		midX = lerp(leader.x, midX, distortion);
 		midY = lerp(leader.y, midY, distortion);
 		
 		float zoomTarget = (min(width, height) - (2 * focusMargin)) / max(maxX - minX, maxY - minY);
-//		float yZoomTarget = (height - (2 * focusMargin)) / (maxY - minY);
-		zoomTarget = constrain(zoomTarget/*min(xZoomTarget, yZoomTarget)*/, minZoom, maxZoom) / distortion;
-		
-		camera.x = lerp(camera.x, midX, 0.05f);
-		camera.y = lerp(camera.y, midY, 0.05f);
-		
-		float localMinZoom = minZoom * 0.5f;
-		float localMaxZoom = maxZoom;
-//		
-//		if(controller.getJry()>0.1)
-//			zoomTarget = (zoomTarget+controller.getJry()*(localMaxZoom-zoomTarget))/distortion;
-//		if(controller.getJry()<-0.1){
-//			camera.x = lerp(camera.x, leader.x, 0.1f);
-//			camera.y = lerp(camera.y, leader.y, 0.1f);
-//			zoomTarget = (zoomTarget+controller.getJry()*(zoomTarget-localMinZoom))/distortion;
-//		}
-		
+		zoomTarget = constrain(zoomTarget, minZoom, maxZoom) / distortion;
 
-		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
+		float distToTarget = dist(camera.x, camera.y, midX, midY);
+		float fadeInDx = cameraDx + (cameraMaxAccel * (midX - camera.x) / distToTarget);
+		float fadeInDy = cameraDy + (cameraMaxAccel * (midY - camera.y) / distToTarget);
 		
+		float fadeOutDx = (midX - camera.x) * 0.05f; 
+		float fadeOutDy = (midY - camera.y) * 0.05f;
+		
+		if (mag(fadeInDx, fadeInDy) < mag(fadeOutDx, fadeOutDy)) {
+			cameraDx = fadeInDx;
+			cameraDy = fadeInDy;
+		} else {
+			cameraDx = fadeOutDx;
+			cameraDy = fadeOutDy;
+		}
+		
+		float speed = mag(cameraDx, cameraDy);
+		if (speed > cameraMaxSpeed) { 
+			cameraDx *= cameraMaxSpeed / speed;
+			cameraDy *= cameraMaxSpeed / speed;
+		}
+		
+		camera.x += cameraDx;
+		camera.y += cameraDy;
 
-//		if(controller.getJry()>0)
-//			zoomTarget = camera.scale+controller.getJry()*(localMaxZoom-camera.scale);
-//		if(controller.getJry()<0){
-//			camera.x = lerp(camera.x, leader.x, 0.1f);
-//			camera.y = lerp(camera.y, leader.y, 0.1f);
-//			zoomTarget = camera.scale+controller.getJry()*(camera.scale-localMinZoom);
-//			
-//		}
 		camera.scale = lerp(camera.scale, zoomTarget, 0.05f);
 	}
 	
@@ -176,9 +164,29 @@ public class Sketch extends PApplet {
 		
 		if (!focused) return;
 		if (!controller.getStart()) {
-			String text = "Game Paused :)";
-			fill(0,0,99, 50);
-			text(text, width / 2, height / 2);
+			println(controller.getJz() + ", " + controller.getJrz());
+			if ((controller.getJz() == 1) && (controller.getJrz() == 1)) {
+				if(--restartCountDown < 0) {
+					restart();
+					controller.start = true;
+				}
+			} else {
+				restartCountDown = 80;
+			}
+			noStroke();
+			fill(0);
+			rect(0, (height / 2) - 50, width, 80);
+			fill(0,0,99);
+			text("Paused.", width / 2, height / 2);
+			
+			if (world.level > 1) {
+				fill(0);
+				rect(0, (height / 2) + 100, width, 80);
+				fill(128);
+				rect((restartCountDown / 80) * width / 2, (height / 2) + 100, width * (1- (restartCountDown / 80)), 80);
+				fill(0,0,99);
+				text("Hold both triggers to restart.", width / 2, (height / 2) + 150);
+			}
 			return;
 		}
 		
@@ -370,6 +378,17 @@ public class Sketch extends PApplet {
 		}
 	}
 	
+	void restart() {
+		while (Swarmling.lastInLine != leader) {
+			Swarmling.lastInLine.unfollow();
+		}
+		world = new World(this, null, 0, 0);
+		world.open = true;
+		stage = 0;
+		leader.x = world.nest.x;
+		leader.y = world.nest.y;
+	}
+	
 	// Monte Carlo method to generate deviation from an offset number.
 	float montecarlo(float max){
 		return montecarlo(max, 0);
@@ -415,12 +434,7 @@ public class Sketch extends PApplet {
 				world.children.get(i).open = true;
 			}
 		} else if (key == 'r') {
-			while (Swarmling.lastInLine != leader) {
-				Swarmling.lastInLine.unfollow();
-			}
-			world = new World(this, null, 0, 0);
-			world.open = true;
-			stage = 0;
+			restart();
 		} else if (key == 's') {
 			World newWorld = new World(this, world, 0, 0);
 			world.children.add(newWorld);
@@ -445,7 +459,6 @@ public class Sketch extends PApplet {
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "game.Sketch" });
-
 	}
 	
 	public void stop() {

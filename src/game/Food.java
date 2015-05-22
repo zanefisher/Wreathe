@@ -38,6 +38,13 @@ public class Food extends Carryable {
 		ddx = 0;
 		ddy = 0;
 		
+		// Move back into the world if outside it.
+		float distOutsideWorld = Sketch.mag(x, y) - sketch.world.radius;
+		if (distOutsideWorld > 0) {
+			ddx -= distOutsideWorld * x / sketch.world.radius;
+			ddy -= distOutsideWorld * y / sketch.world.radius;
+		}
+		
 		// Add friction drag.
 		ddx -= dx / 10;
 		ddy -= dy / 10;

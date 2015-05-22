@@ -4,15 +4,15 @@ public class Swarmling extends GameObject {
 	static Swarmling lastInLine;
 	static Swarmling firstInLine;
 	static int swarmlingNumberFollowing = 0;
-	static final float maxSpeed = 3.4f, maxAccel = 0.3f;
+	static final float maxSpeed = 5f, maxAccel = 0.5f;
 	static final float swarmlingDriftAccel = 1.5f;
 	static final float maxAttractRadius=90;
 	static final float swarmlingRadius=5;
 	//should be a magnitude of world radius
 	static final float wanderingFactor=1000;
 	static final float attackRadius = 100f;
-	static final float attackPower = 20f;
-	static final float swarmlingAvoidRadius = 10f;
+	static final float attackPower = 30f;
+	static final float swarmlingAvoidRadius = 5f;
 	static final int puffPeriod = 3;
 	int puffPhase;
 	static float seed=0;
@@ -43,8 +43,8 @@ public class Swarmling extends GameObject {
 		sketch = s;
 		x = ix;
 		y = iy;
-		dx = sketch.random(-1 * maxSpeed, maxSpeed);
-		dy = sketch.random(-1 * maxSpeed, maxSpeed);
+		dx = 0;
+		dy = 0;
 		radius = swarmlingRadius;
 		avoidRadius = swarmlingAvoidRadius;
 		color = sketch.color(40, 65, 40);
@@ -104,13 +104,15 @@ public class Swarmling extends GameObject {
 	
 	public void uncarry(){
 		if (carrying != null) {
-		for (int i = 0; i < carrying.carriedBy.size(); ++i) {
-			if (carrying.carriedBy.get(i) == this) {
-				carrying.carriedBy.remove(i);
-				break;
+			for (int i = 0; i < carrying.carriedBy.size(); ++i) {
+				if (carrying.carriedBy.get(i) == this) {
+					carrying.carriedBy.remove(i);
+					break;
+				}
 			}
-		}
-		carrying = null;
+			carrying = null;
+			dx = 0;
+			dy = 0;
 		} 
 	}
 	
@@ -146,8 +148,8 @@ public class Swarmling extends GameObject {
 		
 		// Add follow vector.
 		if (following != null) {
-			ddx += (following.x - x) / 4;
-			ddy += (following.y - y) / 4;
+			ddx += (following.x - x) / 2;
+			ddy += (following.y - y) / 2;
 		}
 		
 		//  Add carry vector.
@@ -158,8 +160,8 @@ public class Swarmling extends GameObject {
 		}
 		
 		// Add friction drag.
-		ddx -= dx / 20;
-		ddy -= dy / 20;
+		ddx -= dx / 50;
+		ddy -= dy / 50;
 		
 		//closest target
 		target = null;
